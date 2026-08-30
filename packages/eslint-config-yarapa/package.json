@@ -1,0 +1,90 @@
+{
+  "name": "eslint-config-yarapa",
+  "version": "0.1.0",
+  "description": "Strict, high-assurance ESLint Flat Config presets for JavaScript and TypeScript repositories in regulated Thai banking environments.",
+  "keywords": [
+    "eslint",
+    "eslintconfig",
+    "eslint-config",
+    "flat-config",
+    "banking",
+    "typescript"
+  ],
+  "homepage": "https://github.com/useyarapa/eslint-config-yarapa/tree/main/packages/eslint-config-yarapa#readme",
+  "bugs": {
+    "url": "https://github.com/useyarapa/eslint-config-yarapa/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/useyarapa/eslint-config-yarapa.git",
+    "directory": "packages/eslint-config-yarapa"
+  },
+  "license": "MIT",
+  "author": "YARAPA",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=24.15.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "check-types": "tsc --noEmit -p tsconfig.json",
+    "dev": "tsdown --watch",
+    "generate-rule-inventory": "node --experimental-strip-types scripts/generate-rule-inventory.ts",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "peerDependencies": {
+    "eslint": "^10.0.0",
+    "typescript": ">=5.0.0 <6.1.0"
+  },
+  "dependencies": {
+    "@eslint-community/eslint-plugin-eslint-comments": "4.7.2",
+    "@eslint/js": "10.0.1",
+    "@eslint/json": "2.0.1",
+    "@stylistic/eslint-plugin": "5.10.0",
+    "@vitest/eslint-plugin": "1.6.27",
+    "eslint-import-resolver-typescript": "4.4.5",
+    "eslint-plugin-ava": "17.0.1",
+    "eslint-plugin-import-x": "4.17.1",
+    "eslint-plugin-jsdoc": "64.3.1",
+    "eslint-plugin-jsonc": "3.4.2",
+    "eslint-plugin-n": "18.3.0",
+    "eslint-plugin-package-json": "1.8.0",
+    "eslint-plugin-perfectionist": "5.10.1",
+    "eslint-plugin-promise": "7.3.0",
+    "eslint-plugin-regexp": "3.2.0",
+    "eslint-plugin-security": "4.0.1",
+    "eslint-plugin-sonarjs": "4.2.0",
+    "eslint-plugin-testing-library": "7.16.2",
+    "eslint-plugin-unused-imports": "4.4.1",
+    "globals": "17.11.0",
+    "typescript-eslint": "8.68.0"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
+    "@repo/typescript-config-yarapa": "workspace:*",
+    "@types/node": "24.9.1",
+    "@types/eslint-plugin-promise": "7.3.0",
+    "@types/eslint-plugin-security": "3.0.1",
+    "publint": "0.3.24",
+    "tsdown": "0.22.14",
+    "typescript": "6.0.3",
+    "vitest": "4.1.11"
+  }
+}
