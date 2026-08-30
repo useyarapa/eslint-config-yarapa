@@ -51,7 +51,7 @@ provides the shared `tsconfig.json` bases consumed by the first.
 `vitest`, `ava`, `json`, `packageJson`, `jsdoc`.
 
 `recommended` is the aggregate **Banking Baseline** and deliberately
-*excludes* `node`, `browser`, `vitest`, `ava`, `ignores` — those need
+_excludes_ `node`, `browser`, `vitest`, `ava`, `ignores` — those need
 repo-scoped `files` globs supplied by the consuming repository, so the
 consumer composes them explicitly alongside `recommended`.
 
@@ -113,6 +113,44 @@ The hook runs via `npx --no -- commitlint --edit "$1"`; `husky` is wired
 through `core.hooksPath = .husky/_` and the root `prepare` script (`husky`),
 which pnpm runs automatically on `pnpm install`.
 
+## Pre-commit: gitleaks + lint-staged
+
+A husky `pre-commit` hook (`.husky/pre-commit`) runs before every commit:
+
+1. Checks for the `gitleaks` binary (`command -v gitleaks`); if missing, it
+   prints a platform-specific install hint (`brew install gitleaks` on
+   macOS, the GitHub install docs link on Linux/other) and exits 1. This is
+   a system-level Go binary, **not** an npm package — install it yourself,
+   it is not managed by `pnpm install`.
+2. Runs `gitleaks protect --staged --exit-code=1` to block commits that
+   introduce secrets into staged changes.
+3. Runs `npx lint-staged`, which applies `prettier --write` to staged
+   `*.{ts,tsx}`, `*.{js,jsx,mjs,cjs}`, and `*.{json,md,yml,yaml}` files per
+   the root `.lintstagedrc.json`.
+
+## Vitest + Stryker mutation testing (`eslint-config-yarapa`)
+
+- `vitest.config.ts` runs `test/**/*.test.ts` under the `node` environment
+  with v8 coverage (`pnpm --filter eslint-config-yarapa test`, or
+  `test:coverage` for the coverage report). Keep
+  `@vitest/coverage-v8`'s version pinned to exactly match `vitest`'s.
+- `stryker.config.json` runs Stryker mutation testing against
+  `src/**/*.ts` using the `vitest` test runner
+  (`pnpm --filter eslint-config-yarapa test:mutation`).
+  - Under pnpm's isolated `.pnpm` virtual store, Stryker's default
+    sibling-directory plugin auto-discovery cannot find
+    `@stryker-mutator/vitest-runner`, so it must be listed explicitly in
+    `stryker.config.json`'s `plugins` array.
+  - `@stryker-mutator/core` has no direct `typescript` dependency of its
+    own, so its dynamic `import('typescript')` otherwise resolves to the
+    hoisted root `typescript@7.0.2`, which is incompatible with
+    `typescript-eslint`'s peer range. `pnpm-workspace.yaml`'s
+    `packageExtensions["@stryker-mutator/core"].dependencies.typescript`
+    pins it to `6.0.3` to match this package's own `typescript` version.
+  - Stryker writes a runtime cache/output directory,
+    `packages/eslint-config-yarapa/.stryker-tmp/`, which is gitignored
+    (`.stryker-tmp` in the root `.gitignore`) — never commit it.
+
 ## `knip` on this sandbox: raw-transfer OOM
 
 `knip` (root devDependency, config in `knip.json`) depends on `oxc-parser`,
@@ -134,7 +172,9 @@ pnpm install                                        # install workspace deps
 KNIP_DISABLE_RAW_TRANSFER=1 npx knip                 # unused deps/exports
 pnpm --filter eslint-config-yarapa check-types       # tsc --noEmit
 pnpm --filter eslint-config-yarapa build             # tsdown -> dist/
-pnpm --filter eslint-config-yarapa test              # vitest run (once tests exist)
+pnpm --filter eslint-config-yarapa test              # vitest run
+pnpm --filter eslint-config-yarapa test:coverage      # vitest run --coverage
+pnpm --filter eslint-config-yarapa test:mutation      # stryker run (mutation testing)
 pnpm --filter eslint-config-yarapa lint              # eslint . (once self-lint is wired)
 turbo run build / lint / check-types                 # workspace-wide via Turborepo
 ```

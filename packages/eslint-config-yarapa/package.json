@@ -47,7 +47,9 @@
     "generate-rule-inventory": "node --experimental-strip-types scripts/generate-rule-inventory.ts",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "test:mutation": "stryker run"
   },
   "peerDependencies": {
     "eslint": "^10.0.0",
@@ -79,9 +81,12 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
     "@repo/typescript-config-yarapa": "workspace:*",
-    "@types/node": "24.9.1",
+    "@stryker-mutator/core": "10.0.0",
+    "@stryker-mutator/vitest-runner": "10.0.0",
     "@types/eslint-plugin-promise": "7.3.0",
     "@types/eslint-plugin-security": "3.0.1",
+    "@types/node": "24.9.1",
+    "@vitest/coverage-v8": "4.1.11",
     "publint": "0.3.24",
     "tsdown": "0.22.14",
     "typescript": "6.0.3",

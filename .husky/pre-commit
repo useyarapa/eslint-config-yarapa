@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  case "$(uname -s)" in
+    Darwin) echo "gitleaks is not installed. Run: brew install gitleaks" ;;
+    Linux) echo "gitleaks is not installed. Install it from https://github.com/gitleaks/gitleaks#installing" ;;
+    *) echo "gitleaks is not installed. See https://github.com/gitleaks/gitleaks#installing" ;;
+  esac
+  exit 1
+fi
+gitleaks protect --staged --exit-code=1
+npx lint-staged
