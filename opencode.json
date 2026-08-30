@@ -1,0 +1,19 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "siamplus/glm-5.3-flash",
+  "provider": {
+    "siamplus": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "SiamPlus",
+      "options": {
+        "baseURL": "https://gateway.siamplusdev.com",
+        "apiKey": "sk-TXSJbI9kKFUv49oWH-HuaA"
+      },
+      "models": {
+        "glm-5.3-flash": {
+          "name": "GLM 5.3 Flash"
+        }
+      }
+    }
+  }
+}
