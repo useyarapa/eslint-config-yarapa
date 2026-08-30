@@ -265,14 +265,15 @@ A consumer repository may use a targeted inline waiver when a diagnostic is a
 reviewed false positive or an externally constrained case. Every waiver must:
 
 - name the exact rule;
-- affect the smallest practical code range;
-- include a meaningful description;
+- affect the smallest justified code range;
+- include a meaningful description that identifies the reason;
 - avoid blanket or unlimited disable directives; and
 - remain subject to unused-directive detection.
 
-A consumer repository is non-conforming if it globally disables a mandatory
-rule, lowers an error to a warning, applies incompatible stack presets to the
-same file scope, or uses undocumented suppressions.
+`disableTypeChecked` is the only sanctioned file-scoped control that disables
+type-aware rules. Any other global rule disable, severity reduction, or
+incompatible stack preset applied to the same file scope makes the repository
+non-conforming. Undocumented suppressions are also non-conforming.
 
 The npm package cannot prevent a later Flat Config entry from weakening a rule.
 Organizational CI and code review must treat such downstream overrides as policy

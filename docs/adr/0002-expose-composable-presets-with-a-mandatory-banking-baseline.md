@@ -6,7 +6,7 @@ status: accepted
 
 The package exposes one named `configs` object from one root entrypoint. Its
 sixteen values are consistently shaped Flat Config arrays. `recommended` is an
-aggregate Banking Baseline that includes universally applicable type-aware,
+aggregate Banking Baseline that includes universally relevant type-aware,
 security, documentation, structured-data, and stylistic controls. Runtime and
 test-runner presets remain file-scoped capabilities because Node.js and browser
 globals, and Vitest and AVA semantics, must not be applied to incompatible
@@ -30,4 +30,6 @@ The public surface consists of `recommended`, `base`, `typescript`,
 `security`, `testingLibrary`, `vitest`, `ava`, `json`, `packageJson`, and
 `jsdoc`. There is no default export and no code subpath export. A conforming
 repository applies `recommended`, scopes runtime presets to real runtime
-boundaries, and selects at most one test runner per file scope.
+boundaries, selects the correct test runner preset for each test-file scope
+(and never more than one), and uses `disableTypeChecked` only for explicitly
+listed tooling files without a TypeScript project.
