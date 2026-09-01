@@ -2,10 +2,29 @@ import type { Linter } from "eslint";
 
 import avaPlugin from "eslint-plugin-ava";
 
+import { required } from "./internal/required.js";
 import { vitestFileGlobs } from "./vitest.js";
 
-const [avaRecommended, avaPackageJsonRecommended] =
-  avaPlugin.configs.recommended;
+const avaRecommendedConfigs = required(
+  avaPlugin.configs.recommended,
+  "eslint-plugin-ava.configs.recommended",
+);
+const avaRecommended = required(
+  avaRecommendedConfigs[0],
+  "eslint-plugin-ava.configs.recommended[0]",
+);
+const avaPackageJsonRecommended = required(
+  avaRecommendedConfigs[1],
+  "eslint-plugin-ava.configs.recommended[1]",
+);
+const avaRecommendedPlugin = required(
+  avaRecommended.plugins?.ava,
+  "eslint-plugin-ava.configs.recommended[0].plugins.ava",
+);
+const avaPackageJsonPlugin = required(
+  avaPackageJsonRecommended.plugins?.ava,
+  "eslint-plugin-ava.configs.recommended[1].plugins.ava",
+);
 
 /**
  * AVA test-runner capability preset. Select `ava` or `vitest` for a given
@@ -19,13 +38,13 @@ export const ava: Linter.Config[] = [
   {
     files: vitestFileGlobs,
     name: "yarapa/ava/recommended",
-    plugins: { ava: avaRecommended.plugins.ava },
+    plugins: { ava: avaRecommendedPlugin },
     rules: { ...avaRecommended.rules },
   },
   {
     files: avaPackageJsonRecommended.files,
     name: "yarapa/ava/no-ava-in-dependencies",
-    plugins: { ava: avaPackageJsonRecommended.plugins.ava },
+    plugins: { ava: avaPackageJsonPlugin },
     rules: { ...avaPackageJsonRecommended.rules },
   },
 ];

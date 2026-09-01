@@ -129,7 +129,8 @@ universally relevant controls, including:
 - import resolution and dependency-boundary checks;
 - Promise and asynchronous control-flow checks;
 - regular-expression checks;
-- SonarJS all-rules coverage;
+- SonarJS high-assurance coverage with the documented project-specific
+  exception;
 - security recommended coverage;
 - unused-import controls;
 - auditable ESLint suppression comments;
@@ -238,11 +239,11 @@ The mandatory plugin set includes:
 `@eslint/json`, the TypeScript import resolver, parsers, and `globals` support
 these controls but are not themselves treated as rule plugins.
 
-## SonarJS all-rules policy
+## SonarJS coverage policy
 
 SonarJS is deliberately stricter than its upstream recommended preset. The
-package enables every rule present in the exact-pinned `sonarjs.rules` export
-as an error.
+package enables every generally applicable rule present in the exact-pinned
+`sonarjs.rules` export as an error.
 
 This includes:
 
@@ -252,12 +253,17 @@ This includes:
 - rules with known false-positive potential; and
 - deprecated rules that remain present in the pinned plugin release.
 
-No SonarJS rule is removed or downgraded in the package configuration. The
-phrase "without exceptions" refers to this package-level rule map; it does not
-prohibit a conforming consumer from recording a diagnostic-level Waiver.
-Deprecated rules disappear only when an intentional plugin upgrade removes
-them. Removing that diagnostic coverage is a breaking change and requires a
-reviewed release.
+`sonarjs/file-header` is the single package-level exception. The rule verifies a
+repository-specific copyright or license header, so it cannot be configured
+correctly by a public shared config without inventing consumer-owned legal
+metadata. Consumers with a mandatory source-header policy must configure that
+rule in their repository-owned Flat Config with the exact approved header.
+
+No other SonarJS rule is removed or downgraded in the package configuration.
+The release gate verifies the exception explicitly and verifies every remaining
+exported SonarJS rule at `error`. Deprecated rules disappear only when an
+intentional plugin upgrade removes them. Removing any other diagnostic coverage
+is a breaking change and requires a reviewed release.
 
 ## Waivers and conformance
 
@@ -361,7 +367,8 @@ The release gate includes:
 - isolated Vitest and AVA scopes;
 - DOM Testing Library composition;
 - every-rule severity checks;
-- SonarJS export-to-inventory completeness checks;
+- SonarJS universal-rule export-to-inventory completeness checks plus the
+  explicit project-specific exception assertion;
 - automatic-fix safety and idempotence checks;
 - generated Rule Inventory drift checks;
 - self-linting and type checking;

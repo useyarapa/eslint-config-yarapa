@@ -2,8 +2,24 @@ import type { Linter } from "eslint";
 
 import importXPlugin from "eslint-plugin-import-x";
 
-const jsRecommended = importXPlugin.configs["flat/recommended"];
-const tsRecommended = importXPlugin.configs["flat/typescript"];
+import { required } from "./required.js";
+
+const jsRecommended = required(
+  importXPlugin.configs["flat/recommended"],
+  "eslint-plugin-import-x.configs.flat/recommended",
+);
+const tsRecommended = required(
+  importXPlugin.configs["flat/typescript"],
+  "eslint-plugin-import-x.configs.flat/typescript",
+);
+const importXRecommendedPlugin = required(
+  jsRecommended.plugins?.["import-x"],
+  "eslint-plugin-import-x.configs.flat/recommended.plugins.import-x",
+);
+const jsRecommendedRules = required(
+  jsRecommended.rules,
+  "eslint-plugin-import-x.configs.flat/recommended.rules",
+);
 
 /**
  * Import resolution and dependency-boundary checks. Not independently
@@ -22,9 +38,9 @@ const tsRecommended = importXPlugin.configs["flat/typescript"];
 export const importResolution: Linter.Config[] = [
   {
     name: "yarapa/internal/import-x-recommended",
-    plugins: { "import-x": jsRecommended.plugins["import-x"] },
+    plugins: { "import-x": importXRecommendedPlugin },
     rules: Object.fromEntries(
-      Object.entries(jsRecommended.rules).map(([rule, severity]) => [
+      Object.entries(jsRecommendedRules).map(([rule, severity]) => [
         rule,
         severity === "warn" ? "error" : severity,
       ]),

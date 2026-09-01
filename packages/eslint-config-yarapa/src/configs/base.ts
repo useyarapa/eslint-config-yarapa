@@ -6,7 +6,19 @@ import promisePlugin from "eslint-plugin-promise";
 import regexpPlugin from "eslint-plugin-regexp";
 import unusedImportsPlugin from "eslint-plugin-unused-imports";
 
-const promiseRecommended = promisePlugin.configs["flat/recommended"];
+import { asFlatPlugin } from "./internal/eslintCompat.js";
+import { required } from "./internal/required.js";
+
+const promiseRecommended = required(
+  promisePlugin.configs["flat/recommended"],
+  "eslint-plugin-promise.configs.flat/recommended",
+);
+const promiseRecommendedPlugin = asFlatPlugin(
+  required(
+    promiseRecommended.plugins?.promise,
+    "eslint-plugin-promise.configs.flat/recommended.plugins.promise",
+  ),
+);
 const regexpRecommended = regexpPlugin.configs["flat/recommended"];
 
 /**
@@ -36,7 +48,7 @@ export const base: Linter.Config[] = [
   },
   {
     name: "yarapa/base/promise-recommended",
-    plugins: { promise: promiseRecommended.plugins.promise },
+    plugins: { promise: promiseRecommendedPlugin },
     rules: {
       ...promiseRecommended.rules,
       "promise/no-callback-in-promise": "error",

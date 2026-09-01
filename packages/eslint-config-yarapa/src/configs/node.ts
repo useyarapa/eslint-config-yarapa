@@ -3,7 +3,16 @@ import type { Linter } from "eslint";
 import nPlugin from "eslint-plugin-n";
 import globals from "globals";
 
-const nodeRecommended = nPlugin.configs["flat/recommended-module"];
+import { required } from "./internal/required.js";
+
+const nodeRecommended = required(
+  nPlugin.configs["flat/recommended-module"],
+  "eslint-plugin-n.configs.flat/recommended-module",
+);
+const nodeRecommendedPlugin = required(
+  nodeRecommended.plugins?.n,
+  "eslint-plugin-n.configs.flat/recommended-module.plugins.n",
+);
 
 /**
  * Node.js runtime capability preset. Applies Node.js globals and the
@@ -19,7 +28,7 @@ export const node: Linter.Config[] = [
       },
     },
     name: "yarapa/node/recommended",
-    plugins: { n: nodeRecommended.plugins.n },
+    plugins: { n: nodeRecommendedPlugin },
     rules: { ...nodeRecommended.rules },
   },
 ];

@@ -2,15 +2,22 @@ import type { Linter } from "eslint";
 
 import sonarjsPlugin from "eslint-plugin-sonarjs";
 
+const PROJECT_SPECIFIC_RULES = new Set(["file-header"]);
+
 /**
- * SonarJS all-rules coverage. Not independently exported: `docs/POLICY.md`
- * lists SonarJS as a `recommended`-only universal control, deliberately
- * stricter than SonarJS's own upstream recommended preset. Every rule
- * present in the exact-pinned `sonarjs.rules` export is enabled as an
- * error, without deduplication or package-level exceptions - including
- * rules omitted from SonarJS recommended, type-aware rules, rules that
- * overlap other plugins, rules with known false-positive potential, and
- * deprecated rules that remain present in the pinned plugin release.
+ * SonarJS high-assurance coverage. Not independently exported:
+ * `docs/POLICY.md` lists SonarJS as a `recommended`-only universal control.
+ * Every generally applicable rule present in the exact-pinned
+ * `sonarjs.rules` export is enabled as an error, including rules omitted from
+ * SonarJS recommended, type-aware rules, overlapping rules, rules with known
+ * false-positive potential, and deprecated rules that remain in the pinned
+ * release.
+ *
+ * Rules whose correctness depends on consumer-owned project metadata are not
+ * universal controls. `file-header` requires a repository-specific copyright
+ * or license header value, which a public shared config cannot infer safely,
+ * so it is the single package-level exception and must be configured by the
+ * consuming repository when such a header policy exists.
  */
 export const sonarjsAllRules: Linter.Config[] = [
   {
@@ -32,10 +39,9 @@ export const sonarjsAllRules: Linter.Config[] = [
     name: "yarapa/internal/sonarjs-all-rules",
     plugins: { sonarjs: sonarjsPlugin },
     rules: Object.fromEntries(
-      Object.keys(sonarjsPlugin.rules).map((ruleName) => [
-        `sonarjs/${ruleName}`,
-        "error",
-      ]),
+      Object.keys(sonarjsPlugin.rules)
+        .filter(ruleName => !PROJECT_SPECIFIC_RULES.has(ruleName))
+        .map(ruleName => [`sonarjs/${ruleName}`, "error"]),
     ),
   },
 ];

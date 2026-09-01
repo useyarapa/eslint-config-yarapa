@@ -12,7 +12,7 @@ import tseslint from "typescript-eslint";
  * This preset applies to every TypeScript file, typed or not. `typeChecked`
  * adds the type-aware layer on top for files that have a TypeScript project.
  */
-export const typescript: Linter.Config[] = tseslint.config(
+export const typescript = tseslint.config(
   {
     extends: [tseslint.configs.recommended],
     files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
@@ -27,10 +27,6 @@ export const typescript: Linter.Config[] = tseslint.config(
           "ts-ignore": true,
           "ts-nocheck": true,
         },
-      ],
-      "@typescript-eslint/consistent-type-exports": [
-        "error",
-        { fixMixedExportsWithInlineTypeSpecifier: false },
       ],
       "@typescript-eslint/consistent-type-imports": [
         "error",
@@ -59,4 +55,4 @@ export const typescript: Linter.Config[] = tseslint.config(
       ],
     },
   },
-);
+) as unknown as Linter.Config[];
