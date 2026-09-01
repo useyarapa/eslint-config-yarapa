@@ -1,32 +1,26 @@
-import { ESLint } from "eslint";
+import type { Linter } from "eslint";
+
 import { resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import { perfectionistNatural } from "../src/configs/internal/perfectionist.js";
 import { required } from "../src/configs/internal/required.js";
 import { configs } from "../src/index.js";
-
-const packageRoot = fileURLToPath(new URL("../", import.meta.url));
+import { eslintForConfigs, packageRoot } from "./helpers/eslint.js";
 
 /**
  * Apply an ESLint fixer twice and verify idempotence.
- * @param config Flat Config under test.
+ * @param config Flat Config entries under test.
  * @param code Source text to fix.
  * @param filename Virtual fixture path used for config matching.
  * @returns Output from the first fix pass.
  */
 async function fixTwice(
-  config: ESLint.Options["overrideConfig"],
+  config: Linter.Config[],
   code: string,
   filename: string,
 ): Promise<string> {
-  const eslint = new ESLint({
-    cwd: packageRoot,
-    fix: true,
-    overrideConfig: config,
-    overrideConfigFile: true,
-  });
+  const eslint = eslintForConfigs(config, { fix: true });
 
   const [first] = await eslint.lintText(code, {
     filePath: resolve(packageRoot, filename),

@@ -1,12 +1,10 @@
 import { ESLint } from "eslint";
 import { defineConfig } from "eslint/config";
 import { resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import { configs } from "../src/index.js";
-
-const packageRoot = fileURLToPath(new URL("../", import.meta.url));
+import { eslintFor, packageRoot } from "./helpers/eslint.js";
 
 type PresetName = keyof typeof configs;
 
@@ -29,19 +27,6 @@ const representativeFiles: Record<
   typescript: "fixtures/valid/typescript/case.ts",
   vitest: "fixtures/valid/vitest/case.test.js",
 };
-
-/**
- * Create ESLint for one public preset.
- * @param preset Public preset to validate.
- * @returns ESLint instance configured with that preset.
- */
-function eslintFor(preset: PresetName): ESLint {
-  return new ESLint({
-    cwd: packageRoot,
-    overrideConfig: Reflect.get(configs, preset),
-    overrideConfigFile: true,
-  });
-}
 
 describe("Flat Config validation", () => {
   for (const [preset, relativePath] of Object.entries(

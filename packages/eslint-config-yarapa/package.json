@@ -1,13 +1,12 @@
 {
   "name": "eslint-config-yarapa",
   "version": "0.1.0",
-  "description": "Strict, high-assurance ESLint Flat Config presets for JavaScript and TypeScript repositories in regulated Thai banking environments.",
+  "description": "Strict, high-assurance ESLint Flat Config presets for JavaScript and TypeScript projects.",
   "keywords": [
     "eslint",
     "eslintconfig",
     "eslint-config",
     "flat-config",
-    "banking",
     "typescript"
   ],
   "homepage": "https://github.com/useyarapa/eslint-config-yarapa/tree/main/packages/eslint-config-yarapa#readme",

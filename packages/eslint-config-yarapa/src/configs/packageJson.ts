@@ -2,8 +2,16 @@ import type { Linter } from "eslint";
 
 import { configs as packageJsonConfigs } from "eslint-plugin-package-json";
 
-const recommended = packageJsonConfigs.recommended;
-const stylisticPackageJson = packageJsonConfigs.stylistic;
+import { required } from "./internal/required.js";
+
+const recommended = required(
+  packageJsonConfigs.recommended,
+  "eslint-plugin-package-json.configs.recommended",
+);
+const stylisticPackageJson = required(
+  packageJsonConfigs.stylistic,
+  "eslint-plugin-package-json.configs.stylistic",
+);
 
 /**
  * Package manifest validity, consistency, and property-ordering checks for

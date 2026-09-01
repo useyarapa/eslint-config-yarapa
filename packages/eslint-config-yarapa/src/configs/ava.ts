@@ -2,8 +2,8 @@ import type { Linter } from "eslint";
 
 import avaPlugin from "eslint-plugin-ava";
 
+import { canonicalTestFileGlobs } from "./internal/canonicalTestFileGlobs.js";
 import { required } from "./internal/required.js";
-import { vitestFileGlobs } from "./vitest.js";
 
 const avaRecommendedConfigs = required(
   avaPlugin.configs.recommended,
@@ -36,7 +36,7 @@ const avaPackageJsonPlugin = required(
  */
 export const ava: Linter.Config[] = [
   {
-    files: vitestFileGlobs,
+    files: canonicalTestFileGlobs,
     name: "yarapa/ava/recommended",
     plugins: { ava: avaRecommendedPlugin },
     rules: { ...avaRecommended.rules },

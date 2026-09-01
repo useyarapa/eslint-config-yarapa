@@ -4,12 +4,18 @@ import perfectionistPlugin, {
   configs as perfectionistConfigs,
 } from "eslint-plugin-perfectionist";
 
-const recommendedNatural = perfectionistConfigs["recommended-natural"];
+import { required } from "./required.js";
+
+const recommendedNatural = required(
+  perfectionistConfigs["recommended-natural"],
+  "eslint-plugin-perfectionist.configs.recommended-natural",
+);
 
 /**
  * Perfectionist recommended natural ordering. Not independently exported:
- * `docs/POLICY.md` lists Perfectionist as a `recommended`-only universal
- * control providing semantic import grouping and natural ascending order.
+ * Perfectionist is a `recommended`-only universal control providing semantic
+ * import grouping and natural ascending order, so it is folded into
+ * `recommended` rather than exposed as its own preset.
  */
 export const perfectionistNatural: Linter.Config[] = [
   {

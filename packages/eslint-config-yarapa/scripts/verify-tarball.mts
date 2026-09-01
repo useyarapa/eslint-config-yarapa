@@ -18,24 +18,11 @@ const pnpm
 const node = process.execPath;
 const eslintVersion = process.env.ESLINT_VERSION ?? "10.9.1";
 const typescriptVersion = process.env.TYPESCRIPT_VERSION ?? "6.0.3";
-const expectedPresets = [
-  "ava",
-  "base",
-  "browser",
-  "disableTypeChecked",
-  "ignores",
-  "jsdoc",
-  "json",
-  "node",
-  "packageJson",
-  "recommended",
-  "security",
-  "stylistic",
-  "testingLibrary",
-  "typeChecked",
-  "typescript",
-  "vitest",
-].sort();
+const builtEntryUrl = new URL("../dist/index.mjs", import.meta.url).href;
+const { configs } = (await import(builtEntryUrl)) as {
+  configs: Record<string, unknown>;
+};
+const expectedPresets = Object.keys(configs).sort();
 
 /**
  * Run a certification command and fail on any non-zero result.

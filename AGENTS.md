@@ -55,9 +55,11 @@ boundaries belong to the consuming project, so consumers compose those presets
 explicitly with appropriate `files` or ignore scopes.
 
 Source layout: `packages/eslint-config-yarapa/src/configs/*.ts` (one file per
-public preset) plus `src/configs/internal/*.ts` for composition-only modules
-(SonarJS coverage, import-x resolution, Perfectionist ordering) that are folded
-into public presets but are not themselves exported presets. `src/index.ts` is
+public preset) plus `src/configs/internal/*.ts` for shared support modules —
+composition-only control sets (SonarJS coverage, import-x resolution,
+Perfectionist ordering) and upstream-extraction helpers (`required.ts`,
+`eslintCompat.ts`) — all folded into public presets and none exported as
+public presets themselves. `src/index.ts` is
 the single entry point exporting `configs`.
 
 ## Public package design rules

@@ -3,27 +3,11 @@ import type { Linter } from "eslint";
 import sonarjsPlugin from "eslint-plugin-sonarjs";
 import { describe, expect, it } from "vitest";
 
-import { vitestFileGlobs } from "../src/configs/vitest.js";
+import { canonicalTestFileGlobs } from "../src/configs/internal/canonicalTestFileGlobs.js";
+import { presetNames } from "../src/configs/presetNames.js";
 import { configs } from "../src/index.js";
 
-const REQUIRED_PRESET_NAMES = [
-  "recommended",
-  "base",
-  "typescript",
-  "typeChecked",
-  "disableTypeChecked",
-  "node",
-  "browser",
-  "stylistic",
-  "ignores",
-  "security",
-  "testingLibrary",
-  "vitest",
-  "ava",
-  "json",
-  "packageJson",
-  "jsdoc",
-] as const;
+const REQUIRED_PRESET_NAMES = presetNames;
 
 describe("configs", () => {
   it("exposes exactly the sixteen required preset names", () => {
@@ -62,7 +46,7 @@ describe("configs", () => {
     );
 
     expect(domEntry).toBeDefined();
-    expect(domEntry?.files).toStrictEqual(vitestFileGlobs);
+    expect(domEntry?.files).toStrictEqual(canonicalTestFileGlobs);
   });
 
   it("ava preserves the upstream package.json no-ava-in-dependencies entry", () => {

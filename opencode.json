@@ -7,7 +7,7 @@
       "name": "SiamPlus",
       "options": {
         "baseURL": "https://gateway.siamplusdev.com",
-        "apiKey": "sk-TXSJbI9kKFUv49oWH-HuaA"
+        "apiKey": "{env:SIAMPLUS_API_KEY}"
       },
       "models": {
         "glm-5.3-flash": {
