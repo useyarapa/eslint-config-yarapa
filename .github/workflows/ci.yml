@@ -71,5 +71,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add packages/eslint-config-yarapa/generated/rule-inventory.json
-          git commit -m "chore(inventory): generate rule inventory"
+          HUSKY=0 git commit -m "chore(inventory): generate rule inventory"
           git push
