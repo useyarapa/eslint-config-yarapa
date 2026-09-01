@@ -1,6 +1,6 @@
-import packageJsonPlugin from "eslint-plugin-package-json";
-
 import type { Linter } from "eslint";
+
+import packageJsonPlugin from "eslint-plugin-package-json";
 
 const recommended = packageJsonPlugin.configs.recommended;
 const stylisticPackageJson = packageJsonPlugin.configs.stylistic;

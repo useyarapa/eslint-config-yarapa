@@ -1,10 +1,10 @@
+import type { Linter } from "eslint";
+
 import commentsPlugin from "@eslint-community/eslint-plugin-eslint-comments";
 import js from "@eslint/js";
 import promisePlugin from "eslint-plugin-promise";
 import regexpPlugin from "eslint-plugin-regexp";
 import unusedImportsPlugin from "eslint-plugin-unused-imports";
-
-import type { Linter } from "eslint";
 
 const promiseRecommended = promisePlugin.configs["flat/recommended"];
 const regexpRecommended = regexpPlugin.configs["flat/recommended"];
@@ -25,16 +25,23 @@ export const base: Linter.Config[] = [
     plugins: {
       "@eslint-community/eslint-comments": commentsPlugin,
     },
-    rules: { ...commentsPlugin.configs.recommended.rules },
+    rules: {
+      ...commentsPlugin.configs.recommended.rules,
+      // Every Waiver must include a meaningful description identifying
+      // the reason for the suppression; this rule makes an undescribed
+      // suppression directive itself a lint error, so waivers stay
+      // auditable rather than silent.
+      "@eslint-community/eslint-comments/require-description": "error",
+    },
   },
   {
     name: "yarapa/base/promise-recommended",
     plugins: { promise: promiseRecommended.plugins.promise },
     rules: {
       ...promiseRecommended.rules,
+      "promise/no-callback-in-promise": "error",
       "promise/no-nesting": "error",
       "promise/no-promise-in-callback": "error",
-      "promise/no-callback-in-promise": "error",
       "promise/no-return-in-finally": "error",
       "promise/valid-params": "error",
     },

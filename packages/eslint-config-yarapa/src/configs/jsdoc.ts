@@ -1,6 +1,6 @@
-import jsdocPlugin from "eslint-plugin-jsdoc";
-
 import type { Linter } from "eslint";
+
+import jsdocPlugin from "eslint-plugin-jsdoc";
 
 const jsRecommended = jsdocPlugin.configs["flat/recommended-error"];
 const tsRecommended = jsdocPlugin.configs["flat/recommended-typescript-error"];
@@ -13,14 +13,14 @@ const tsRecommended = jsdocPlugin.configs["flat/recommended-typescript-error"];
  */
 export const jsdoc: Linter.Config[] = [
   {
-    name: "yarapa/jsdoc/recommended-javascript",
     files: ["**/*.js", "**/*.mjs", "**/*.cjs", "**/*.jsx"],
+    name: "yarapa/jsdoc/recommended-javascript",
     plugins: { jsdoc: jsRecommended.plugins.jsdoc },
     rules: { ...jsRecommended.rules },
   },
   {
-    name: "yarapa/jsdoc/recommended-typescript",
     files: ["**/*.ts", "**/*.mts", "**/*.cts", "**/*.tsx"],
+    name: "yarapa/jsdoc/recommended-typescript",
     plugins: { jsdoc: tsRecommended.plugins.jsdoc },
     rules: { ...tsRecommended.rules },
   },

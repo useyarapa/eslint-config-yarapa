@@ -1,3 +1,5 @@
+import type { Linter } from "eslint";
+
 import { base } from "./base.js";
 import { importResolution } from "./internal/importResolution.js";
 import { perfectionistNatural } from "./internal/perfectionist.js";
@@ -9,8 +11,6 @@ import { security } from "./security.js";
 import { stylistic } from "./stylistic.js";
 import { typeChecked } from "./typeChecked.js";
 import { typescript } from "./typescript.js";
-
-import type { Linter } from "eslint";
 
 /**
  * The aggregate Banking Baseline. Applies every universally relevant

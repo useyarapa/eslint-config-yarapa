@@ -1,3 +1,5 @@
+import type { Linter } from "eslint";
+
 import { ava } from "./configs/ava.js";
 import { base } from "./configs/base.js";
 import { browser } from "./configs/browser.js";
@@ -15,29 +17,31 @@ import { typeChecked } from "./configs/typeChecked.js";
 import { typescript } from "./configs/typescript.js";
 import { vitest } from "./configs/vitest.js";
 
-import type { Linter } from "eslint";
-
 /**
- * The sixteen named Flat Config array presets exposed by `configs`.
+ * The sixteen named Flat Config array presets exposed by `configs`. Kept
+ * un-exported so the generated declaration entrypoint exposes only the
+ * single named `configs` export, per
+ * `docs/adr/0002-expose-composable-presets-with-a-mandatory-banking-baseline.md`;
+ * this type still annotates `configs` below.
  */
-export interface YarapaConfigs {
-  recommended: Linter.Config[];
-  base: Linter.Config[];
-  typescript: Linter.Config[];
-  typeChecked: Linter.Config[];
-  disableTypeChecked: Linter.Config[];
-  node: Linter.Config[];
-  browser: Linter.Config[];
-  stylistic: Linter.Config[];
-  ignores: Linter.Config[];
-  security: Linter.Config[];
-  testingLibrary: Linter.Config[];
-  vitest: Linter.Config[];
+type YarapaConfigs = {
   ava: Linter.Config[];
-  json: Linter.Config[];
-  packageJson: Linter.Config[];
+  base: Linter.Config[];
+  browser: Linter.Config[];
+  disableTypeChecked: Linter.Config[];
+  ignores: Linter.Config[];
   jsdoc: Linter.Config[];
-}
+  json: Linter.Config[];
+  node: Linter.Config[];
+  packageJson: Linter.Config[];
+  recommended: Linter.Config[];
+  security: Linter.Config[];
+  stylistic: Linter.Config[];
+  testingLibrary: Linter.Config[];
+  typeChecked: Linter.Config[];
+  typescript: Linter.Config[];
+  vitest: Linter.Config[];
+};
 
 /**
  * The public surface of `eslint-config-yarapa`: sixteen consistently
@@ -49,20 +53,20 @@ export interface YarapaConfigs {
  * graph, and the `defineConfig`/`extends` usage example.
  */
 export const configs: YarapaConfigs = {
-  recommended,
-  base,
-  typescript,
-  typeChecked,
-  disableTypeChecked,
-  node,
-  browser,
-  stylistic,
-  ignores,
-  security,
-  testingLibrary,
-  vitest,
   ava,
-  json,
-  packageJson,
+  base,
+  browser,
+  disableTypeChecked,
+  ignores,
   jsdoc,
+  json,
+  node,
+  packageJson,
+  recommended,
+  security,
+  stylistic,
+  testingLibrary,
+  typeChecked,
+  typescript,
+  vitest,
 };

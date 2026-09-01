@@ -9,7 +9,6 @@ import type { Linter } from "eslint";
  */
 export const ignores: Linter.Config[] = [
   {
-    name: "yarapa/ignores/common-build-output",
     ignores: [
       "**/dist/**",
       "**/build/**",
@@ -19,5 +18,6 @@ export const ignores: Linter.Config[] = [
       "**/.turbo/**",
       "**/node_modules/**",
     ],
+    name: "yarapa/ignores/common-build-output",
   },
 ];

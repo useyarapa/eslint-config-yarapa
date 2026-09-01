@@ -1,7 +1,7 @@
+import type { Linter } from "eslint";
+
 import nPlugin from "eslint-plugin-n";
 import globals from "globals";
-
-import type { Linter } from "eslint";
 
 const nodeRecommended = nPlugin.configs["flat/recommended-module"];
 
@@ -12,14 +12,14 @@ const nodeRecommended = nPlugin.configs["flat/recommended-module"];
  */
 export const node: Linter.Config[] = [
   {
-    name: "yarapa/node/recommended",
-    plugins: { n: nodeRecommended.plugins.n },
     languageOptions: {
       ...nodeRecommended.languageOptions,
       globals: {
         ...globals.node,
       },
     },
+    name: "yarapa/node/recommended",
+    plugins: { n: nodeRecommended.plugins.n },
     rules: { ...nodeRecommended.rules },
   },
 ];

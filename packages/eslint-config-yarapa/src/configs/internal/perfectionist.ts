@@ -1,6 +1,6 @@
-import perfectionistPlugin from "eslint-plugin-perfectionist";
-
 import type { Linter } from "eslint";
+
+import perfectionistPlugin from "eslint-plugin-perfectionist";
 
 const recommendedNatural = perfectionistPlugin.configs["recommended-natural"];
 

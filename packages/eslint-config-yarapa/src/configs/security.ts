@@ -1,6 +1,6 @@
-import securityPlugin from "eslint-plugin-security";
-
 import type { Linter } from "eslint";
+
+import securityPlugin from "eslint-plugin-security";
 
 const securityRecommended = securityPlugin.configs.recommended;
 

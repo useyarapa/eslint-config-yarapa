@@ -1,6 +1,6 @@
-import sonarjsPlugin from "eslint-plugin-sonarjs";
-
 import type { Linter } from "eslint";
+
+import sonarjsPlugin from "eslint-plugin-sonarjs";
 
 /**
  * SonarJS all-rules coverage. Not independently exported: `docs/POLICY.md`
@@ -14,6 +14,21 @@ import type { Linter } from "eslint";
  */
 export const sonarjsAllRules: Linter.Config[] = [
   {
+    // SonarJS's rule implementations assume a JS/TS-shaped AST (e.g. they
+    // call `getAncestors()`, which the JSONC source code representation
+    // does not implement) and crash the linter when applied to JSON,
+    // JSONC, or JSON5 files. Scope explicitly to JavaScript/TypeScript so
+    // `recommended` can compose this with `json`/`packageJson` safely.
+    files: [
+      "**/*.js",
+      "**/*.mjs",
+      "**/*.cjs",
+      "**/*.jsx",
+      "**/*.ts",
+      "**/*.mts",
+      "**/*.cts",
+      "**/*.tsx",
+    ],
     name: "yarapa/internal/sonarjs-all-rules",
     plugins: { sonarjs: sonarjsPlugin },
     rules: Object.fromEntries(

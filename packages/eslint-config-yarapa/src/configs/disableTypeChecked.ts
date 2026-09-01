@@ -1,6 +1,6 @@
-import tseslint from "typescript-eslint";
-
 import type { Linter } from "eslint";
+
+import tseslint from "typescript-eslint";
 
 /**
  * The sole sanctioned file-scoped control that disables type-aware rules.

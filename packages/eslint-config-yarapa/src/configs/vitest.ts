@@ -1,6 +1,6 @@
-import vitestPlugin from "@vitest/eslint-plugin";
-
 import type { Linter } from "eslint";
+
+import vitestPlugin from "@vitest/eslint-plugin";
 
 /**
  * Canonical Vitest test-file glob, covering `*.test.*`/`*.spec.*` naming and
@@ -23,8 +23,8 @@ export const vitestFileGlobs: string[] = [
  */
 export const vitest: Linter.Config[] = [
   {
-    name: "yarapa/vitest/recommended",
     files: vitestFileGlobs,
+    name: "yarapa/vitest/recommended",
     plugins: { vitest: vitestPlugin },
     rules: { ...vitestPlugin.configs.recommended.rules },
   },

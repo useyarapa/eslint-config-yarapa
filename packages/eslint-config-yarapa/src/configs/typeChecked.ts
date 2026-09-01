@@ -1,6 +1,6 @@
-import tseslint from "typescript-eslint";
-
 import type { Linter } from "eslint";
+
+import tseslint from "typescript-eslint";
 
 /**
  * Type-aware TypeScript controls. Mandatory for TypeScript source files in
@@ -10,21 +10,21 @@ import type { Linter } from "eslint";
  * repository, not a package limitation.
  */
 export const typeChecked: Linter.Config[] = tseslint.config({
-  name: "yarapa/type-checked/recommended",
-  files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
   extends: [tseslint.configs.recommendedTypeChecked],
+  files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
   languageOptions: {
     parserOptions: {
       projectService: true,
       tsconfigRootDir: process.cwd(),
     },
   },
+  name: "yarapa/type-checked/recommended",
   rules: {
+    "@typescript-eslint/await-thenable": "error",
     "@typescript-eslint/no-floating-promises": "error",
     "@typescript-eslint/no-misused-promises": "error",
-    "@typescript-eslint/await-thenable": "error",
     "@typescript-eslint/no-unnecessary-type-assertion": "error",
-    "@typescript-eslint/unbound-method": "error",
     "@typescript-eslint/only-throw-error": "error",
+    "@typescript-eslint/unbound-method": "error",
   },
 });

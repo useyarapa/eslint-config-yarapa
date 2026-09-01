@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { vitestFileGlobs } from "../src/configs/vitest.js";
 import { configs } from "../src/index.js";
 
 const REQUIRED_PRESET_NAMES = [
@@ -45,6 +46,26 @@ describe("configs", () => {
         expect(entry).not.toBeNull();
       }
     }
+  });
+
+  it("testingLibrary scopes its DOM rules to the canonical test-file globs", () => {
+    const domEntry = configs.testingLibrary.find(
+      (entry) => entry.name === "yarapa/testing-library/dom",
+    );
+
+    expect(domEntry).toBeDefined();
+    expect(domEntry?.files).toStrictEqual(vitestFileGlobs);
+  });
+
+  it("ava preserves the upstream package.json no-ava-in-dependencies entry", () => {
+    const packageJsonEntry = configs.ava.find(
+      (entry) => entry.name === "yarapa/ava/no-ava-in-dependencies",
+    );
+
+    expect(packageJsonEntry).toBeDefined();
+    expect(packageJsonEntry?.rules).toHaveProperty(
+      "ava/no-ava-in-dependencies",
+    );
   });
 
   it("recommended does not compose the repo-scoped stack presets", () => {

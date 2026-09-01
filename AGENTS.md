@@ -12,7 +12,7 @@ Flat Config package for JavaScript/TypeScript repositories in regulated Thai
 banking environments. A second package, **`@repo/typescript-config-yarapa`**,
 provides the shared `tsconfig.json` bases consumed by the first.
 
-```
+```text
 .
 ├── docs/
 │   ├── POLICY.md                 # THE spec — read this first
@@ -92,7 +92,7 @@ Commit messages are enforced by `commitlint` via a husky `commit-msg` hook
 (`.husky/commit-msg`, config in `.commitlintrc.json`). Every commit must be
 Conventional Commits style **with a required scope** and **no body/footer**:
 
-```
+```text
 <type>(<scope>): <subject>
 ```
 
@@ -216,14 +216,18 @@ considered feature-complete (see Issue #1 for the live checklist):
   structural mismatch between `@eslint/core` and `@types/eslint`'s
   `Linter.Config` types.
 - No `tsdown` build has succeeded yet.
-- No test suite exists yet (`test/` is empty; POLICY.md requires fixtures per
-  preset, self-lint dogfooding, tarball smoke test, `publint`,
-  `@arethetypeswrong/cli`).
+- A 19-test Vitest contract suite exists at
+  `packages/eslint-config-yarapa/test/configs.test.ts`, covering the
+  sixteen preset names/shapes plus targeted regressions (AVA's
+  package.json entry, Testing Library's file scoping, `recommended`'s
+  excluded stack presets). Outstanding per POLICY.md's Verification
+  section: fixtures per preset, self-lint dogfooding, tarball smoke test,
+  `publint`, `@arethetypeswrong/cli`.
 - `scripts/generate-rule-inventory.ts` (referenced by `package.json`) does
   not exist yet.
 - Root `turbo.json` / root scripts are not wired to the new package.
 - Changesets tooling is not set up.
 - `eslint-plugin-ava` has no upstream `@types` package; a local `.d.ts` shim
-  is still needed, and the package.json-specific
-  `ava/no-ava-in-dependencies` rule (from `avaPlugin.configs.recommended[1]`)
-  is not wired anywhere yet.
+  is still needed. The package.json-specific `ava/no-ava-in-dependencies`
+  rule (from `avaPlugin.configs.recommended[1]`) is now wired as
+  `yarapa/ava/no-ava-in-dependencies` in `src/configs/ava.ts`.

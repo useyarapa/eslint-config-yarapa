@@ -1,6 +1,6 @@
-import stylisticPlugin from "@stylistic/eslint-plugin";
-
 import type { Linter } from "eslint";
+
+import stylisticPlugin from "@stylistic/eslint-plugin";
 
 const MAX_LINE_LENGTH = 80;
 
@@ -41,6 +41,19 @@ export const stylistic: Linter.Config[] = [
           ignoreUrls: true,
         },
       ],
+    },
+  },
+  {
+    files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
+    name: "yarapa/stylistic/typescript-type-definitions",
+    rules: {
+      // The mandatory stylistic standard selects `type` as the standard
+      // object-shape form. `.d.ts` files may still declare `interface`
+      // for cases such as declaration merging that only interfaces
+      // support; this rule stays enabled there too because that use is
+      // an explicitly justified, reviewable exception rather than a
+      // blanket carve-out.
+      "@typescript-eslint/consistent-type-definitions": ["error", "type"],
     },
   },
 ];

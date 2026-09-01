@@ -1,6 +1,6 @@
-import tseslint from "typescript-eslint";
-
 import type { Linter } from "eslint";
+
+import tseslint from "typescript-eslint";
 
 /**
  * Syntax-only TypeScript controls: the complete typescript-eslint
@@ -14,35 +14,41 @@ import type { Linter } from "eslint";
  */
 export const typescript: Linter.Config[] = tseslint.config(
   {
-    name: "yarapa/typescript/recommended",
-    files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
     extends: [tseslint.configs.recommended],
+    files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
+    name: "yarapa/typescript/recommended",
     rules: {
       "@typescript-eslint/ban-ts-comment": [
         "error",
         {
+          minimumDescriptionLength: 10,
+          "ts-check": false,
           "ts-expect-error": "allow-with-description",
           "ts-ignore": true,
           "ts-nocheck": true,
-          "ts-check": false,
-          minimumDescriptionLength: 10,
         },
-      ],
-      "@typescript-eslint/no-non-null-assertion": "error",
-      "@typescript-eslint/consistent-type-imports": [
-        "error",
-        { prefer: "type-imports", fixStyle: "separate-type-imports" },
       ],
       "@typescript-eslint/consistent-type-exports": [
         "error",
         { fixMixedExportsWithInlineTypeSpecifier: false },
       ],
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        { fixStyle: "separate-type-imports", prefer: "type-imports" },
+      ],
       "@typescript-eslint/no-import-type-side-effects": "error",
+      "@typescript-eslint/no-non-null-assertion": "error",
+      // `unused-imports/no-unused-vars` (from `base`) is the active
+      // unused-variable rule for the Banking Baseline; it splits and
+      // composes the standard no-unused-vars logic, so the
+      // typescript-eslint rule must stay off to avoid duplicate/
+      // conflicting reports on the same bindings.
+      "@typescript-eslint/no-unused-vars": "off",
     },
   },
   {
-    name: "yarapa/typescript/declaration-files",
     files: ["**/*.d.ts", "**/*.d.mts", "**/*.d.cts"],
+    name: "yarapa/typescript/declaration-files",
     rules: {
       // Ambient declaration files describe external shapes; these controls
       // stay enabled but the rules below are commonly emitted by declaration

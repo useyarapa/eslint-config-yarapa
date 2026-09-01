@@ -1,0 +1,5 @@
+# Force LF line endings for every text file, on every platform, per the
+# mandatory stylistic standard in docs/POLICY.md ("Repository files use LF
+# on every platform"). This is the repository-level enforcement referenced
+# by packages/eslint-config-yarapa/src/configs/stylistic.ts.
+* text=auto eol=lf

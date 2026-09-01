@@ -1,6 +1,6 @@
-import globals from "globals";
-
 import type { Linter } from "eslint";
+
+import globals from "globals";
 
 /**
  * Browser runtime capability preset. Supplies browser globals and language
@@ -10,11 +10,11 @@ import type { Linter } from "eslint";
  */
 export const browser: Linter.Config[] = [
   {
-    name: "yarapa/browser/globals",
     languageOptions: {
       globals: {
         ...globals.browser,
       },
     },
+    name: "yarapa/browser/globals",
   },
 ];
