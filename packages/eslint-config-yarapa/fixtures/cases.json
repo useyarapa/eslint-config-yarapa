@@ -162,7 +162,8 @@
     },
     "invalid": {
       "filename": "fixtures/invalid/packageJson/package.json",
-      "code": "{\n  \"name\": \"Bad Package Name\",\n  \"version\": \"1.0.0\"\n}\n"
+      "code": "{\n  \"name\": \"Bad Package Name\",\n  \"version\": \"1.0.0\"\n}\n",
+      "rule": "package-json/valid-name"
     }
   },
   {
