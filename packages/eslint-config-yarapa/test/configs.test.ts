@@ -1,3 +1,4 @@
+import sonarjsPlugin from "eslint-plugin-sonarjs";
 import { describe, expect, it } from "vitest";
 
 import { vitestFileGlobs } from "../src/configs/vitest.js";
@@ -66,6 +67,20 @@ describe("configs", () => {
     expect(packageJsonEntry?.rules).toHaveProperty(
       "ava/no-ava-in-dependencies",
     );
+  });
+
+  it("enables every generally applicable SonarJS rule as an error", () => {
+    const sonarEntry = configs.recommended.find(
+      entry => entry.name === "yarapa/internal/sonarjs-all-rules",
+    );
+
+    expect(sonarEntry).toBeDefined();
+    expect(sonarEntry?.rules).not.toHaveProperty("sonarjs/file-header");
+
+    for (const ruleName of Object.keys(sonarjsPlugin.rules)) {
+      if (ruleName === "file-header") continue;
+      expect(sonarEntry?.rules?.[`sonarjs/${ruleName}`]).toBe("error");
+    }
   });
 
   it("recommended does not compose the repo-scoped stack presets", () => {
