@@ -15,6 +15,26 @@ function readRepoFile(relativePath: string): string {
   return readFileSync(resolve(repoRoot, relativePath), "utf8");
 }
 
+/**
+ * Read the pinned and peer TypeScript versions from a package manifest.
+ * @param relativePath Path of the manifest relative to the repository root.
+ * @returns The TypeScript dev dependency and peer dependency versions.
+ */
+function readTypeScriptPins(relativePath: string): {
+  typescriptDevDependency: string | undefined;
+  typescriptPeerRange: string | undefined;
+} {
+  const manifest = JSON.parse(readRepoFile(relativePath)) as {
+    devDependencies?: { typescript?: string };
+    peerDependencies?: { typescript?: string };
+  };
+
+  return {
+    typescriptDevDependency: manifest.devDependencies?.typescript,
+    typescriptPeerRange: manifest.peerDependencies?.typescript,
+  };
+}
+
 describe("enterprise repository gates", () => {
   it("certifies pull requests and pushes to main", () => {
     const ci = readRepoFile(".github/workflows/ci.yml");
@@ -66,6 +86,34 @@ describe("enterprise repository gates", () => {
     );
     expect(lintStaged).not.toContain("prettier");
     expect(lintStaged).toContain("eslint --fix");
+  });
+
+  it("pins TypeScript dev tooling inside the certified peer range", () => {
+    const { typescriptDevDependency, typescriptPeerRange } = readTypeScriptPins(
+      "packages/eslint-config-yarapa/package.json",
+    );
+    const root = readTypeScriptPins("package.json");
+
+    expect(typescriptPeerRange).toBe(">=5.0.0 <6.1.0");
+
+    const pinned = [
+      typescriptDevDependency,
+      root.typescriptDevDependency,
+    ];
+    for (const version of pinned) {
+      expect(version).toMatch(/^\d+\.\d+\.\d+$/u);
+      const [major = 0, minor = 0] = (version ?? "0.0.0")
+        .split(".")
+        .map(Number);
+      expect(major * 1_000 + minor).toBeLessThan(6 * 1_000 + 1);
+    }
+  });
+
+  it("blocks Dependabot from raising TypeScript beyond the certified range", () => {
+    const dependabot = readRepoFile(".github/dependabot.yml");
+    expect(dependabot).toContain("typescript-ecosystem");
+    expect(dependabot).toMatch(/ignore:/);
+    expect(dependabot).toMatch(/typescript[\s\S]{0,200}">=6\.1\.0"/);
   });
 
   it("runs staged ESLint from the repository root after building", () => {

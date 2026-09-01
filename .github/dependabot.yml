@@ -9,6 +9,11 @@ updates:
       time: "09:00"
       timezone: Asia/Bangkok
     open-pull-requests-limit: 10
+    ignore:
+      # typescript-eslint supports TypeScript only below 6.1.0; the certified
+      # compatibility matrix ends at the latest <6.1.0 line.
+      - dependency-name: typescript
+        versions: [">=6.1.0"]
     groups:
       eslint-ecosystem:
         patterns:
