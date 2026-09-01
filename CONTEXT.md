@@ -1,70 +1,64 @@
 # YARAPA ESLint Configuration
 
-This context defines the language used to describe a strict, high-assurance
-linting standard for repositories in regulated Thai banking environments.
+This document defines terminology for the public `eslint-config-yarapa`
+package. The package is a general-purpose ESLint Flat Config library for
+JavaScript and TypeScript projects and is intended for developers worldwide.
+
+Public presets must not encode assumptions that belong to a particular
+organization, industry, legal regime, repository layout, CI provider, or
+package manager. Consumers own those project-specific boundaries.
 
 ## Language
 
-**Consumer Repository**:
-A repository that adopts the YARAPA linting standard and its conformance
-requirements.
-_Avoid_: Client, downstream app, generic user
+**Consumer Project**:
+A JavaScript or TypeScript project that installs and composes
+`eslint-config-yarapa`.
 
 **Preset**:
 A public, named ESLint Flat Config array exposed by the package.
-_Avoid_: Config object, ruleset file
 
 **Capability Preset**:
 A preset that adds one bounded concern, such as a runtime, language, security
-policy, or test stack.
-_Avoid_: Optional plugin, feature flag
+control, documentation format, or test stack.
 
 **Aggregate Preset**:
-A preset that composes multiple capability presets into one policy baseline.
+A preset that composes multiple generally useful capability presets.
 `recommended` is the canonical aggregate preset.
-_Avoid_: Default config, starter config
 
 **Applicable File**:
 A file whose language, content, runtime, and test stack place it within a
-preset's declared scope. A sanctioned, file-scoped control such as
-`disableTypeChecked` changes which type-aware rules apply; it does not make the
-file exempt from the rest of the Banking Baseline.
-_Avoid_: Every file, included file
-
-**Banking Baseline**:
-The mandatory high-assurance policy applied by the `recommended` aggregate
-preset to each applicable file in a conforming consumer repository.
-_Avoid_: General-purpose defaults, beginner preset
+preset's declared scope. Consumer-owned `files` and `ignores` entries define
+project-specific boundaries.
 
 **Stack Preset**:
 A capability preset selected according to a file's actual runtime or test
 stack, such as `node`, `browser`, `vitest`, or `ava`.
-_Avoid_: Universal preset, convenience config
 
 **Type-Aware Preset**:
 A preset whose rules use TypeScript project information rather than syntax
 alone.
-_Avoid_: TypeScript preset, typed style
 
 **Upstream Baseline**:
-The complete set of rules enabled by each applicable recommended Flat Config
-selected from a plugin, together with the non-rule settings required for those
-rules to operate correctly. Every enabled rule is mandatory coverage.
-_Avoid_: Suggested rules, plugin defaults
+The rules and support settings inherited from an upstream ESLint or plugin
+configuration and intentionally included in a YARAPA preset.
 
 **Rule Inventory**:
-The resolved, versioned record of every rule, severity, option, and preset in
-the package.
-_Avoid_: Rule documentation, plugin list
+The deterministic record of resolved rules, severities, options, sources, and
+preset provenance used to review behavioral changes.
 
-**Waiver**:
-A targeted, documented suppression of one named rule over the smallest
-justified code range. A waiver does not remove a rule from the Banking
-Baseline.
-_Avoid_: Exception, disabled rule, blanket suppression
+**Suppression**:
+A consumer-owned ESLint suppression for a specific diagnostic. The public
+package may encourage narrow, documented suppressions, but it does not impose
+organization-specific approval or conformance processes.
 
-**Conforming Repository**:
-A consumer repository that applies the Banking Baseline, selects the correct
-stack presets, uses only sanctioned file-scoped controls, does not otherwise
-weaken rules, and limits suppressions to auditable waivers.
-_Avoid_: Installed repository, compatible project
+## Product boundary
+
+`eslint-config-yarapa` may be opinionated about lint behavior while remaining
+general-purpose. Public presets can define correctness, security, TypeScript,
+style, documentation, data-format, runtime, and test-runner behavior when that
+behavior is reusable across unrelated projects.
+
+The package must not require consumers to adopt YARAPA-specific paths,
+headers, CI workflows, branch policies, legal metadata, package-manager
+settings, or internal governance conventions. Repository-maintainer controls
+used to develop this package are not part of its consumer API.

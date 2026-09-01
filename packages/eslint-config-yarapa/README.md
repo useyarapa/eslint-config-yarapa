@@ -1,6 +1,10 @@
 # eslint-config-yarapa
 
-Strict, deterministic ESLint 10 Flat Config presets for JavaScript and TypeScript repositories that need auditable engineering controls.
+Strict, deterministic ESLint 10 Flat Config presets for JavaScript and
+TypeScript projects. `eslint-config-yarapa` is a general-purpose public npm
+library intended for developers worldwide; its presets do not require a
+particular organization, industry, repository layout, CI provider, or package
+manager.
 
 ## Requirements
 
@@ -13,13 +17,17 @@ The package is ESM-only. Its JavaScript API has one named export, `configs`, and
 
 ## Installation
 
-Install the config together with its peer dependencies in the consuming repository:
+Install the config together with its peer dependencies using the package
+manager used by your project. For example with pnpm:
 
 ```sh
 pnpm add -D eslint-config-yarapa eslint typescript
 ```
 
-Use exact or organization-approved versions in regulated repositories. The package's supported boundaries are certified in its own CI matrix.
+Equivalent npm, Yarn, or other standards-compatible package-manager workflows
+are valid. Consumers should not need YARAPA-specific package-manager settings
+to install the package. Use versions inside the supported peer ranges; the
+package's compatibility boundaries are certified by its own CI matrix.
 
 ## Quick start
 
@@ -34,9 +42,15 @@ export default defineConfig(
 );
 ```
 
-`recommended` is the aggregate banking baseline. It includes core JavaScript controls, syntax-only and type-aware TypeScript coverage, import/dependency checks, Promise and async checks, regular-expression checks, SonarJS/security controls, JSDoc, JSON/JSONC/JSON5, package-manifest checks, stylistic rules, and deterministic ordering.
+`recommended` is the canonical aggregate high-assurance preset. It includes
+core JavaScript controls, syntax-only and type-aware TypeScript coverage,
+import/dependency checks, Promise and async checks, regular-expression checks,
+SonarJS/security controls, JSDoc, JSON/JSONC/JSON5, package-manifest checks,
+stylistic rules, and deterministic ordering.
 
-Runtime and test-runner presets are intentionally not folded into `recommended`; scope them to the files that actually run in those environments.
+Runtime, test-runner, ignore, project-layout, and organizational boundaries are
+intentionally not inferred from YARAPA's own repository. Consumers scope those
+concerns to their actual files and environments.
 
 ## Presets
 
@@ -44,7 +58,7 @@ All values under `configs` are Flat Config arrays and can be passed directly to 
 
 | Preset | Purpose |
 | --- | --- |
-| `recommended` | Aggregate high-assurance baseline for normal source repositories. |
+| `recommended` | Aggregate high-assurance baseline for general JavaScript and TypeScript projects. |
 | `base` | Core JavaScript correctness baseline. |
 | `typescript` | TypeScript syntax-level controls that do not require project type information. |
 | `typeChecked` | Type-aware TypeScript controls using TypeScript Project Service. |
@@ -61,7 +75,26 @@ All values under `configs` are Flat Config arrays and can be passed directly to 
 | `packageJson` | `package.json` validity, consistency, and style checks. |
 | `jsdoc` | JSDoc correctness/documentation checks. |
 
-The package deliberately exposes composable deterministic presets rather than a stateful options factory. This keeps the resolved control set reviewable and makes Rule Inventory drift meaningful.
+The package deliberately exposes composable deterministic presets rather than a
+stateful options factory. This keeps the resolved rule set reviewable and makes
+Rule Inventory drift meaningful without baking a specific project's layout or
+workflow into the public API.
+
+## Consumer-owned boundaries
+
+The package can be opinionated about reusable lint behavior while consumers
+retain control of project-specific concerns. Public presets do not require:
+
+- YARAPA-specific directory names or monorepo structure;
+- a specific CI provider or branch policy;
+- organization-specific legal headers or metadata;
+- pnpm-specific installation policy;
+- a particular runtime or test runner unless its corresponding preset is
+  explicitly selected.
+
+If a control cannot be configured correctly without consumer-owned information,
+the consumer should configure that control in its own Flat Config rather than
+the public package inventing a default.
 
 ## Node and browser boundaries
 
@@ -100,11 +133,14 @@ languageOptions: {
 }
 ```
 
-A normal TypeScript source file therefore needs to belong to the intended `tsconfig.json`. If Project Service reports that a file is outside every project, fix the consumer's project boundary rather than disabling type-aware linting globally.
+A normal TypeScript source file therefore needs to belong to the intended
+`tsconfig.json`. If Project Service reports that a file is outside every
+project, fix the consumer project's project boundary rather than disabling
+type-aware linting globally.
 
 ### Out-of-project tooling files
 
-Some repository tooling files intentionally sit outside application `tsconfig.json` files. Scope `disableTypeChecked` narrowly:
+Some project tooling files intentionally sit outside application `tsconfig.json` files. Scope `disableTypeChecked` narrowly:
 
 ```js
 export default defineConfig(
@@ -162,7 +198,9 @@ Only compose runner/framework presets where their APIs are actually present.
 
 `configs.ignores` covers common generated output such as `dist`, `build`, `out`, coverage output, `.next`, `.turbo`, and `node_modules`.
 
-It intentionally does not ignore arbitrary source, generated business code, fixtures, migrations, or repository-specific directories. Those boundaries belong to the consumer and should be explicit in the consumer's Flat Config.
+It intentionally does not ignore arbitrary source, fixtures, migrations, or
+project-specific directories. Those boundaries belong to the consumer and
+should be explicit in the consumer's Flat Config.
 
 ## JSON and package manifests
 
@@ -216,11 +254,17 @@ Compose the matching runner preset (`vitest` or `ava`) only for that runner's te
 
 ### A generated directory is still linted
 
-`configs.ignores` is intentionally conservative. Add a consumer-owned ignore entry for repository-specific generated output.
+`configs.ignores` is intentionally conservative. Add a consumer-owned ignore entry for project-specific generated output.
 
 ### A dependency update changes many diagnostics
 
 Regenerate/review the Rule Inventory and behavioral fixtures. Do not accept a dependency update solely because package installation succeeds.
+
+### Installation requires project-specific package-manager policy
+
+Treat this as a portability problem to investigate. The public package should
+install as an ordinary dependency on its supported package managers without
+requiring YARAPA-specific consumer configuration.
 
 ## Maintainer verification
 
@@ -235,4 +279,9 @@ pnpm --filter eslint-config-yarapa inventory:check
 pnpm --filter eslint-config-yarapa test:consumer
 ```
 
-`test:consumer` builds and packs the package, runs `publint`, runs Are The Types Wrong with the ESM-only profile, installs the tarball into a clean temporary consumer, verifies the public `configs` export, and executes ESLint against the packed artifact. It does not publish anything to npm.
+`test:consumer` builds and packs the package, runs `publint`, runs Are The Types
+Wrong with the ESM-only profile, installs the tarball into a clean temporary
+consumer, verifies the public `configs` export, and executes ESLint against the
+packed artifact. The temporary consumer is intended to model normal public npm
+usage rather than a YARAPA-specific repository. It does not publish anything
+to npm.

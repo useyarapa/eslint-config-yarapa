@@ -1,11 +1,28 @@
 # YARAPA Code Standard
 
-Monorepo for YARAPA's high-assurance JavaScript and TypeScript engineering standards. The primary deliverable is [`eslint-config-yarapa`](./packages/eslint-config-yarapa), an ESLint 10 Flat Config package designed for deterministic, auditable use in regulated environments.
+Monorepo for [`eslint-config-yarapa`](./packages/eslint-config-yarapa), a strict,
+deterministic, general-purpose ESLint 10 Flat Config package for JavaScript and
+TypeScript projects. The npm package is intended for developers worldwide and
+does not encode YARAPA-specific industry, legal, repository-layout, CI, or
+package-manager requirements into its public presets.
 
 ## Repository packages
 
 - `packages/eslint-config-yarapa` — public ESLint Flat Config package with exactly 16 composable presets.
 - `packages/typescript-config-yarapa` — repository TypeScript configuration support.
+
+## Public package boundary
+
+Repository governance and the public npm API are separate concerns. This
+repository may use strict CI, review, dependency, and security controls to
+maintain the package, but consumers are not required to adopt those controls.
+Consumer projects own their runtime scopes, test-runner scopes, ignores,
+project layout, package manager, CI provider, legal metadata, and organizational
+policy.
+
+The public package should be validated as a normal third-party dependency in
+clean consumer projects. Verification must not depend on hidden YARAPA-specific
+consumer configuration.
 
 ## Maintainer commands
 
@@ -42,6 +59,10 @@ The compatibility matrix is boundary-focused rather than a full Cartesian produc
 
 The packed-consumer path is release-readiness verification only. It runs build, `publint`, `pnpm pack`, Are The Types Wrong using the ESM-only profile, installation into a clean temporary consumer, public-export verification, and ESLint execution. It does not publish a package.
 
+Consumer certification should model ordinary public-package installation. Do
+not make the temporary consumer depend on repository-only pnpm policy, internal
+paths, or organization-specific configuration merely to obtain a green check.
+
 ## Required `main` governance
 
 Repository administrators should configure a GitHub ruleset or branch protection for `main` with the following controls:
@@ -54,7 +75,9 @@ Repository administrators should configure a GitHub ruleset or branch protection
 6. Block branch deletion.
 7. Apply `CODEOWNERS` review requirements where supported by the repository plan.
 
-These settings are external repository state, not files in this tree. Their presence must be verified through GitHub before claiming that `main` is protected.
+These settings maintain this source repository. They are not part of the
+`eslint-config-yarapa` consumer contract. Their presence must be verified
+through GitHub before claiming that `main` is protected.
 
 ## Dependency governance
 
@@ -64,16 +87,21 @@ GitHub Actions used by CI are expected to follow one auditable pinning strategy 
 
 ## Behavioral versioning
 
-For this repository, diagnostic behavior is part of compatibility. A JavaScript API that remains source-compatible can still introduce a breaking change when an existing consumer receives new errors, tighter rule options, broader file applicability, or materially different automatic fixes. Such changes require explicit behavioral SemVer review.
+Diagnostic behavior is part of public-package compatibility. A JavaScript API
+that remains source-compatible can still introduce a breaking change when an
+existing consumer receives new errors, tighter rule options, broader file
+applicability, or materially different automatic fixes. Such changes require
+explicit behavioral SemVer review.
 
 ## Change control
 
 - Do not weaken CI, security controls, or published lint rules simply to obtain a green build.
 - Keep package runtime/plugin dependencies deterministic and review Rule Inventory changes.
+- Keep public presets reusable across unrelated projects; repository-specific controls stay in this repository.
 - Review automatic fixes for safety and idempotence.
 - Reply to pull-request review conversations with the disposition and verification evidence before resolving them.
 - Do not claim external repository controls are enabled without verifying current GitHub state.
 
 ## Publication boundary
 
-Repository verification may build and pack `eslint-config-yarapa`, but package publication is a separate explicitly authorized operation. Normal development and enterprise-hardening workflows must not publish to npm, configure npm publishing credentials/OIDC, create publication tags, or create GitHub Releases for publication.
+Repository verification may build and pack `eslint-config-yarapa`, but package publication is a separate explicitly authorized operation. Normal development and certification workflows must not publish to npm, configure npm publishing credentials/OIDC, create publication tags, or create GitHub Releases for publication.
