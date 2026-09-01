@@ -9,7 +9,7 @@ import tseslint from "typescript-eslint";
  * its intended `tsconfig.json` is a configuration defect in the consumer
  * repository, not a package limitation.
  */
-export const typeChecked: Linter.Config[] = tseslint.config({
+export const typeChecked = tseslint.config({
   extends: [tseslint.configs.recommendedTypeChecked],
   files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
   languageOptions: {
@@ -27,4 +27,4 @@ export const typeChecked: Linter.Config[] = tseslint.config({
     "@typescript-eslint/only-throw-error": "error",
     "@typescript-eslint/unbound-method": "error",
   },
-});
+}) as unknown as Linter.Config[];
