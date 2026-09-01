@@ -72,7 +72,18 @@ try {
 
   writeFileSync(
     resolve(consumerDir, "package.json"),
-    `${JSON.stringify({ name: "yarapa-consumer-smoke", private: true, type: "module" }, null, 2)}\n`,
+    `${JSON.stringify(
+      {
+        name: "yarapa-consumer-smoke",
+        pnpm: {
+          onlyBuiltDependencies: ["unrs-resolver"],
+        },
+        private: true,
+        type: "module",
+      },
+      null,
+      2,
+    )}\n`,
   );
 
   run(
