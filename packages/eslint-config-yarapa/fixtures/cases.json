@@ -112,7 +112,7 @@
     "invalid": {
       "filename": "fixtures/invalid/testingLibrary/case.test.js",
       "code": "import { render } from \"@testing-library/dom\";\nconst { container } = render(\"<button />\");\ncontainer.querySelector(\"button\");\n",
-      "rule": "testing-library/no-container"
+      "rule": "testing-library/no-node-access"
     }
   },
   {
@@ -150,8 +150,7 @@
     },
     "invalid": {
       "filename": "fixtures/invalid/json/case.json",
-      "code": "{ \"value\": 1, }\n",
-      "fatal": true
+      "code": "{ \"value\": 1, }\n"
     }
   },
   {

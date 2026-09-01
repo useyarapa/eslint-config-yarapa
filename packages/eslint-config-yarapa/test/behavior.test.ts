@@ -35,6 +35,14 @@ function eslintFor(presets: PresetName[]): ESLint {
   });
 }
 
+function messageSummary(result: ESLint.LintResult): object[] {
+  return result.messages.map(message => ({
+    message: message.message,
+    ruleId: message.ruleId,
+    severity: message.severity,
+  }));
+}
+
 for (const fixture of fixtureCases.filter(item => !item.special)) {
   describe(`behavioral fixture: ${fixture.preset}`, () => {
     it("accepts the valid fixture", async () => {
@@ -44,8 +52,10 @@ for (const fixture of fixtureCases.filter(item => !item.special)) {
       });
 
       expect(result).toBeDefined();
-      expect(result!.errorCount).toBe(0);
-      expect(result!.warningCount).toBe(0);
+      expect(
+        messageSummary(result!),
+        `Unexpected diagnostics for ${fixture.preset} valid fixture`,
+      ).toEqual([]);
     });
 
     it("rejects the invalid fixture", async () => {
@@ -75,8 +85,7 @@ describe("typeChecked", () => {
 
   it("accepts a typed project source file", async () => {
     const [result] = await eslint.lintFiles(resolve(projectRoot, "src/valid.ts"));
-    expect(result!.errorCount).toBe(0);
-    expect(result!.warningCount).toBe(0);
+    expect(messageSummary(result!)).toEqual([]);
   });
 
   it("reports a floating promise with type information", async () => {
@@ -101,8 +110,10 @@ describe("disableTypeChecked", () => {
       },
     );
 
-    expect(result!.errorCount).toBe(0);
-    expect(result!.warningCount).toBe(0);
+    expect(
+      messageSummary(result!),
+      "Unexpected diagnostics for out-of-project valid tooling file",
+    ).toEqual([]);
   });
 
   it("keeps syntax-only TypeScript controls enabled", async () => {

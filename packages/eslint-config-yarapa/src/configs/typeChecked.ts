@@ -21,6 +21,10 @@ export const typeChecked = tseslint.config({
   name: "yarapa/type-checked/recommended",
   rules: {
     "@typescript-eslint/await-thenable": "error",
+    "@typescript-eslint/consistent-type-exports": [
+      "error",
+      { fixMixedExportsWithInlineTypeSpecifier: false },
+    ],
     "@typescript-eslint/no-floating-promises": "error",
     "@typescript-eslint/no-misused-promises": "error",
     "@typescript-eslint/no-unnecessary-type-assertion": "error",

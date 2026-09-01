@@ -28,10 +28,6 @@ export const typescript = tseslint.config(
           "ts-nocheck": true,
         },
       ],
-      "@typescript-eslint/consistent-type-exports": [
-        "error",
-        { fixMixedExportsWithInlineTypeSpecifier: false },
-      ],
       "@typescript-eslint/consistent-type-imports": [
         "error",
         { fixStyle: "separate-type-imports", prefer: "type-imports" },
