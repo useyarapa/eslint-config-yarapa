@@ -14,52 +14,37 @@ const { configs } = (await import(builtEntryUrl)) as {
   configs: Record<string, Linter.Config[]>;
 };
 
-const sources: ReadonlyArray<readonly [string, string]> = [
-  [
-    "@eslint-community/eslint-comments/",
+const sourcePrefixes = {
+  "@eslint-community/eslint-comments/":
     "@eslint-community/eslint-plugin-eslint-comments",
-  ],
-  ["@stylistic/", "@stylistic/eslint-plugin"],
-  ["@typescript-eslint/", "typescript-eslint"],
-  ["ava/", "eslint-plugin-ava"],
-  ["import-x/", "eslint-plugin-import-x"],
-  ["jsdoc/", "eslint-plugin-jsdoc"],
-  ["jsonc/", "eslint-plugin-jsonc"],
-  ["n/", "eslint-plugin-n"],
-  ["package-json/", "eslint-plugin-package-json"],
-  ["perfectionist/", "eslint-plugin-perfectionist"],
-  ["promise/", "eslint-plugin-promise"],
-  ["regexp/", "eslint-plugin-regexp"],
-  ["security/", "eslint-plugin-security"],
-  ["sonarjs/", "eslint-plugin-sonarjs"],
-  ["testing-library/", "eslint-plugin-testing-library"],
-  ["unused-imports/", "eslint-plugin-unused-imports"],
-  ["vitest/", "@vitest/eslint-plugin"],
-];
+  "@stylistic/": "@stylistic/eslint-plugin",
+  "@typescript-eslint/": "typescript-eslint",
+  "ava/": "eslint-plugin-ava",
+  "import-x/": "eslint-plugin-import-x",
+  "jsdoc/": "eslint-plugin-jsdoc",
+  "jsonc/": "eslint-plugin-jsonc",
+  "n/": "eslint-plugin-n",
+  "package-json/": "eslint-plugin-package-json",
+  "perfectionist/": "eslint-plugin-perfectionist",
+  "promise/": "eslint-plugin-promise",
+  "regexp/": "eslint-plugin-regexp",
+  "security/": "eslint-plugin-security",
+  "sonarjs/": "eslint-plugin-sonarjs",
+  "testing-library/": "eslint-plugin-testing-library",
+  "unused-imports/": "eslint-plugin-unused-imports",
+  "vitest/": "@vitest/eslint-plugin",
+  "*": "@eslint/js",
+} as const;
 
-type NormalizedSeverity = "error" | "off" | "warn";
-
-type InventoryEntry = {
-  configName: string;
-  options: unknown[];
-  preset: string;
-  rule: string;
-  severity: NormalizedSeverity;
-  source: string;
-};
-
-type InventoryRule = readonly [
-  severity: NormalizedSeverity,
-  source: string,
-  options: unknown[],
-];
-
+type EnabledSeverity = "error" | "warn";
+type SeverityCode = "e" | "w";
+type InventoryValue = SeverityCode | readonly [SeverityCode, unknown[]];
 type InventoryPresets = Record<
   string,
-  Record<string, Record<string, InventoryRule>>
+  Record<string, Record<string, InventoryValue>>
 >;
 
-function normalizeSeverity(value: Linter.RuleEntry): NormalizedSeverity {
+function normalizeSeverity(value: Linter.RuleEntry): "off" | EnabledSeverity {
   const severity = Array.isArray(value) ? value[0] : value;
 
   if (severity === 0 || severity === "off") return "off";
@@ -69,12 +54,16 @@ function normalizeSeverity(value: Linter.RuleEntry): NormalizedSeverity {
   throw new Error(`Unsupported ESLint severity: ${String(severity)}`);
 }
 
+function severityCode(severity: EnabledSeverity): SeverityCode {
+  return severity === "error" ? "e" : "w";
+}
+
 function ruleSource(rule: string): string {
-  for (const [prefix, source] of sources) {
-    if (rule.startsWith(prefix)) return source;
+  for (const [prefix, source] of Object.entries(sourcePrefixes)) {
+    if (prefix !== "*" && rule.startsWith(prefix)) return source;
   }
 
-  return "@eslint/js";
+  return sourcePrefixes["*"];
 }
 
 function compareCodeUnits(left: string, right: string): number {
@@ -83,18 +72,29 @@ function compareCodeUnits(left: string, right: string): number {
   return 0;
 }
 
-const entries: InventoryEntry[] = [];
+const entries: Array<{
+  configName: string;
+  options: unknown[];
+  preset: string;
+  rule: string;
+  severity: EnabledSeverity;
+  source: string;
+}> = [];
+
 for (const [preset, configArray] of Object.entries(configs)) {
   for (const config of configArray) {
     for (const [rule, value] of Object.entries(config.rules ?? {})) {
       if (value === undefined) continue;
+
+      const severity = normalizeSeverity(value);
+      if (severity === "off") continue;
 
       entries.push({
         configName: config.name ?? "(anonymous)",
         options: Array.isArray(value) ? value.slice(1) : [],
         preset,
         rule,
-        severity: normalizeSeverity(value),
+        severity,
         source: ruleSource(rule),
       });
     }
@@ -119,20 +119,19 @@ for (const entry of entries) {
     );
   }
 
-  config[entry.rule] = [entry.severity, entry.source, entry.options];
+  const code = severityCode(entry.severity);
+  config[entry.rule] =
+    entry.options.length === 0 ? code : [code, entry.options];
 }
 
-const output = `${JSON.stringify(
-  {
-    entryShape: ["severity", "source", "options"],
-    package: packageJson.name,
-    packageVersion: packageJson.version,
-    presets,
-    schemaVersion: 2,
-  },
-  null,
-  2,
-)}\n`;
+const output = `${JSON.stringify({
+  package: packageJson.name,
+  packageVersion: packageJson.version,
+  presets,
+  schemaVersion: 3,
+  severityCodes: { e: "error", w: "warn" },
+  sourcePrefixes,
+})}\n`;
 
 if (process.argv.includes("--check")) {
   const current = readFileSync(outputPath, "utf8");
