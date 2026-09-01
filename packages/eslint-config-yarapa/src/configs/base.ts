@@ -6,15 +6,18 @@ import promisePlugin from "eslint-plugin-promise";
 import regexpPlugin from "eslint-plugin-regexp";
 import unusedImportsPlugin from "eslint-plugin-unused-imports";
 
+import { asFlatPlugin } from "./internal/eslintCompat.js";
 import { required } from "./internal/required.js";
 
 const promiseRecommended = required(
   promisePlugin.configs["flat/recommended"],
   "eslint-plugin-promise.configs.flat/recommended",
 );
-const promiseRecommendedPlugin = required(
-  promiseRecommended.plugins?.promise,
-  "eslint-plugin-promise.configs.flat/recommended.plugins.promise",
+const promiseRecommendedPlugin = asFlatPlugin(
+  required(
+    promiseRecommended.plugins?.promise,
+    "eslint-plugin-promise.configs.flat/recommended.plugins.promise",
+  ),
 );
 const regexpRecommended = regexpPlugin.configs["flat/recommended"];
 

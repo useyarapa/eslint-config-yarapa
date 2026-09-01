@@ -2,15 +2,18 @@ import type { Linter } from "eslint";
 
 import securityPlugin from "eslint-plugin-security";
 
+import { asFlatPlugin } from "./internal/eslintCompat.js";
 import { required } from "./internal/required.js";
 
 const securityRecommended = required(
   securityPlugin.configs.recommended,
   "eslint-plugin-security.configs.recommended",
 );
-const securityRecommendedPlugin = required(
-  securityRecommended.plugins?.security,
-  "eslint-plugin-security.configs.recommended.plugins.security",
+const securityRecommendedPlugin = asFlatPlugin(
+  required(
+    securityRecommended.plugins?.security,
+    "eslint-plugin-security.configs.recommended.plugins.security",
+  ),
 );
 const securityRecommendedRules = required(
   securityRecommended.rules,
