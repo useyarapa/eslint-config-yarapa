@@ -11,7 +11,10 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const packageRoot = fileURLToPath(new URL("../", import.meta.url));
-const pnpm = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
+const pnpm =
+  process.platform === "win32"
+    ? resolve(process.env.PNPM_HOME ?? "", "pnpm.exe")
+    : "pnpm";
 const node = process.execPath;
 const eslintVersion = process.env.ESLINT_VERSION ?? "10.9.1";
 const typescriptVersion = process.env.TYPESCRIPT_VERSION ?? "6.0.3";
@@ -47,6 +50,10 @@ function run(command: string, args: string[], cwd: string): void {
   }
 }
 
+if (process.platform === "win32" && !process.env.PNPM_HOME) {
+  throw new Error("PNPM_HOME is required for the Windows consumer smoke test");
+}
+
 const tempRoot = mkdtempSync(join(tmpdir(), "yarapa-consumer-"));
 const packDir = resolve(tempRoot, "pack");
 const consumerDir = resolve(tempRoot, "consumer");
@@ -61,7 +68,7 @@ try {
   if (!tarballName) throw new Error("pnpm pack did not produce a tarball");
   const tarball = resolve(packDir, tarballName);
 
-  run(pnpm, ["exec", "attw", tarball], packageRoot);
+  run(pnpm, ["exec", "attw", tarball, "--profile", "esm-only"], packageRoot);
 
   writeFileSync(
     resolve(consumerDir, "package.json"),
