@@ -159,11 +159,11 @@
     "compose": ["packageJson"],
     "valid": {
       "filename": "fixtures/valid/packageJson/package.json",
-      "code": "{\n  \"name\": \"fixture-package\",\n  \"version\": \"1.0.0\",\n  \"description\": \"Fixture package.\",\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"https://github.com/example/fixture-package.git\"\n  },\n  \"license\": \"MIT\",\n  \"author\": \"YARAPA\",\n  \"sideEffects\": false,\n  \"type\": \"module\",\n  \"exports\": \"./index.js\",\n  \"files\": [\n    \"index.js\"\n  ]\n}\n"
+      "code": "{\n  \"name\": \"fixture-package\",\n  \"version\": \"1.0.0\",\n  \"description\": \"Fixture package.\",\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"https://github.com/example/fixture-package.git\"\n  },\n  \"license\": \"MIT\",\n  \"author\": \"YARAPA\",\n  \"sideEffects\": false,\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./index.js\"\n  },\n  \"files\": [\n    \"index.js\"\n  ]\n}\n"
     },
     "invalid": {
       "filename": "fixtures/invalid/packageJson/package.json",
-      "code": "{\n  \"name\": \"Bad Package Name\",\n  \"version\": \"1.0.0\",\n  \"description\": \"Fixture package.\",\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"https://github.com/example/fixture-package.git\"\n  },\n  \"license\": \"MIT\",\n  \"author\": \"YARAPA\",\n  \"sideEffects\": false,\n  \"type\": \"module\",\n  \"exports\": \"./index.js\",\n  \"files\": [\n    \"index.js\"\n  ]\n}\n",
+      "code": "{\n  \"name\": \"Bad Package Name\",\n  \"version\": \"1.0.0\",\n  \"description\": \"Fixture package.\",\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"https://github.com/example/fixture-package.git\"\n  },\n  \"license\": \"MIT\",\n  \"author\": \"YARAPA\",\n  \"sideEffects\": false,\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": \"./index.js\"\n  },\n  \"files\": [\n    \"index.js\"\n  ]\n}\n",
       "rule": "package-json/valid-name"
     }
   },
