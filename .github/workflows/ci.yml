@@ -50,11 +50,8 @@ jobs:
           cache: true
       - run: pnpm --filter eslint-config-yarapa build
 
-  inventory-bootstrap:
-    if: github.event_name == 'push'
-    name: inventory-bootstrap
-    permissions:
-      contents: write
+  inventory:
+    name: inventory
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -62,14 +59,4 @@ jobs:
         with:
           runtime: node@24.15.0
           cache: true
-      - run: pnpm --filter eslint-config-yarapa inventory:generate
-      - name: Commit generated inventory
-        run: |
-          if git diff --quiet -- packages/eslint-config-yarapa/generated/rule-inventory.json && git ls-files --error-unmatch packages/eslint-config-yarapa/generated/rule-inventory.json >/dev/null 2>&1; then
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add packages/eslint-config-yarapa/generated/rule-inventory.json
-          HUSKY=0 git commit -m "chore(inventory): generate rule inventory"
-          git push
+      - run: pnpm --filter eslint-config-yarapa inventory:check
