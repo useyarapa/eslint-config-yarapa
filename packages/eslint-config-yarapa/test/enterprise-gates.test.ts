@@ -52,9 +52,14 @@ describe("enterprise repository gates", () => {
   it("uses ESLint as the sole repository formatting path", () => {
     const rootPackage = readRepoFile("package.json");
     const lintStaged = readRepoFile(".lintstagedrc.json");
+    const { scripts } = JSON.parse(rootPackage) as {
+      scripts: Record<string, string>;
+    };
 
     expect(rootPackage).not.toContain('"prettier"');
-    expect(rootPackage).toContain('"format": "eslint . --fix"');
+    expect(scripts.format).toBe(
+      "pnpm --filter eslint-config-yarapa build && pnpm --filter eslint-config-yarapa exec eslint ../.. --fix",
+    );
     expect(lintStaged).not.toContain("prettier");
     expect(lintStaged).toContain("eslint --fix");
   });
