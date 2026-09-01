@@ -49,3 +49,19 @@ jobs:
           runtime: node@24.15.0
           cache: true
       - run: pnpm --filter eslint-config-yarapa build
+
+  inventory-bootstrap:
+    name: inventory-bootstrap
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v2
+        with:
+          runtime: node@24.15.0
+          cache: true
+      - run: pnpm --filter eslint-config-yarapa inventory:generate
+      - uses: actions/upload-artifact@v7
+        with:
+          name: rule-inventory
+          path: packages/eslint-config-yarapa/generated/rule-inventory.json
+          if-no-files-found: error
