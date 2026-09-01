@@ -48,6 +48,17 @@ type InventoryEntry = {
   source: string;
 };
 
+type InventoryRule = readonly [
+  severity: NormalizedSeverity,
+  source: string,
+  options: unknown[],
+];
+
+type InventoryPresets = Record<
+  string,
+  Record<string, Record<string, InventoryRule>>
+>;
+
 function normalizeSeverity(value: Linter.RuleEntry): NormalizedSeverity {
   const severity = Array.isArray(value) ? value[0] : value;
 
@@ -97,12 +108,27 @@ entries.sort(
     compareCodeUnits(left.rule, right.rule),
 );
 
+const presets: InventoryPresets = {};
+for (const entry of entries) {
+  const preset = (presets[entry.preset] ??= {});
+  const config = (preset[entry.configName] ??= {});
+
+  if (config[entry.rule] !== undefined) {
+    throw new Error(
+      `Duplicate Rule Inventory entry: ${entry.preset} / ${entry.configName} / ${entry.rule}`,
+    );
+  }
+
+  config[entry.rule] = [entry.severity, entry.source, entry.options];
+}
+
 const output = `${JSON.stringify(
   {
-    entries,
+    entryShape: ["severity", "source", "options"],
     package: packageJson.name,
     packageVersion: packageJson.version,
-    schemaVersion: 1,
+    presets,
+    schemaVersion: 2,
   },
   null,
   2,
