@@ -102,24 +102,25 @@ describe("enterprise repository gates", () => {
     expect(major * 1_000 + minor).toBeLessThan(6 * 1_000 + 1);
   });
 
-  it("leaves the root monorepo toolchain TypeScript outside the peer range", () => {
+  it("keeps the root compiler above the certified peer ceiling", () => {
     const { typescriptDevDependency } = readTypeScriptPins("package.json");
-    const [major = 0] = (typescriptDevDependency ?? "0.0.0")
+    const [major = 0, minor = 0] = (typescriptDevDependency ?? "0.0.0")
       .split(".")
       .map(Number);
 
-    expect(major).toBeGreaterThanOrEqual(6);
+    expect(major * 1_000 + minor).toBeGreaterThanOrEqual(6 * 1_000 + 1);
   });
 
-  it("blocks Dependabot from raising the package compiler beyond the certified range", () => {
+  it("blocks Dependabot from raising any workspace manifest beyond the certified range", () => {
     const dependabot = readRepoFile(".github/dependabot.yml");
-    const packageEntry = dependabot
+    const npmEntries = dependabot
       .split("  - package-ecosystem:")
-      .find(section => section.includes("directory: /packages/eslint-config-yarapa"));
+      .filter(section => section.trimStart().startsWith("npm"));
 
-    expect(packageEntry).toBeDefined();
-    expect(packageEntry).toContain("ignore:");
-    expect(packageEntry).toMatch(
+    expect(npmEntries).toHaveLength(1);
+    expect(npmEntries[0]).toContain("directory: /");
+    expect(npmEntries[0]).toContain("ignore:");
+    expect(npmEntries[0]).toMatch(
       /dependency-name: typescript[\s\S]*?">=6\.1\.0"/u,
     );
   });
