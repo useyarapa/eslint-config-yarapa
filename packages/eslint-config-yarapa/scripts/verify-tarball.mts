@@ -34,7 +34,7 @@ const expectedPresets = [
   "vitest",
 ].sort();
 
-function run(command, args, cwd) {
+function run(command: string, args: string[], cwd: string): void {
   const result = spawnSync(command, args, {
     cwd,
     env: process.env,
