@@ -17,6 +17,22 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
+  lockfile-sync:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'chore/enterprise-hardening'
+    name: lockfile-sync
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v2
+        with:
+          runtime: node@24.15.0
+          install: false
+      - run: pnpm install --lockfile-only --no-frozen-lockfile
+      - uses: actions/upload-artifact@v4
+        with:
+          name: synced-lockfile
+          path: pnpm-lock.yaml
+
   lint:
     name: lint
     runs-on: ubuntu-latest
