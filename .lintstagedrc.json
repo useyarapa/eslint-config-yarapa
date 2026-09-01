@@ -1,5 +1,5 @@
 {
-  "*.{ts,tsx}": ["prettier --write"],
-  "*.{js,jsx,mjs,cjs}": ["prettier --write"],
-  "*.{json,md,yml,yaml}": ["prettier --write"]
+  "*.{ts,tsx,js,jsx,mjs,cjs}": [
+    "pnpm --filter eslint-config-yarapa exec eslint --fix --max-warnings=0"
+  ]
 }
