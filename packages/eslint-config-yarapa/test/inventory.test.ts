@@ -1,15 +1,12 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-
 import { describe, expect, it } from "vitest";
 
 import { configs } from "../src/index.js";
 
 const packageRoot = fileURLToPath(new URL("../", import.meta.url));
 
-type SeverityCode = "e" | "w";
-type InventoryValue = SeverityCode | [SeverityCode, unknown[]];
 type Inventory = {
   package: string;
   packageVersion: string;
@@ -18,6 +15,8 @@ type Inventory = {
   severityCodes: Record<SeverityCode, string>;
   sourcePrefixes: Record<string, string>;
 };
+type InventoryValue = [SeverityCode, unknown[]] | SeverityCode;
+type SeverityCode = "e" | "w";
 
 const packageJson = JSON.parse(
   readFileSync(resolve(packageRoot, "package.json"), "utf8"),
@@ -26,12 +25,22 @@ const inventory = JSON.parse(
   readFileSync(resolve(packageRoot, "generated/rule-inventory.json"), "utf8"),
 ) as Inventory;
 
-function sorted(values: string[]): string[] {
-  return [...values].sort((left, right) => (left < right ? -1 : left > right ? 1 : 0));
-}
-
+/**
+ * Read the compact severity from an inventory value.
+ * @param value Inventory rule value.
+ * @returns Compact severity code.
+ */
 function severity(value: InventoryValue): SeverityCode {
   return Array.isArray(value) ? value[0] : value;
+}
+
+/**
+ * Return a deterministically sorted copy of string values.
+ * @param values Values to sort.
+ * @returns Sorted copy.
+ */
+function sorted(values: string[]): string[] {
+  return [...values].sort((left, right) => left.localeCompare(right));
 }
 
 describe("Rule Inventory", () => {
@@ -49,41 +58,67 @@ describe("Rule Inventory", () => {
   });
 
   it("stores deterministic enabled controls only", () => {
-    for (const [presetName, preset] of Object.entries(inventory.presets)) {
-      expect(Object.keys(preset)).toStrictEqual(sorted(Object.keys(preset)));
+    const presetEntries = Object.entries(inventory.presets);
+    const configEntries = presetEntries.flatMap(([presetName, preset]) =>
+      Object.entries(preset).map(([configName, rules]) => ({
+        configName,
+        presetName,
+        rules,
+      })),
+    );
+    const ruleEntries = configEntries.flatMap(
+      ({ configName, presetName, rules }) =>
+        Object.entries(rules).map(([ruleName, value]) => ({
+          configName,
+          presetName,
+          ruleName,
+          value,
+        })),
+    );
 
-      for (const [configName, rules] of Object.entries(preset)) {
-        expect(Object.keys(rules)).toStrictEqual(sorted(Object.keys(rules)));
+    const unsortedPresets = presetEntries
+      .filter(([, preset]) =>
+        Object.keys(preset).join("\0") !== sorted(Object.keys(preset)).join("\0"),
+      )
+      .map(([presetName]) => presetName);
+    const unsortedConfigs = configEntries
+      .filter(({ rules }) =>
+        Object.keys(rules).join("\0") !== sorted(Object.keys(rules)).join("\0"),
+      )
+      .map(({ configName, presetName }) => `${presetName}/${configName}`);
+    const invalidSeverities = ruleEntries
+      .filter(({ value }) => !["e", "w"].includes(severity(value)))
+      .map(({ configName, presetName, ruleName }) =>
+        `${presetName}/${configName}/${ruleName}`,
+      );
+    const invalidOptionShapes = ruleEntries
+      .filter(({ value }) =>
+        Array.isArray(value)
+        && (value.length !== 2 || !Array.isArray(value[1])),
+      )
+      .map(({ configName, presetName, ruleName }) =>
+        `${presetName}/${configName}/${ruleName}`,
+      );
 
-        for (const [ruleName, value] of Object.entries(rules)) {
-          expect(["e", "w"], `${presetName}/${configName}/${ruleName}`).toContain(
-            severity(value),
-          );
-
-          if (Array.isArray(value)) {
-            expect(value).toHaveLength(2);
-            expect(Array.isArray(value[1])).toBe(true);
-          }
-        }
-      }
-    }
+    expect(unsortedPresets).toStrictEqual([]);
+    expect(unsortedConfigs).toStrictEqual([]);
+    expect(invalidSeverities).toStrictEqual([]);
+    expect(invalidOptionShapes).toStrictEqual([]);
   });
 
   it("maps every plugin rule to a declared inventory source prefix", () => {
     const prefixes = Object.keys(inventory.sourcePrefixes).filter(
       prefix => prefix !== "*",
     );
+    const ruleNames = Object.values(inventory.presets)
+      .flatMap(preset => Object.values(preset))
+      .flatMap(rules => Object.keys(rules));
+    const missingPrefixes = ruleNames.filter(
+      ruleName =>
+        ruleName.includes("/")
+        && !prefixes.some(prefix => ruleName.startsWith(prefix)),
+    );
 
-    for (const preset of Object.values(inventory.presets)) {
-      for (const rules of Object.values(preset)) {
-        for (const ruleName of Object.keys(rules)) {
-          if (!ruleName.includes("/")) continue;
-          expect(
-            prefixes.some(prefix => ruleName.startsWith(prefix)),
-            `Missing source prefix for ${ruleName}`,
-          ).toBe(true);
-        }
-      }
-    }
+    expect(missingPrefixes).toStrictEqual([]);
   });
 });

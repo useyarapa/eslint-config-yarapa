@@ -1,6 +1,7 @@
 import type { Linter } from "eslint";
 
-import tseslint from "typescript-eslint";
+import { defineConfig } from "eslint/config";
+import { configs as tseslintConfigs } from "typescript-eslint";
 
 /**
  * Type-aware TypeScript controls. Mandatory for TypeScript source files in
@@ -9,8 +10,9 @@ import tseslint from "typescript-eslint";
  * its intended `tsconfig.json` is a configuration defect in the consumer
  * repository, not a package limitation.
  */
-export const typeChecked = tseslint.config({
-  extends: [tseslint.configs.recommendedTypeChecked],
+
+export const typeChecked = defineConfig({
+  extends: [tseslintConfigs.recommendedTypeChecked],
   files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
   languageOptions: {
     parserOptions: {

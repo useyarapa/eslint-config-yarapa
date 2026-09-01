@@ -1,3 +1,4 @@
+import { spawnSync } from "node:child_process";
 import {
   mkdirSync,
   mkdtempSync,
@@ -7,12 +8,11 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const packageRoot = fileURLToPath(new URL("../", import.meta.url));
-const pnpm =
-  process.platform === "win32"
+const pnpm
+  = process.platform === "win32"
     ? resolve(process.env.PNPM_HOME ?? "", "pnpm.exe")
     : "pnpm";
 const node = process.execPath;
@@ -37,6 +37,12 @@ const expectedPresets = [
   "vitest",
 ].sort();
 
+/**
+ * Run a certification command and fail on any non-zero result.
+ * @param command Executable to run.
+ * @param args Command arguments.
+ * @param cwd Working directory for the command.
+ */
 function run(command: string, args: string[], cwd: string): void {
   const result = spawnSync(command, args, {
     cwd,

@@ -1,6 +1,7 @@
 import type { Linter } from "eslint";
 
-import tseslint from "typescript-eslint";
+import { defineConfig } from "eslint/config";
+import { configs as tseslintConfigs } from "typescript-eslint";
 
 /**
  * Syntax-only TypeScript controls: the complete typescript-eslint
@@ -12,9 +13,10 @@ import tseslint from "typescript-eslint";
  * This preset applies to every TypeScript file, typed or not. `typeChecked`
  * adds the type-aware layer on top for files that have a TypeScript project.
  */
-export const typescript = tseslint.config(
+
+export const typescript = defineConfig(
   {
-    extends: [tseslint.configs.recommended],
+    extends: [tseslintConfigs.recommended],
     files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
     name: "yarapa/typescript/recommended",
     rules: {

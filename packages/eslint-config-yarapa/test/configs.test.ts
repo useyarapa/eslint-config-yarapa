@@ -1,3 +1,5 @@
+import type { Linter } from "eslint";
+
 import sonarjsPlugin from "eslint-plugin-sonarjs";
 import { describe, expect, it } from "vitest";
 
@@ -25,15 +27,19 @@ const REQUIRED_PRESET_NAMES = [
 
 describe("configs", () => {
   it("exposes exactly the sixteen required preset names", () => {
-    expect(Object.keys(configs).sort()).toStrictEqual(
-      [...REQUIRED_PRESET_NAMES].sort(),
+    expect(
+      Object.keys(configs).sort((left, right) => left.localeCompare(right)),
+    ).toStrictEqual(
+      [...REQUIRED_PRESET_NAMES].sort((left, right) =>
+        left.localeCompare(right),
+      ),
     );
   });
 
   it.each(REQUIRED_PRESET_NAMES)(
     "configs.%s is a non-empty Flat Config array",
-    (presetName) => {
-      const preset = configs[presetName];
+    presetName => {
+      const preset = Reflect.get(configs, presetName);
 
       expect(Array.isArray(preset)).toBe(true);
       expect(preset.length).toBeGreaterThan(0);
@@ -42,7 +48,8 @@ describe("configs", () => {
 
   it("every config entry in every preset is a plain object", () => {
     for (const presetName of REQUIRED_PRESET_NAMES) {
-      for (const entry of configs[presetName]) {
+      const preset = Reflect.get(configs, presetName);
+      for (const entry of preset) {
         expect(typeof entry).toBe("object");
         expect(entry).not.toBeNull();
       }
@@ -51,7 +58,7 @@ describe("configs", () => {
 
   it("testingLibrary scopes its DOM rules to the canonical test-file globs", () => {
     const domEntry = configs.testingLibrary.find(
-      (entry) => entry.name === "yarapa/testing-library/dom",
+      entry => entry.name === "yarapa/testing-library/dom",
     );
 
     expect(domEntry).toBeDefined();
@@ -60,7 +67,7 @@ describe("configs", () => {
 
   it("ava preserves the upstream package.json no-ava-in-dependencies entry", () => {
     const packageJsonEntry = configs.ava.find(
-      (entry) => entry.name === "yarapa/ava/no-ava-in-dependencies",
+      entry => entry.name === "yarapa/ava/no-ava-in-dependencies",
     );
 
     expect(packageJsonEntry).toBeDefined();
@@ -79,13 +86,17 @@ describe("configs", () => {
 
     for (const ruleName of Object.keys(sonarjsPlugin.rules)) {
       if (ruleName === "file-header") continue;
-      expect(sonarEntry?.rules?.[`sonarjs/${ruleName}`]).toBe("error");
+      const severity = Reflect.get(
+        sonarEntry?.rules ?? {},
+        `sonarjs/${ruleName}`,
+      ) as Linter.RuleEntry | undefined;
+      expect(severity).toBe("error");
     }
   });
 
   it("recommended does not compose the repo-scoped stack presets", () => {
     const recommendedConfigNames = configs.recommended
-      .map((entry) => entry.name)
+      .map(entry => entry.name)
       .filter((name): name is string => typeof name === "string");
 
     const excludedPrefixes = [

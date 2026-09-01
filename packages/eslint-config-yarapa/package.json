@@ -21,6 +21,7 @@
   },
   "license": "MIT",
   "author": "YARAPA",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {
@@ -80,6 +81,7 @@
     "@types/eslint-plugin-security": "3.0.1",
     "@types/node": "24.9.1",
     "@vitest/coverage-v8": "4.1.11",
+    "eslint": "10.9.1",
     "publint": "0.3.24",
     "tsdown": "0.22.14",
     "typescript": "6.0.3",
@@ -91,8 +93,5 @@
   },
   "engines": {
     "node": ">=24.15.0"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

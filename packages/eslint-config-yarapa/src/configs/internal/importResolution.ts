@@ -1,15 +1,15 @@
 import type { Linter } from "eslint";
 
-import importXPlugin from "eslint-plugin-import-x";
+import { configs as importXConfigs } from "eslint-plugin-import-x";
 
 import { required } from "./required.js";
 
 const jsRecommended = required(
-  importXPlugin.configs["flat/recommended"],
+  importXConfigs["flat/recommended"],
   "eslint-plugin-import-x.configs.flat/recommended",
 );
 const tsRecommended = required(
-  importXPlugin.configs["flat/typescript"],
+  importXConfigs["flat/typescript"],
   "eslint-plugin-import-x.configs.flat/typescript",
 );
 const importXRecommendedPlugin = required(

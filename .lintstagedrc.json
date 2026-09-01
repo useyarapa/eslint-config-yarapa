@@ -1,5 +1,5 @@
 {
   "*.{ts,tsx,js,jsx,mjs,cjs}": [
-    "pnpm --filter eslint-config-yarapa exec eslint --fix --max-warnings=0"
+    "pnpm exec eslint --fix --max-warnings=0"
   ]
 }

@@ -1,7 +1,7 @@
+import { ESLint } from "eslint";
+import { defineConfig } from "eslint/config";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-
-import { ESLint } from "eslint";
 import { describe, expect, it } from "vitest";
 
 import { configs } from "../src/index.js";
@@ -10,11 +10,13 @@ const packageRoot = fileURLToPath(new URL("../", import.meta.url));
 
 type PresetName = keyof typeof configs;
 
-const representativeFiles: Record<Exclude<PresetName, "ignores">, string> = {
+const representativeFiles: Record<
+  Exclude<PresetName, "disableTypeChecked" | "ignores">,
+  string
+> = {
   ava: "fixtures/valid/ava/case.test.js",
   base: "fixtures/valid/base/case.js",
   browser: "fixtures/valid/browser/case.js",
-  disableTypeChecked: "fixtures/projects/tooling-out-of-project/valid.ts",
   jsdoc: "fixtures/valid/jsdoc/case.js",
   json: "fixtures/valid/json/case.json",
   node: "fixtures/valid/node/case.js",
@@ -28,25 +30,49 @@ const representativeFiles: Record<Exclude<PresetName, "ignores">, string> = {
   vitest: "fixtures/valid/vitest/case.test.js",
 };
 
+/**
+ * Create ESLint for one public preset.
+ * @param preset Public preset to validate.
+ * @returns ESLint instance configured with that preset.
+ */
 function eslintFor(preset: PresetName): ESLint {
   return new ESLint({
     cwd: packageRoot,
-    overrideConfig: configs[preset],
+    overrideConfig: Reflect.get(configs, preset),
     overrideConfigFile: true,
   });
 }
 
 describe("Flat Config validation", () => {
-  it.each(Object.entries(representativeFiles) as [PresetName, string][])(
-    "resolves configs.%s with ESLint itself",
-    async (preset, relativePath) => {
-      const config = await eslintFor(preset).calculateConfigForFile(
-        resolve(packageRoot, relativePath),
-      );
+  for (const [preset, relativePath] of Object.entries(
+    representativeFiles,
+  ) as [PresetName, string][]) {
+    it(`resolves configs.${preset} with ESLint itself`, async () => {
+      await expect(
+        eslintFor(preset).calculateConfigForFile(
+          resolve(packageRoot, relativePath),
+        ),
+      ).resolves.toBeDefined();
+    });
+  }
 
-      expect(config).toBeDefined();
-    },
-  );
+  it("resolves disableTypeChecked as a scoped override", async () => {
+    const relativePath = "fixtures/projects/tooling-out-of-project/valid.ts";
+    const eslint = new ESLint({
+      cwd: packageRoot,
+      overrideConfig: defineConfig(
+        configs.recommended,
+        {
+          extends: [configs.disableTypeChecked],
+          files: ["fixtures/projects/tooling-out-of-project/**/*.ts"],
+        },
+      ),
+      overrideConfigFile: true,
+    });
+    await expect(
+      eslint.calculateConfigForFile(resolve(packageRoot, relativePath)),
+    ).resolves.toBeDefined();
+  });
 
   it("validates the ignores preset through ESLint path matching", async () => {
     await expect(

@@ -1,6 +1,6 @@
 import type { Linter } from "eslint";
 
-import tseslint from "typescript-eslint";
+import { configs as tseslintConfigs } from "typescript-eslint";
 
 /**
  * The sole sanctioned file-scoped control that disables type-aware rules.
@@ -11,5 +11,5 @@ import tseslint from "typescript-eslint";
  * this preset only turns off rules that require type information.
  */
 export const disableTypeChecked: Linter.Config[] = [
-  tseslint.configs.disableTypeChecked,
+  tseslintConfigs.disableTypeChecked,
 ];
