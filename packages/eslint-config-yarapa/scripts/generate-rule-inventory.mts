@@ -1,3 +1,5 @@
+import type { Linter } from "eslint";
+
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -6,11 +8,17 @@ const packageRoot = fileURLToPath(new URL("../", import.meta.url));
 const outputPath = resolve(packageRoot, "generated/rule-inventory.json");
 const packageJson = JSON.parse(
   readFileSync(resolve(packageRoot, "package.json"), "utf8"),
-);
-const { configs } = await import("../dist/index.mjs");
+) as { name: string; version: string };
+const builtEntryUrl = new URL("../dist/index.mjs", import.meta.url).href;
+const { configs } = (await import(builtEntryUrl)) as {
+  configs: Record<string, Linter.Config[]>;
+};
 
-const sources = [
-  ["@eslint-community/eslint-comments/", "@eslint-community/eslint-plugin-eslint-comments"],
+const sources: ReadonlyArray<readonly [string, string]> = [
+  [
+    "@eslint-community/eslint-comments/",
+    "@eslint-community/eslint-plugin-eslint-comments",
+  ],
   ["@stylistic/", "@stylistic/eslint-plugin"],
   ["@typescript-eslint/", "typescript-eslint"],
   ["ava/", "eslint-plugin-ava"],
@@ -29,7 +37,18 @@ const sources = [
   ["vitest/", "@vitest/eslint-plugin"],
 ];
 
-function normalizeSeverity(value) {
+type NormalizedSeverity = "error" | "off" | "warn";
+
+type InventoryEntry = {
+  configName: string;
+  options: unknown[];
+  preset: string;
+  rule: string;
+  severity: NormalizedSeverity;
+  source: string;
+};
+
+function normalizeSeverity(value: Linter.RuleEntry): NormalizedSeverity {
   const severity = Array.isArray(value) ? value[0] : value;
 
   if (severity === 0 || severity === "off") return "off";
@@ -39,7 +58,7 @@ function normalizeSeverity(value) {
   throw new Error(`Unsupported ESLint severity: ${String(severity)}`);
 }
 
-function ruleSource(rule) {
+function ruleSource(rule: string): string {
   for (const [prefix, source] of sources) {
     if (rule.startsWith(prefix)) return source;
   }
@@ -47,7 +66,7 @@ function ruleSource(rule) {
   return "@eslint/js";
 }
 
-const entries = [];
+const entries: InventoryEntry[] = [];
 for (const [preset, configArray] of Object.entries(configs)) {
   for (const config of configArray) {
     for (const [rule, value] of Object.entries(config.rules ?? {})) {
@@ -65,10 +84,11 @@ for (const [preset, configArray] of Object.entries(configs)) {
   }
 }
 
-entries.sort((left, right) =>
-  left.preset.localeCompare(right.preset) ||
-  left.configName.localeCompare(right.configName) ||
-  left.rule.localeCompare(right.rule),
+entries.sort(
+  (left, right) =>
+    left.preset.localeCompare(right.preset) ||
+    left.configName.localeCompare(right.configName) ||
+    left.rule.localeCompare(right.rule),
 );
 
 const output = `${JSON.stringify(
