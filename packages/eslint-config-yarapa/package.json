@@ -84,7 +84,7 @@
     "eslint": "10.9.1",
     "publint": "0.3.24",
     "tsdown": "0.22.14",
-    "typescript": "7.0.2",
+    "typescript": "6.0.3",
     "vitest": "4.1.11"
   },
   "peerDependencies": {

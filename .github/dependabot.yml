@@ -9,6 +9,13 @@ updates:
       time: "09:00"
       timezone: Asia/Bangkok
     open-pull-requests-limit: 10
+    ignore:
+      # The root npm job updates every pnpm workspace manifest, including the
+      # public package's (see #8). typescript-eslint supports TypeScript only
+      # below 6.1.0, so no workspace manifest may be raised into that range;
+      # root toolchain moves are intentional, manual engineering changes.
+      - dependency-name: typescript
+        versions: [">=6.1.0"]
     groups:
       eslint-ecosystem:
         patterns:
