@@ -75,9 +75,6 @@ try {
     `${JSON.stringify(
       {
         name: "yarapa-consumer-smoke",
-        pnpm: {
-          onlyBuiltDependencies: ["unrs-resolver"],
-        },
         private: true,
         type: "module",
       },
@@ -86,9 +83,13 @@ try {
     )}\n`,
   );
 
+  // pnpm 11 blocks unreviewed dependency build scripts by default. The
+  // TypeScript import resolver requires unrs-resolver's postinstall, so the
+  // disposable smoke consumer explicitly approves only that known build.
   run(
     pnpm,
     [
+      "--allow-build=unrs-resolver",
       "add",
       "--save-exact",
       `eslint@${eslintVersion}`,
