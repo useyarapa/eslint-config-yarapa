@@ -66,6 +66,12 @@ function ruleSource(rule: string): string {
   return "@eslint/js";
 }
 
+function compareCodeUnits(left: string, right: string): number {
+  if (left < right) return -1;
+  if (left > right) return 1;
+  return 0;
+}
+
 const entries: InventoryEntry[] = [];
 for (const [preset, configArray] of Object.entries(configs)) {
   for (const config of configArray) {
@@ -86,9 +92,9 @@ for (const [preset, configArray] of Object.entries(configs)) {
 
 entries.sort(
   (left, right) =>
-    left.preset.localeCompare(right.preset) ||
-    left.configName.localeCompare(right.configName) ||
-    left.rule.localeCompare(right.rule),
+    compareCodeUnits(left.preset, right.preset) ||
+    compareCodeUnits(left.configName, right.configName) ||
+    compareCodeUnits(left.rule, right.rule),
 );
 
 const output = `${JSON.stringify(
