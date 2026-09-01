@@ -25,6 +25,8 @@
         "style",
         "test"
       ]
-    ]
+    ],
+    "body-empty": [2, "always"],
+    "footer-empty": [2, "always"]
   }
 }
