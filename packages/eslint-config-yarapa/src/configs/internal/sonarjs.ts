@@ -5,11 +5,10 @@ import sonarjsPlugin from "eslint-plugin-sonarjs";
 const PROJECT_SPECIFIC_RULES = new Set(["file-header"]);
 
 /**
- * SonarJS high-assurance coverage. Not independently exported:
- * `docs/POLICY.md` lists SonarJS as a `recommended`-only universal control.
- * Every generally applicable rule present in the exact-pinned
- * `sonarjs.rules` export is enabled as an error, including rules omitted from
- * SonarJS recommended, type-aware rules, overlapping rules, rules with known
+ * SonarJS high-assurance coverage. Not independently exported. Every
+ * generally applicable rule present in the exact-pinned `sonarjs.rules`
+ * export is enabled as an error, including rules omitted from SonarJS
+ * recommended, type-aware rules, overlapping rules, rules with known
  * false-positive potential, and deprecated rules that remain in the pinned
  * release.
  *
