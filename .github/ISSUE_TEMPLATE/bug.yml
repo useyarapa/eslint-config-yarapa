@@ -1,0 +1,55 @@
+name: Bug report
+description: Report incorrect diagnostics, crashes, compatibility failures, or package-consumption defects.
+title: "bug: "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Report reproducible behavior against a supported Node.js, ESLint, and TypeScript combination. Do not include secrets or proprietary source code.
+  - type: input
+    id: version
+    attributes:
+      label: eslint-config-yarapa version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include Node.js, ESLint, TypeScript, OS, package manager, and the YARAPA presets composed.
+      placeholder: |
+        Node.js: 24.20.0
+        ESLint: 10.9.1
+        TypeScript: 6.0.3
+        OS: Ubuntu 24.04
+        Presets: recommended, node
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Provide a minimal public reproduction or sanitized code/config that demonstrates the defect.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety
+      options:
+        - label: I removed credentials, secrets, customer data, and proprietary banking source code from this report.
+          required: true

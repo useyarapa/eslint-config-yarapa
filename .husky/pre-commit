@@ -10,4 +10,5 @@ if ! command -v gitleaks >/dev/null 2>&1; then
   exit 1
 fi
 gitleaks protect --staged --exit-code=1
+pnpm --filter eslint-config-yarapa build
 pnpm exec lint-staged

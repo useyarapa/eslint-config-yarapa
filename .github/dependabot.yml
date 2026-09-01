@@ -1,0 +1,51 @@
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Bangkok
+    open-pull-requests-limit: 10
+    groups:
+      eslint-ecosystem:
+        patterns:
+          - eslint
+          - "@eslint/*"
+          - "@eslint-community/*"
+          - "@stylistic/*"
+          - "eslint-plugin-*"
+          - eslint-import-resolver-typescript
+          - typescript-eslint
+          - "@vitest/eslint-plugin"
+      typescript-ecosystem:
+        patterns:
+          - typescript
+          - "@types/*"
+      test-build-tooling:
+        patterns:
+          - vitest
+          - "@vitest/coverage-v8"
+          - "@stryker-mutator/*"
+          - tsdown
+          - turbo
+          - knip
+          - lint-staged
+          - husky
+          - "@commitlint/*"
+          - publint
+          - "@arethetypeswrong/*"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:30"
+      timezone: Asia/Bangkok
+    groups:
+      github-actions:
+        patterns:
+          - "*"

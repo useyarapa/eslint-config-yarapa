@@ -1,15 +1,15 @@
 import type { Linter } from "eslint";
 
-import jsdocPlugin from "eslint-plugin-jsdoc";
+import { configs as jsdocConfigs } from "eslint-plugin-jsdoc";
 
 import { required } from "./internal/required.js";
 
 const jsRecommended = required(
-  jsdocPlugin.configs["flat/recommended-error"],
+  jsdocConfigs["flat/recommended-error"],
   "eslint-plugin-jsdoc.configs.flat/recommended-error",
 );
 const tsRecommended = required(
-  jsdocPlugin.configs["flat/recommended-typescript-error"],
+  jsdocConfigs["flat/recommended-typescript-error"],
   "eslint-plugin-jsdoc.configs.flat/recommended-typescript-error",
 );
 const jsRecommendedPlugin = required(

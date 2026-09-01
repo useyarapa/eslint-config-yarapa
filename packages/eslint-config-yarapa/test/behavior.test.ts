@@ -1,40 +1,52 @@
+import { ESLint } from "eslint";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-
-import { ESLint } from "eslint";
 import { describe, expect, it } from "vitest";
 
+import { required } from "../src/configs/internal/required.js";
 import { configs } from "../src/index.js";
 
 const packageRoot = fileURLToPath(new URL("../", import.meta.url));
 
-type PresetName = keyof typeof configs;
 type FixtureCase = {
-  preset: PresetName;
   compose?: PresetName[];
-  special?: string;
-  valid?: { code: string; filename: string };
   invalid?: {
     code: string;
     fatal?: boolean;
     filename: string;
     rule?: string;
   };
+  preset: PresetName;
+  special?: string;
+  valid?: { code: string; filename: string };
 };
+type PresetName = keyof typeof configs;
 
 const fixtureCases = JSON.parse(
   readFileSync(resolve(packageRoot, "fixtures/cases.json"), "utf8"),
 ) as FixtureCase[];
 
+/**
+ * Create ESLint for a composed public-preset list.
+ * @param presets Public presets to compose.
+ * @returns ESLint instance using only the supplied presets.
+ */
 function eslintFor(presets: PresetName[]): ESLint {
   return new ESLint({
     cwd: packageRoot,
-    overrideConfig: presets.flatMap(preset => configs[preset]),
+    overrideConfig: presets.flatMap(preset =>
+      Reflect.get(configs, preset),
+    ),
     overrideConfigFile: true,
   });
 }
 
+/**
+ * Reduce a lint result to stable diagnostic fields for assertions.
+ * @param result ESLint result to summarize.
+ * @returns Stable diagnostic summary objects.
+ */
 function messageSummary(result: ESLint.LintResult): object[] {
   return result.messages.map(message => ({
     message: message.message,
@@ -47,34 +59,33 @@ for (const fixture of fixtureCases.filter(item => !item.special)) {
   describe(`behavioral fixture: ${fixture.preset}`, () => {
     it("accepts the valid fixture", async () => {
       const eslint = eslintFor(fixture.compose ?? [fixture.preset]);
-      const [result] = await eslint.lintText(fixture.valid!.code, {
-        filePath: resolve(packageRoot, fixture.valid!.filename),
+      const valid = required(fixture.valid, `${fixture.preset} valid fixture`);
+      const [result] = await eslint.lintText(valid.code, {
+        filePath: resolve(packageRoot, valid.filename),
       });
+      const lintResult = required(result, `${fixture.preset} valid lint result`);
 
-      expect(result).toBeDefined();
-      expect(
-        messageSummary(result!),
-        `Unexpected diagnostics for ${fixture.preset} valid fixture`,
-      ).toEqual([]);
+      expect(messageSummary(lintResult)).toEqual([]);
     });
 
     it("rejects the invalid fixture", async () => {
       const eslint = eslintFor(fixture.compose ?? [fixture.preset]);
-      const [result] = await eslint.lintText(fixture.invalid!.code, {
-        filePath: resolve(packageRoot, fixture.invalid!.filename),
+      const invalid = required(
+        fixture.invalid,
+        `${fixture.preset} invalid fixture`,
+      );
+      const [result] = await eslint.lintText(invalid.code, {
+        filePath: resolve(packageRoot, invalid.filename),
       });
+      const lintResult = required(result, `${fixture.preset} invalid lint result`);
 
-      expect(result).toBeDefined();
-      expect(result!.errorCount).toBeGreaterThan(0);
-
-      if (fixture.invalid!.fatal) {
-        expect(result!.fatalErrorCount).toBeGreaterThan(0);
-      }
-      if (fixture.invalid!.rule) {
-        expect(result!.messages.map(message => message.ruleId)).toContain(
-          fixture.invalid!.rule,
-        );
-      }
+      expect(lintResult.errorCount).toBeGreaterThan(0);
+      expect(!invalid.fatal || lintResult.fatalErrorCount > 0).toBe(true);
+      const expectedRule = invalid.rule;
+      expect(
+        expectedRule === undefined
+        || lintResult.messages.some(message => message.ruleId === expectedRule),
+      ).toBe(true);
     });
   });
 }
@@ -85,12 +96,13 @@ describe("typeChecked", () => {
 
   it("accepts a typed project source file", async () => {
     const [result] = await eslint.lintFiles(resolve(projectRoot, "src/valid.ts"));
-    expect(messageSummary(result!)).toEqual([]);
+    expect(messageSummary(required(result, "typed valid lint result"))).toEqual([]);
   });
 
   it("reports a floating promise with type information", async () => {
     const [result] = await eslint.lintFiles(resolve(projectRoot, "src/invalid.ts"));
-    expect(result!.messages.map(message => message.ruleId)).toContain(
+    const lintResult = required(result, "typed invalid lint result");
+    expect(lintResult.messages.map(message => message.ruleId)).toContain(
       "@typescript-eslint/no-floating-promises",
     );
   });
@@ -111,8 +123,7 @@ describe("disableTypeChecked", () => {
     );
 
     expect(
-      messageSummary(result!),
-      "Unexpected diagnostics for out-of-project valid tooling file",
+      messageSummary(required(result, "out-of-project valid lint result")),
     ).toEqual([]);
   });
 
@@ -124,7 +135,8 @@ describe("disableTypeChecked", () => {
       ),
     });
 
-    expect(result!.messages.map(message => message.ruleId)).toContain(
+    const lintResult = required(result, "out-of-project invalid lint result");
+    expect(lintResult.messages.map(message => message.ruleId)).toContain(
       "@typescript-eslint/no-explicit-any",
     );
   });

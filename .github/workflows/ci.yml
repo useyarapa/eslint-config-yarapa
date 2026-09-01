@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches:
-      - genspark_ai_developer
+      - main
 
 permissions:
   contents: read
@@ -17,12 +17,51 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
+  lockfile-sync:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'chore/enterprise-hardening'
+    name: lockfile-sync
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          runtime: node@24.15.0
+          install: false
+      - run: pnpm install --lockfile-only --no-frozen-lockfile
+      - name: Commit synchronized lockfile
+        shell: bash
+        run: |
+          if git diff --quiet -- pnpm-lock.yaml; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pnpm-lock.yaml
+          git commit -m "chore(deps): sync tooling lockfile"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          runtime: node@24.15.0
+          cache: true
+      - run: pnpm --filter eslint-config-yarapa build
+      - run: pnpm --filter eslint-config-yarapa lint
+
   test:
     name: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: pnpm/setup@v2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
         with:
           runtime: node@24.15.0
           cache: true
@@ -32,8 +71,8 @@ jobs:
     name: check-types
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: pnpm/setup@v2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
         with:
           runtime: node@24.15.0
           cache: true
@@ -43,8 +82,8 @@ jobs:
     name: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: pnpm/setup@v2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
         with:
           runtime: node@24.15.0
           cache: true
@@ -54,9 +93,64 @@ jobs:
     name: inventory
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: pnpm/setup@v2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
         with:
           runtime: node@24.15.0
           cache: true
       - run: pnpm --filter eslint-config-yarapa inventory:check
+
+  consumer:
+    name: consumer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          runtime: node@24.20.0
+          cache: true
+      - run: pnpm --filter eslint-config-yarapa test:consumer
+
+  compatibility:
+    name: compatibility (${{ matrix.name }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: node-24.15.0-eslint-10.0.0-typescript-5.0.4
+            node: 24.15.0
+            eslint: 10.0.0
+            typescript: 5.0.4
+          - name: node-24.20.0-eslint-10.9.1-typescript-5.9.3
+            node: 24.20.0
+            eslint: 10.9.1
+            typescript: 5.9.3
+          - name: node-24.20.0-eslint-10.9.1-typescript-6.0.3
+            node: 24.20.0
+            eslint: 10.9.1
+            typescript: 6.0.3
+    env:
+      ESLINT_VERSION: ${{ matrix.eslint }}
+      TYPESCRIPT_VERSION: ${{ matrix.typescript }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          runtime: node@${{ matrix.node }}
+          cache: true
+      - run: pnpm --filter eslint-config-yarapa test:consumer
+
+  windows-consumer:
+    name: windows-consumer
+    runs-on: windows-latest
+    env:
+      ESLINT_VERSION: 10.9.1
+      TYPESCRIPT_VERSION: 6.0.3
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2
+        with:
+          runtime: node@24.20.0
+          cache: true
+      - run: pnpm --filter eslint-config-yarapa test:consumer

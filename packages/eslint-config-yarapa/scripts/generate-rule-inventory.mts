@@ -15,6 +15,7 @@ const { configs } = (await import(builtEntryUrl)) as {
 };
 
 const sourcePrefixes = {
+  "*": "@eslint/js",
   "@eslint-community/eslint-comments/":
     "@eslint-community/eslint-plugin-eslint-comments",
   "@stylistic/": "@stylistic/eslint-plugin",
@@ -33,17 +34,70 @@ const sourcePrefixes = {
   "testing-library/": "eslint-plugin-testing-library",
   "unused-imports/": "eslint-plugin-unused-imports",
   "vitest/": "@vitest/eslint-plugin",
-  "*": "@eslint/js",
 } as const;
 
 type EnabledSeverity = "error" | "warn";
-type SeverityCode = "e" | "w";
-type InventoryValue = SeverityCode | readonly [SeverityCode, unknown[]];
+type InventoryEntry = {
+  configName: string;
+  options: unknown[];
+  preset: string;
+  rule: string;
+  severity: EnabledSeverity;
+  source: string;
+};
 type InventoryPresets = Record<
   string,
   Record<string, Record<string, InventoryValue>>
 >;
+type InventoryValue = readonly [SeverityCode, unknown[]] | SeverityCode;
 
+type SeverityCode = "e" | "w";
+
+/**
+ * Append enabled rules from one Flat Config entry to the inventory list.
+ * @param target Inventory entries being accumulated.
+ * @param preset Public preset name.
+ * @param config Flat Config entry to inspect.
+ */
+function appendEnabledRules(
+  target: InventoryEntry[],
+  preset: string,
+  config: Linter.Config,
+): void {
+  for (const [rule, value] of Object.entries(config.rules ?? {})) {
+    if (value === undefined) continue;
+
+    const severity = normalizeSeverity(value);
+    if (severity !== "off") {
+      target.push({
+        configName: config.name ?? "(anonymous)",
+        options: Array.isArray(value) ? value.slice(1) : [],
+        preset: preset,
+        rule: rule,
+        severity: severity,
+        source: ruleSource(rule),
+      });
+    }
+  }
+}
+
+/**
+ * Compare strings by raw code-unit order for deterministic output.
+ * @param left Left-hand string.
+ * @param right Right-hand string.
+ * @returns Negative, positive, or zero ordering result.
+ */
+function compareCodeUnits(left: string, right: string): number {
+  if (left < right) return -1;
+  if (left > right) return 1;
+  return 0;
+}
+
+/**
+ * Normalize an ESLint rule entry to an enabled/off severity.
+ * @param value ESLint rule entry to normalize.
+ * @returns Normalized severity.
+ */
 function normalizeSeverity(value: Linter.RuleEntry): "off" | EnabledSeverity {
   const severity = Array.isArray(value) ? value[0] : value;
 
@@ -54,10 +108,11 @@ function normalizeSeverity(value: Linter.RuleEntry): "off" | EnabledSeverity {
   throw new Error(`Unsupported ESLint severity: ${String(severity)}`);
 }
 
-function severityCode(severity: EnabledSeverity): SeverityCode {
-  return severity === "error" ? "e" : "w";
-}
-
+/**
+ * Resolve the package source that owns a rule name.
+ * @param rule Rule identifier.
+ * @returns Package name recorded in the inventory.
+ */
 function ruleSource(rule: string): string {
   for (const [prefix, source] of Object.entries(sourcePrefixes)) {
     if (prefix !== "*" && rule.startsWith(prefix)) return source;
@@ -66,49 +121,32 @@ function ruleSource(rule: string): string {
   return sourcePrefixes["*"];
 }
 
-function compareCodeUnits(left: string, right: string): number {
-  if (left < right) return -1;
-  if (left > right) return 1;
-  return 0;
+/**
+ * Encode an enabled severity for the compact inventory format.
+ * @param severity Enabled severity.
+ * @returns Compact severity code.
+ */
+function severityCode(severity: EnabledSeverity): SeverityCode {
+  return severity === "error" ? "e" : "w";
 }
 
-const entries: Array<{
-  configName: string;
-  options: unknown[];
-  preset: string;
-  rule: string;
-  severity: EnabledSeverity;
-  source: string;
-}> = [];
-
+const entries: InventoryEntry[] = [];
 for (const [preset, configArray] of Object.entries(configs)) {
   for (const config of configArray) {
-    for (const [rule, value] of Object.entries(config.rules ?? {})) {
-      if (value === undefined) continue;
-
-      const severity = normalizeSeverity(value);
-      if (severity === "off") continue;
-
-      entries.push({
-        configName: config.name ?? "(anonymous)",
-        options: Array.isArray(value) ? value.slice(1) : [],
-        preset,
-        rule,
-        severity,
-        source: ruleSource(rule),
-      });
-    }
+    appendEnabledRules(entries, preset, config);
   }
 }
 
 entries.sort(
   (left, right) =>
-    compareCodeUnits(left.preset, right.preset) ||
-    compareCodeUnits(left.configName, right.configName) ||
-    compareCodeUnits(left.rule, right.rule),
+    compareCodeUnits(left.preset, right.preset)
+    || compareCodeUnits(left.configName, right.configName)
+    || compareCodeUnits(left.rule, right.rule),
 );
 
-const presets: InventoryPresets = {};
+const presets = Object.fromEntries(
+  Object.keys(configs).map(preset => [preset, {}]),
+) as InventoryPresets;
 for (const entry of entries) {
   const preset = (presets[entry.preset] ??= {});
   const config = (preset[entry.configName] ??= {});
@@ -120,17 +158,17 @@ for (const entry of entries) {
   }
 
   const code = severityCode(entry.severity);
-  config[entry.rule] =
-    entry.options.length === 0 ? code : [code, entry.options];
+  config[entry.rule]
+    = entry.options.length === 0 ? code : [code, entry.options];
 }
 
 const output = `${JSON.stringify({
   package: packageJson.name,
   packageVersion: packageJson.version,
-  presets,
+  presets: presets,
   schemaVersion: 3,
   severityCodes: { e: "error", w: "warn" },
-  sourcePrefixes,
+  sourcePrefixes: sourcePrefixes,
 })}\n`;
 
 if (process.argv.includes("--check")) {

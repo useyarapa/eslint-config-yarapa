@@ -1,8 +1,10 @@
 import type { Linter } from "eslint";
 
-import perfectionistPlugin from "eslint-plugin-perfectionist";
+import perfectionistPlugin, {
+  configs as perfectionistConfigs,
+} from "eslint-plugin-perfectionist";
 
-const recommendedNatural = perfectionistPlugin.configs["recommended-natural"];
+const recommendedNatural = perfectionistConfigs["recommended-natural"];
 
 /**
  * Perfectionist recommended natural ordering. Not independently exported:

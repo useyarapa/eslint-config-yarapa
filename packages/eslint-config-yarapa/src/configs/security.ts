@@ -1,12 +1,15 @@
 import type { Linter } from "eslint";
 
+// eslint-disable-next-line import-x/default -- CJS default is intentional.
 import securityPlugin from "eslint-plugin-security";
+
+const securityConfigs = securityPlugin["configs"];
 
 import { asFlatPlugin } from "./internal/eslintCompat.js";
 import { required } from "./internal/required.js";
 
 const securityRecommended = required(
-  securityPlugin.configs.recommended,
+  securityConfigs.recommended,
   "eslint-plugin-security.configs.recommended",
 );
 const securityRecommendedPlugin = asFlatPlugin(

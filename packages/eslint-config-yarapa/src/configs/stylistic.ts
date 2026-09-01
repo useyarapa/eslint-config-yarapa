@@ -29,6 +29,11 @@ export const stylistic: Linter.Config[] = [
     plugins: { "@stylistic": stylisticPlugin },
     rules: {
       ...customized.rules,
+      "@stylistic/arrow-parens": [
+        "error",
+        "as-needed",
+        { requireForBlockBody: false },
+      ],
       "@stylistic/max-len": [
         "error",
         {

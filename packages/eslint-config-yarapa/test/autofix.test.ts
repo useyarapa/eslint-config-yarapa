@@ -1,0 +1,92 @@
+import { ESLint } from "eslint";
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { describe, expect, it } from "vitest";
+
+import { perfectionistNatural } from "../src/configs/internal/perfectionist.js";
+import { required } from "../src/configs/internal/required.js";
+import { configs } from "../src/index.js";
+
+const packageRoot = fileURLToPath(new URL("../", import.meta.url));
+
+/**
+ * Apply an ESLint fixer twice and verify idempotence.
+ * @param config Flat Config under test.
+ * @param code Source text to fix.
+ * @param filename Virtual fixture path used for config matching.
+ * @returns Output from the first fix pass.
+ */
+async function fixTwice(
+  config: ESLint.Options["overrideConfig"],
+  code: string,
+  filename: string,
+): Promise<string> {
+  const eslint = new ESLint({
+    cwd: packageRoot,
+    fix: true,
+    overrideConfig: config,
+    overrideConfigFile: true,
+  });
+
+  const [first] = await eslint.lintText(code, {
+    filePath: resolve(packageRoot, filename),
+  });
+  expect(first).toBeDefined();
+  const firstResult = required(first, "first autofix lint result");
+  expect(firstResult.fatalErrorCount).toBe(0);
+
+  const output1 = firstResult.output ?? code;
+  const [second] = await eslint.lintText(output1, {
+    filePath: resolve(packageRoot, filename),
+  });
+  expect(second).toBeDefined();
+  const secondResult = required(second, "second autofix lint result");
+  expect(secondResult.fatalErrorCount).toBe(0);
+
+  const output2 = secondResult.output ?? output1;
+  expect(output2).toBe(output1);
+
+  return output1;
+}
+
+describe("autofix safety and idempotence", () => {
+  it("normalizes representative stylistic source once", async () => {
+    const output = await fixTwice(
+      configs.stylistic,
+      "export const value = 'ok'\n",
+      "fixtures/autofix/stylistic.js",
+    );
+
+    expect(output).toBe("export const value = \"ok\";\n");
+  });
+
+  it("removes an unused import without changing the used export", async () => {
+    const output = await fixTwice(
+      configs.base,
+      "import { readFileSync } from \"node:fs\";\n\nexport const value = 1;\n",
+      "fixtures/autofix/unused-import.js",
+    );
+
+    expect(output).toBe("\nexport const value = 1;\n");
+  });
+
+  it("keeps single-parameter block arrows idempotent", async () => {
+    const output = await fixTwice(
+      configs.recommended,
+      "export const identity = (value) => { return value; };\n",
+      "fixtures/autofix/arrow-parens.js",
+    );
+
+    expect(output).toContain("identity = value =>");
+  });
+
+  it("orders imports deterministically", async () => {
+    const output = await fixTwice(
+      perfectionistNatural,
+      "import z from \"z\";\nimport a from \"a\";\n\nexport { a, z };\n",
+      "fixtures/autofix/import-order.js",
+    );
+
+    expect(output.indexOf("from \"a\"")).toBeLessThan(output.indexOf("from \"z\""));
+  });
+});

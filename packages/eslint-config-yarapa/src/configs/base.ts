@@ -1,9 +1,12 @@
 import type { Linter } from "eslint";
 
-import commentsPlugin from "@eslint-community/eslint-plugin-eslint-comments";
+// eslint-disable-next-line import-x/default -- CJS default is intentional.
+import commentsPlugin, {
+  configs as commentsConfigs,
+} from "@eslint-community/eslint-plugin-eslint-comments";
 import js from "@eslint/js";
 import promisePlugin from "eslint-plugin-promise";
-import regexpPlugin from "eslint-plugin-regexp";
+import { configs as regexpConfigs } from "eslint-plugin-regexp";
 import unusedImportsPlugin from "eslint-plugin-unused-imports";
 
 import { asFlatPlugin } from "./internal/eslintCompat.js";
@@ -19,7 +22,7 @@ const promiseRecommendedPlugin = asFlatPlugin(
     "eslint-plugin-promise.configs.flat/recommended.plugins.promise",
   ),
 );
-const regexpRecommended = regexpPlugin.configs["flat/recommended"];
+const regexpRecommended = regexpConfigs["flat/recommended"];
 
 /**
  * Universally relevant, non-type-aware JavaScript baseline: ESLint core
@@ -38,7 +41,7 @@ export const base: Linter.Config[] = [
       "@eslint-community/eslint-comments": commentsPlugin,
     },
     rules: {
-      ...commentsPlugin.configs.recommended.rules,
+      ...commentsConfigs.recommended.rules,
       // Every Waiver must include a meaningful description identifying
       // the reason for the suppression; this rule makes an undescribed
       // suppression directive itself a lint error, so waivers stay
