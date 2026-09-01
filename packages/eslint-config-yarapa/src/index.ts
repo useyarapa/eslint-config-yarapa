@@ -19,10 +19,8 @@ import { vitest } from "./configs/vitest.js";
 
 /**
  * The sixteen named Flat Config array presets exposed by `configs`. Kept
- * un-exported so the generated declaration entrypoint exposes only the
- * single named `configs` export, per
- * `docs/adr/0002-expose-composable-presets-with-a-mandatory-banking-baseline.md`;
- * this type still annotates `configs` below.
+ * un-exported so the generated declaration entrypoint exposes only the single
+ * named `configs` export.
  */
 type YarapaConfigs = {
   ava: Linter.Config[];
@@ -44,13 +42,9 @@ type YarapaConfigs = {
 };
 
 /**
- * The public surface of `eslint-config-yarapa`: sixteen consistently
- * shaped ESLint Flat Config array presets. There is no default export and
- * no code subpath export - `configs` is the sole entrypoint, per
- * `docs/adr/0002-expose-composable-presets-with-a-mandatory-banking-baseline.md`.
- *
- * See `docs/POLICY.md` for the full composition contract, prerequisite
- * graph, and the `defineConfig`/`extends` usage example.
+ * The public surface of `eslint-config-yarapa`: sixteen consistently shaped
+ * ESLint Flat Config array presets. There is no default export and no code
+ * subpath export; `configs` is the sole JavaScript entrypoint.
  */
 export const configs: YarapaConfigs = {
   ava,
