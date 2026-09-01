@@ -131,11 +131,11 @@ describe("disableTypeChecked", () => {
 });
 
 describe("ignores", () => {
-  const eslint = eslintFor(["ignores"]);
+  const eslint = eslintFor(["ignores", "typescript"]);
 
   it("ignores documented build output", async () => {
     await expect(
-      eslint.isPathIgnored(resolve(packageRoot, "dist/generated.js")),
+      eslint.isPathIgnored(resolve(packageRoot, "dist/generated.ts")),
     ).resolves.toBe(true);
   });
 
