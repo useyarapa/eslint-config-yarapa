@@ -88,32 +88,40 @@ describe("enterprise repository gates", () => {
     expect(lintStaged).toContain("eslint --fix");
   });
 
-  it("pins TypeScript dev tooling inside the certified peer range", () => {
+  it("pins the package compiler inside the certified peer range", () => {
     const { typescriptDevDependency, typescriptPeerRange } = readTypeScriptPins(
       "packages/eslint-config-yarapa/package.json",
     );
-    const root = readTypeScriptPins("package.json");
 
     expect(typescriptPeerRange).toBe(">=5.0.0 <6.1.0");
-
-    const pinned = [
-      typescriptDevDependency,
-      root.typescriptDevDependency,
-    ];
-    for (const version of pinned) {
-      expect(version).toMatch(/^\d+\.\d+\.\d+$/u);
-      const [major = 0, minor = 0] = (version ?? "0.0.0")
-        .split(".")
-        .map(Number);
-      expect(major * 1_000 + minor).toBeLessThan(6 * 1_000 + 1);
-    }
+    expect(typescriptDevDependency).toMatch(/^\d+\.\d+\.\d+$/u);
+    const [major = 0, minor = 0] = (typescriptDevDependency ?? "0.0.0")
+      .split(".")
+      .map(Number);
+    expect(major * 1_000 + minor).toBeGreaterThanOrEqual(5 * 1_000);
+    expect(major * 1_000 + minor).toBeLessThan(6 * 1_000 + 1);
   });
 
-  it("blocks Dependabot from raising TypeScript beyond the certified range", () => {
+  it("leaves the root monorepo toolchain TypeScript outside the peer range", () => {
+    const { typescriptDevDependency } = readTypeScriptPins("package.json");
+    const [major = 0] = (typescriptDevDependency ?? "0.0.0")
+      .split(".")
+      .map(Number);
+
+    expect(major).toBeGreaterThanOrEqual(6);
+  });
+
+  it("blocks Dependabot from raising the package compiler beyond the certified range", () => {
     const dependabot = readRepoFile(".github/dependabot.yml");
-    expect(dependabot).toContain("typescript-ecosystem");
-    expect(dependabot).toMatch(/ignore:/);
-    expect(dependabot).toMatch(/typescript[\s\S]{0,200}">=6\.1\.0"/);
+    const packageEntry = dependabot
+      .split("  - package-ecosystem:")
+      .find(section => section.includes("directory: /packages/eslint-config-yarapa"));
+
+    expect(packageEntry).toBeDefined();
+    expect(packageEntry).toContain("ignore:");
+    expect(packageEntry).toMatch(
+      /dependency-name: typescript[\s\S]*?">=6\.1\.0"/u,
+    );
   });
 
   it("runs staged ESLint from the repository root after building", () => {

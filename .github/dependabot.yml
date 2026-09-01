@@ -9,9 +9,47 @@ updates:
       time: "09:00"
       timezone: Asia/Bangkok
     open-pull-requests-limit: 10
+    groups:
+      eslint-ecosystem:
+        patterns:
+          - eslint
+          - "@eslint/*"
+          - "@eslint-community/*"
+          - "@stylistic/*"
+          - "eslint-plugin-*"
+          - eslint-import-resolver-typescript
+          - typescript-eslint
+          - "@vitest/eslint-plugin"
+      typescript-ecosystem:
+        patterns:
+          - typescript
+          - "@types/*"
+      test-build-tooling:
+        patterns:
+          - vitest
+          - "@vitest/coverage-v8"
+          - "@stryker-mutator/*"
+          - tsdown
+          - turbo
+          - knip
+          - lint-staged
+          - husky
+          - "@commitlint/*"
+          - publint
+          - "@arethetypeswrong/*"
+
+  - package-ecosystem: npm
+    directory: /packages/eslint-config-yarapa
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:15"
+      timezone: Asia/Bangkok
+    open-pull-requests-limit: 10
     ignore:
-      # typescript-eslint supports TypeScript only below 6.1.0; the certified
-      # compatibility matrix ends at the latest <6.1.0 line.
+      # typescript-eslint supports TypeScript only below 6.1.0; the public
+      # package pins its own compiler inside the certified peer range while
+      # the root monorepo tooling stays on its own documented line.
       - dependency-name: typescript
         versions: [">=6.1.0"]
     groups:
@@ -27,7 +65,6 @@ updates:
           - "@vitest/eslint-plugin"
       typescript-ecosystem:
         patterns:
-          - typescript
           - "@types/*"
       test-build-tooling:
         patterns:
