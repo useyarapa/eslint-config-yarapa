@@ -36,3 +36,6 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+
+# Stryker mutation testing runtime cache/output
+.stryker-tmp
