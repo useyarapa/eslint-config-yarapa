@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches:
-      - genspark_ai_developer
+      - main
 
 permissions:
   contents: read
@@ -17,6 +17,18 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v2
+        with:
+          runtime: node@24.15.0
+          cache: true
+      - run: pnpm --filter eslint-config-yarapa build
+      - run: pnpm --filter eslint-config-yarapa lint
+
   test:
     name: test
     runs-on: ubuntu-latest
@@ -60,3 +72,58 @@ jobs:
           runtime: node@24.15.0
           cache: true
       - run: pnpm --filter eslint-config-yarapa inventory:check
+
+  consumer:
+    name: consumer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v2
+        with:
+          runtime: node@24.20.0
+          cache: true
+      - run: pnpm --filter eslint-config-yarapa test:consumer
+
+  compatibility:
+    name: compatibility (${{ matrix.name }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: node-24.15.0-eslint-10.0.0-typescript-5.0.4
+            node: 24.15.0
+            eslint: 10.0.0
+            typescript: 5.0.4
+          - name: node-24.20.0-eslint-10.9.1-typescript-5.9.3
+            node: 24.20.0
+            eslint: 10.9.1
+            typescript: 5.9.3
+          - name: node-24.20.0-eslint-10.9.1-typescript-6.0.3
+            node: 24.20.0
+            eslint: 10.9.1
+            typescript: 6.0.3
+    env:
+      ESLINT_VERSION: ${{ matrix.eslint }}
+      TYPESCRIPT_VERSION: ${{ matrix.typescript }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v2
+        with:
+          runtime: node@${{ matrix.node }}
+          cache: true
+      - run: pnpm --filter eslint-config-yarapa test:consumer
+
+  windows-consumer:
+    name: windows-consumer
+    runs-on: windows-latest
+    env:
+      ESLINT_VERSION: 10.9.1
+      TYPESCRIPT_VERSION: 6.0.3
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v2
+        with:
+          runtime: node@24.20.0
+          cache: true
+      - run: pnpm --filter eslint-config-yarapa test:consumer
