@@ -141,7 +141,7 @@ describe("ignores", () => {
 
   it("does not ignore source by default", async () => {
     await expect(
-      eslint.isPathIgnored(resolve(packageRoot, "src/index.js")),
+      eslint.isPathIgnored(resolve(packageRoot, "src/index.ts")),
     ).resolves.toBe(false);
   });
 });
