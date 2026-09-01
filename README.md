@@ -1,159 +1,79 @@
-# Turborepo starter
+# YARAPA Code Standard
 
-This Turborepo starter is maintained by the Turborepo core team.
+Monorepo for YARAPA's high-assurance JavaScript and TypeScript engineering standards. The primary deliverable is [`eslint-config-yarapa`](./packages/eslint-config-yarapa), an ESLint 10 Flat Config package designed for deterministic, auditable use in regulated environments.
 
-## Using this example
+## Repository packages
 
-Run the following command:
+- `packages/eslint-config-yarapa` — public ESLint Flat Config package with exactly 16 composable presets.
+- `packages/typescript-config-yarapa` — repository TypeScript configuration support.
 
-```sh
-npx create-turbo@latest
-```
-
-## What's inside?
-
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `@next/eslint-plugin-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+## Maintainer commands
 
 ```sh
-cd my-turborepo
-turbo build
+pnpm install --frozen-lockfile
+pnpm lint
+pnpm format
+pnpm check-types
+pnpm test
+pnpm verify
+pnpm inspect
 ```
 
-Without global `turbo`, use your package manager:
+`pnpm format` uses the repository's own ESLint Stylistic policy. Prettier is not part of the canonical formatting path.
 
-```sh
-cd my-turborepo
-npx turbo build
-pnpm exec turbo build
-pnpm exec turbo build
-```
+`pnpm inspect` builds the local config package and starts the development-only ESLint Config Inspector so maintainers can inspect merged configuration and rule provenance.
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+## Certification model
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+The CI workflow runs for pull requests and pushes to `main`. The intended required checks for protected `main` are:
 
-```sh
-turbo build --filter=docs
-```
+- `lint`
+- `test`
+- `check-types`
+- `build`
+- `inventory`
+- `consumer`
+- `compatibility (node-24.15.0-eslint-10.0.0-typescript-5.0.4)`
+- `compatibility (node-24.20.0-eslint-10.9.1-typescript-5.9.3)`
+- `compatibility (node-24.20.0-eslint-10.9.1-typescript-6.0.3)`
+- `windows-consumer`
 
-Without global `turbo`:
+The compatibility matrix is boundary-focused rather than a full Cartesian product. It certifies the declared Node.js, ESLint 10, and TypeScript support range with packed-consumer execution.
 
-```sh
-npx turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+The packed-consumer path is release-readiness verification only. It runs build, `publint`, `pnpm pack`, Are The Types Wrong using the ESM-only profile, installation into a clean temporary consumer, public-export verification, and ESLint execution. It does not publish a package.
 
-### Develop
+## Required `main` governance
 
-To develop all apps and packages, run the following command:
+Repository administrators should configure a GitHub ruleset or branch protection for `main` with the following controls:
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+1. Require changes through pull requests.
+2. Require the CI checks listed above before merge.
+3. Require review conversations to be resolved.
+4. Dismiss stale approvals after new commits where the repository plan supports approval requirements.
+5. Block force pushes.
+6. Block branch deletion.
+7. Apply `CODEOWNERS` review requirements where supported by the repository plan.
 
-```sh
-cd my-turborepo
-turbo dev
-```
+These settings are external repository state, not files in this tree. Their presence must be verified through GitHub before claiming that `main` is protected.
 
-Without global `turbo`, use your package manager:
+## Dependency governance
 
-```sh
-cd my-turborepo
-npx turbo dev
-pnpm exec turbo dev
-pnpm exec turbo dev
-```
+Dependabot groups updates by ESLint ecosystem, TypeScript ecosystem, test/build tooling, and GitHub Actions. Dependency PRs are reviewable and are not auto-merged. Changes that alter lint behavior must expose their Rule Inventory diff.
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+GitHub Actions used by CI are expected to follow one auditable pinning strategy across the workflow and remain reviewable through Dependabot.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+## Behavioral versioning
 
-```sh
-turbo dev --filter=web
-```
+For this repository, diagnostic behavior is part of compatibility. A JavaScript API that remains source-compatible can still introduce a breaking change when an existing consumer receives new errors, tighter rule options, broader file applicability, or materially different automatic fixes. Such changes require explicit behavioral SemVer review.
 
-Without global `turbo`:
+## Change control
 
-```sh
-npx turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+- Do not weaken CI, security controls, or published lint rules simply to obtain a green build.
+- Keep package runtime/plugin dependencies deterministic and review Rule Inventory changes.
+- Review automatic fixes for safety and idempotence.
+- Reply to pull-request review conversations with the disposition and verification evidence before resolving them.
+- Do not claim external repository controls are enabled without verifying current GitHub state.
 
-### Remote Caching
+## Publication boundary
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-pnpm exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-pnpm exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+Repository verification may build and pack `eslint-config-yarapa`, but package publication is a separate explicitly authorized operation. Normal development and enterprise-hardening workflows must not publish to npm, configure npm publishing credentials/OIDC, create publication tags, or create GitHub Releases for publication.
