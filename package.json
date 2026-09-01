@@ -6,6 +6,7 @@
     "dev": "turbo run dev",
     "lint": "pnpm --filter eslint-config-yarapa build && pnpm --filter eslint-config-yarapa exec eslint ../..",
     "format": "pnpm --filter eslint-config-yarapa build && pnpm --filter eslint-config-yarapa exec eslint ../.. --fix",
+    "inspect": "pnpm --filter eslint-config-yarapa build && eslint-config-inspector",
     "check-types": "turbo run check-types",
     "test": "turbo run test",
     "verify": "pnpm --filter eslint-config-yarapa verify",
@@ -15,6 +16,8 @@
   "devDependencies": {
     "@commitlint/cli": "21.2.2",
     "@commitlint/config-conventional": "21.2.2",
+    "@eslint/config-inspector": "3.3.0",
+    "eslint": "10.9.1",
     "husky": "9.1.7",
     "knip": "^6.33.0",
     "lint-staged": "17.4.1",
