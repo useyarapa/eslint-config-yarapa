@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0
+
+### Minor Changes
+
+- 9f37f1b: Complete the v1 ESLint configuration surface and repository-readiness work, including canonical framework presets and packed-consumer verification.
+
 ## [0.2.0](https://github.com/useyarapa/eslint-config-yarapa/compare/eslint-config-yarapa-v0.1.0...eslint-config-yarapa-v0.2.0) (2026-09-02)
 
 
