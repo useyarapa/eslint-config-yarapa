@@ -175,9 +175,9 @@ try {
   writeFileSync(
     resolve(consumerDir, nestSampleFile),
     [
-      "import { port } from \"./sample-nest-service\";",
+      "import \"./sample-nest-service\";",
       "",
-      "export const configuredPort = port;",
+      "export const configuredPort = 3000;",
       "",
     ].join("\n"),
   );
