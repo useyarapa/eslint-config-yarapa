@@ -19,6 +19,7 @@ const node = process.execPath;
 const eslintVersion = process.env.ESLINT_VERSION ?? "10.9.1";
 const typescriptVersion = process.env.TYPESCRIPT_VERSION ?? "6.0.3";
 const nestSampleFile = "sample-nest.ts";
+const nestServiceFile = "sample-nest-service.ts";
 
 /**
  * Run a consumer-verification command and fail on any non-zero result.
@@ -131,9 +132,9 @@ try {
           module: "NodeNext",
           moduleResolution: "NodeNext",
           strict: true,
-          target: "ES2024",
+          target: "ES2022",
         },
-        include: [nestSampleFile],
+        include: [nestSampleFile, nestServiceFile],
       },
       null,
       2,
@@ -168,8 +169,17 @@ try {
     ].join("\n"),
   );
   writeFileSync(
-    resolve(consumerDir, nestSampleFile),
+    resolve(consumerDir, nestServiceFile),
     "export const port = 3000;\n",
+  );
+  writeFileSync(
+    resolve(consumerDir, nestSampleFile),
+    [
+      "import { port } from \"./sample-nest-service\";",
+      "",
+      "export const configuredPort = port;",
+      "",
+    ].join("\n"),
   );
 
   run(node, ["verify.mjs"], consumerDir);
@@ -185,7 +195,7 @@ try {
   );
   run(
     pnpm,
-    ["exec", "eslint", "-c", "eslint.nest.config.mjs", nestSampleFile],
+    ["exec", "eslint", "-c", "eslint.nest.config.mjs", nestSampleFile, nestServiceFile],
     consumerDir,
   );
   run(
