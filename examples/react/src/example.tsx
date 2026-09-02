@@ -1,14 +1,6 @@
-import { formatGreeting } from "./greeting.js";
 import type { GreetingProps } from "./types.js";
 
-/**
- * Compose greeting behavior behind a React custom-hook boundary.
- * @param name Name included in the greeting.
- * @returns Normalized greeting text.
- */
-export function useGreeting(name: string): string {
-  return formatGreeting(name);
-}
+import { formatGreeting } from "./greeting.js";
 
 /**
  * Render a typed React component without framework-specific global state.
@@ -18,4 +10,13 @@ export function useGreeting(name: string): string {
  */
 export function Greeting({ name }: GreetingProps): string {
   return useGreeting(name);
+}
+
+/**
+ * Compose greeting behavior behind a React custom-hook boundary.
+ * @param name Name included in the greeting.
+ * @returns Normalized greeting text.
+ */
+export function useGreeting(name: string): string {
+  return formatGreeting(name);
 }
