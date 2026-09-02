@@ -70,7 +70,7 @@ describe("enterprise repository gates", () => {
   });
 
   it("keeps the legacy Markdown reset in effect", () => {
-    const trackedMarkdown = execFileSync("git", ["ls-files", "*.md"], {
+    const trackedMarkdown = execFileSync("/usr/bin/git", ["ls-files", "*.md"], {
       cwd: repoRoot,
       encoding: "utf8",
     }).trim();
