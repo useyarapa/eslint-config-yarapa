@@ -18,8 +18,29 @@ const pnpm
 const node = process.execPath;
 const eslintVersion = process.env.ESLINT_VERSION ?? "10.9.1";
 const typescriptVersion = process.env.TYPESCRIPT_VERSION ?? "6.0.3";
+const frameworkProfile = process.env.FRAMEWORK_PROFILE;
+const frameworkVersion = process.env.FRAMEWORK_VERSION;
 const nestSampleFile = "sample-nest.ts";
 const nestServiceFile = "sample-nest-service.ts";
+
+const frameworkPackages: Record<string, string[]> = {
+  nest: ["@nestjs/core"],
+  next: ["next"],
+  react: ["react"],
+};
+
+if ((frameworkProfile === undefined) !== (frameworkVersion === undefined)) {
+  throw new Error(
+    "FRAMEWORK_PROFILE and FRAMEWORK_VERSION must be provided together",
+  );
+}
+
+if (
+  frameworkProfile !== undefined
+  && !Object.hasOwn(frameworkPackages, frameworkProfile)
+) {
+  throw new Error(`Unsupported FRAMEWORK_PROFILE: ${frameworkProfile}`);
+}
 
 /**
  * Run a consumer-verification command and fail on any non-zero result.
@@ -92,6 +113,11 @@ try {
     consumerDir,
   );
 
+  const selectedFrameworkPackages
+    = frameworkProfile === undefined
+      ? []
+      : frameworkPackages[frameworkProfile] ?? [];
+
   writeFileSync(
     resolve(consumerDir, "verify.mjs"),
     [
@@ -105,6 +131,10 @@ try {
       "    throw new Error(\"Expected non-empty Flat Config array\");",
       "  }",
       "}",
+      "",
+      ...selectedFrameworkPackages.map(
+        packageName => `await import(${JSON.stringify(packageName)});`,
+      ),
       "",
     ].join("\n"),
   );
