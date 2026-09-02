@@ -23,23 +23,30 @@ const frameworkVersion = process.env.FRAMEWORK_VERSION;
 const nestSampleFile = "sample-nest.ts";
 const nestServiceFile = "sample-nest-service.ts";
 
-const frameworkPackages: Record<string, string[]> = {
-  nest: ["@nestjs/core"],
-  next: ["next"],
-  react: ["react"],
-};
-
 if ((frameworkProfile === undefined) !== (frameworkVersion === undefined)) {
   throw new Error(
     "FRAMEWORK_PROFILE and FRAMEWORK_VERSION must be provided together",
   );
 }
 
-if (
-  frameworkProfile !== undefined
-  && !Object.hasOwn(frameworkPackages, frameworkProfile)
-) {
-  throw new Error(`Unsupported FRAMEWORK_PROFILE: ${frameworkProfile}`);
+/**
+ * Resolve the framework packages expected by one explicit compatibility case.
+ * @param profile Selected semantic framework profile.
+ * @returns Package names that must resolve in the packed consumer.
+ */
+function frameworkPackageNames(profile: string | undefined): string[] {
+  switch (profile) {
+    case undefined:
+      return [];
+    case "nest":
+      return ["@nestjs/core"];
+    case "next":
+      return ["next"];
+    case "react":
+      return ["react"];
+    default:
+      throw new Error(`Unsupported FRAMEWORK_PROFILE: ${profile}`);
+  }
 }
 
 /**
@@ -113,10 +120,7 @@ try {
     consumerDir,
   );
 
-  const selectedFrameworkPackages
-    = frameworkProfile === undefined
-      ? []
-      : frameworkPackages[frameworkProfile] ?? [];
+  const selectedFrameworkPackages = frameworkPackageNames(frameworkProfile);
 
   writeFileSync(
     resolve(consumerDir, "verify.mjs"),
