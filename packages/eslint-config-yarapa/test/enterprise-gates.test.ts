@@ -57,10 +57,9 @@ describe("enterprise repository gates", () => {
     expect(ci).toContain(domain);
   });
 
-  it("has non-empty collaboration governance files", () => {
+  it("has non-empty non-documentation governance files", () => {
     for (const relativePath of [
       ".github/CODEOWNERS",
-      ".github/pull_request_template.md",
       ".github/dependabot.yml",
     ]) {
       const absolutePath = resolve(repoRoot, relativePath);
@@ -69,8 +68,18 @@ describe("enterprise repository gates", () => {
     }
   });
 
-  it("does not expose the Turborepo starter README", () => {
-    expect(readRepoFile("README.md")).not.toContain("# Turborepo starter");
+  it("keeps the legacy Markdown reset in effect", () => {
+    for (const relativePath of [
+      ".github/pull_request_template.md",
+      "AGENTS.md",
+      "CLAUDE.md",
+      "CONTEXT.md",
+      "GEMINI.md",
+      "README.md",
+      "packages/eslint-config-yarapa/README.md",
+    ]) {
+      expect(existsSync(resolve(repoRoot, relativePath))).toBe(false);
+    }
   });
 
   it("uses ESLint as the sole repository formatting path", () => {
