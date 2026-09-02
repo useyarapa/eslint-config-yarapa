@@ -40,6 +40,17 @@ jobs:
           cache: true
       - run: pnpm --filter eslint-config-yarapa test
 
+  mutation:
+    name: mutation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          runtime: node@24.15.0
+          cache: true
+      - run: pnpm --filter eslint-config-yarapa test:mutation
+
   check-types:
     name: check-types
     runs-on: ubuntu-latest
@@ -123,6 +134,7 @@ jobs:
     needs:
       - lint
       - test
+      - mutation
       - check-types
       - build
       - consumer
@@ -137,6 +149,7 @@ jobs:
           COMPATIBILITY_RESULT: ${{ needs.compatibility.result }}
           CONSUMER_RESULT: ${{ needs.consumer.result }}
           LINT_RESULT: ${{ needs.lint.result }}
+          MUTATION_RESULT: ${{ needs.mutation.result }}
           TEST_RESULT: ${{ needs.test.result }}
           WINDOWS_CONSUMER_RESULT: ${{ needs.windows-consumer.result }}
         run: |
@@ -146,6 +159,7 @@ jobs:
             "$COMPATIBILITY_RESULT" \
             "$CONSUMER_RESULT" \
             "$LINT_RESULT" \
+            "$MUTATION_RESULT" \
             "$TEST_RESULT" \
             "$WINDOWS_CONSUMER_RESULT"
           do
