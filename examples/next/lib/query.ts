@@ -6,9 +6,9 @@ import type { SearchValue } from "../types.js";
  * @returns A single value when present and unambiguous.
  */
 export function readSingleQueryValue(value: SearchValue): string | undefined {
-  if (Array.isArray(value)) {
-    return value.length === 1 ? value[0] : undefined;
+  if (typeof value === "string" || value === undefined) {
+    return value;
   }
 
-  return value;
+  return value.length === 1 ? value[0] : undefined;
 }
