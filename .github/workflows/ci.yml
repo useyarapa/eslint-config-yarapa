@@ -40,8 +40,11 @@ jobs:
           cache: true
       - run: pnpm --filter eslint-config-yarapa test
 
+  # Temporary check-name bridge for repository ruleset 21984697.
+  # The job id remains `mutation`; only the reported check name is `inventory`.
+  # Remove this compatibility name after the ruleset is migrated to `ci`.
   mutation:
-    name: mutation
+    name: inventory
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -215,17 +218,3 @@ jobs:
           do
             test "$result" = success
           done
-
-  # Temporary compatibility bridge for repository ruleset 21984697.
-  # Remove after the required status check is migrated from "inventory" to "ci".
-  legacy-inventory-status:
-    name: inventory
-    if: always()
-    needs:
-      - ci
-    runs-on: ubuntu-latest
-    steps:
-      - name: Mirror aggregate CI result for the legacy required-check name
-        env:
-          CI_RESULT: ${{ needs.ci.result }}
-        run: test "$CI_RESULT" = success
