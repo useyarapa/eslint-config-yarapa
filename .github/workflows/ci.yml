@@ -165,3 +165,17 @@ jobs:
           do
             test "$result" = success
           done
+
+  # Temporary compatibility bridge for repository ruleset 21984697.
+  # Remove after the required status check is migrated from "inventory" to "ci".
+  legacy-inventory-status:
+    name: inventory
+    if: always()
+    needs:
+      - ci
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mirror aggregate CI result for the legacy required-check name
+        env:
+          CI_RESULT: ${{ needs.ci.result }}
+        run: test "$CI_RESULT" = success
