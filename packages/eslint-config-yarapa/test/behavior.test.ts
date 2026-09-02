@@ -28,10 +28,9 @@ describe("shared YARAPA behavior", () => {
     const [result] = await eslint.lintFiles(
       resolve(projectRoot, "src/valid.ts"),
     );
+    const summary = messageSummary(required(result, "typed valid lint result"));
 
-    expect(
-      messageSummary(required(result, "typed valid lint result")),
-    ).toEqual([]);
+    expect(summary, JSON.stringify(summary, null, 2)).toEqual([]);
   });
 
   it("reports a floating promise with type information", async () => {
