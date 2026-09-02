@@ -26,6 +26,7 @@ export const reactHooks: Linter.Config[] = [
       "react-hooks": asFlatPlugin(reactHooksPlugin),
     },
     rules: {
+      "react-hooks/component-hook-factories": "error",
       "react-hooks/config": "error",
       "react-hooks/error-boundaries": "error",
       "react-hooks/exhaustive-deps": "error",
