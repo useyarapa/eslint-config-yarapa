@@ -179,7 +179,9 @@ Do not disclose vulnerabilities in public issues. Follow [SECURITY.md](./SECURIT
 
 Changesets maintains version/changelog PRs, package tags, and GitHub Releases. npm publication uses npm Trusted Publishing through GitHub Actions OIDC and does not use a long-lived `NPM_TOKEN`.
 
-The npm package must have a registry-side Trusted Publisher configured for this repository and `.github/workflows/release.yml` before automated publication can succeed. Repository workflow files cannot configure that npm account setting by themselves.
+The npm package must have a registry-side Trusted Publisher configured for this repository with workflow filename `release.yml`; the repository workflow itself lives at `.github/workflows/release.yml`. Repository workflow files cannot configure that npm account setting by themselves.
+
+Changesets creates its Version Packages PR with the repository `GITHUB_TOKEN`. GitHub places the resulting pull-request Actions runs in an approval-required state, so a maintainer must approve those CI runs before the version PR can satisfy required checks. This repository intentionally does not add a long-lived PAT or a custom approval bot to bypass that gate.
 
 Every publish run rebuilds and executes the package verification path, including lint, type checking, tests, `publint`, AreTheTypesWrong, packing, installation, import, and real ESLint consumer smoke tests before registry publication.
 
