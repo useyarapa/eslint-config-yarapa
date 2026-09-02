@@ -27,9 +27,9 @@ const modernJavaScriptOwnership: Linter.Config = {
  * TypeScript handwriting used by every semantic profile: core correctness,
  * type-aware TypeScript with Project Service, import resolution and dependency
  * checks, Promise and asynchronous control-flow checks, regexp and SonarJS
- * coverage, security rules, unused-code handling, ESLint suppression discipline,
- * JSDoc, JSON/package metadata validation, @stylistic formatting, and natural
- * ordering.
+ * coverage, security rules, unused-code handling, ESLint suppression
+ * discipline, JSDoc, JSON/package metadata validation, `@stylistic` formatting,
+ * and natural ordering.
  *
  * Runtime, framework, and test-library semantics remain explicit file/profile
  * composition concerns rather than plugin-shaped public presets. Repository
