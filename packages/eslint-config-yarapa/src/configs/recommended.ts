@@ -12,6 +12,16 @@ import { stylistic } from "./stylistic.js";
 import { typeChecked } from "./typeChecked.js";
 import { typescript } from "./typescript.js";
 
+const modernJavaScriptOwnership: Linter.Config = {
+  name: "yarapa/canonical-ownership/modern-js",
+  rules: {
+    "sonarjs/arguments-usage": "off",
+    "sonarjs/array-constructor": "off",
+    "sonarjs/arrow-function-convention": "off",
+    "sonarjs/prefer-default-last": "off",
+  },
+};
+
 /**
  * The aggregate Banking Baseline. Applies every universally relevant control:
  * ESLint core recommended, TypeScript recommended and type-aware recommended
@@ -35,6 +45,7 @@ export const recommended: Linter.Config[] = [
   ...typeChecked,
   ...importResolution,
   ...sonarjsAllRules,
+  modernJavaScriptOwnership,
   ...security,
   ...jsdoc,
   ...json,

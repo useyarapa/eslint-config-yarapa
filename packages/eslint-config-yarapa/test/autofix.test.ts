@@ -84,4 +84,26 @@ describe("autofix safety and idempotence", () => {
       output.indexOf("from \"z\""),
     );
   });
+
+  it("normalizes template strings and object shorthand once", async () => {
+    const output = await fixTwice(
+      yarapa,
+      "export const greet = name => { const value = \"Hello \" + name; return { value: value }; };\n",
+      "fixtures/autofix/modern-js.js",
+    );
+
+    expect(output).toBe(
+      "export const greet = name => { const value = `Hello ${name}`; return { value }; };\n",
+    );
+  });
+
+  it("normalizes expression arrows to implicit returns once", async () => {
+    const output = await fixTwice(
+      yarapa,
+      "export const double = value => { return value * 2; };\n",
+      "fixtures/autofix/implicit-arrow.js",
+    );
+
+    expect(output).toBe("export const double = value => value * 2;\n");
+  });
 });

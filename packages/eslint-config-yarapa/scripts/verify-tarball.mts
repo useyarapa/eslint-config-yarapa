@@ -34,7 +34,9 @@ function run(command: string, args: string[], cwd: string): void {
     stdio: "inherit",
   });
 
-  if (result.error) throw result.error;
+  if (result.error) {
+    throw result.error;
+  }
   if (result.status !== 0) {
     throw new Error(
       `${command} ${args.join(" ")} failed with ${result.status}`,
@@ -57,7 +59,9 @@ try {
   run(pnpm, ["pack", "--pack-destination", packDir], packageRoot);
 
   const tarballName = readdirSync(packDir).find(name => name.endsWith(".tgz"));
-  if (!tarballName) throw new Error("pnpm pack did not produce a tarball");
+  if (!tarballName) {
+    throw new Error("pnpm pack did not produce a tarball");
+  }
   const tarball = resolve(packDir, tarballName);
 
   run(pnpm, ["exec", "attw", tarball, "--profile", "esm-only"], packageRoot);

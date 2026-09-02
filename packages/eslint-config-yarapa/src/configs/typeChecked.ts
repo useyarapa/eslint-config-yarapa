@@ -30,11 +30,13 @@ export const typeChecked: Linter.Config[] = asFlatConfigArray(
         "error",
         { fixMixedExportsWithInlineTypeSpecifier: false },
       ],
+      "@typescript-eslint/dot-notation": "error",
       "@typescript-eslint/no-floating-promises": "error",
       "@typescript-eslint/no-misused-promises": "error",
       "@typescript-eslint/no-unnecessary-type-assertion": "error",
       "@typescript-eslint/only-throw-error": "error",
       "@typescript-eslint/unbound-method": "error",
+      "dot-notation": "off",
     },
   }),
 );

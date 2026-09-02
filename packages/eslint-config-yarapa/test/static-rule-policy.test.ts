@@ -22,7 +22,9 @@ function findRule(
       | Linter.RuleEntry
       | undefined;
 
-    if (rule !== undefined) resolved = rule;
+    if (rule !== undefined) {
+      resolved = rule;
+    }
   }
 
   return resolved;

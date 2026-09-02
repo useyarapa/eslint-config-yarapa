@@ -37,6 +37,8 @@ export const typescript: Linter.Config[] = asFlatConfigArray(
           "error",
           { fixStyle: "separate-type-imports", prefer: "type-imports" },
         ],
+        "@typescript-eslint/default-param-last": "error",
+        "@typescript-eslint/no-array-constructor": "error",
         "@typescript-eslint/no-import-type-side-effects": "error",
         "@typescript-eslint/no-non-null-assertion": "error",
         // `unused-imports/no-unused-vars` (from `base`) is the active
@@ -45,6 +47,8 @@ export const typescript: Linter.Config[] = asFlatConfigArray(
         // typescript-eslint rule must stay off to avoid duplicate/
         // conflicting reports on the same bindings.
         "@typescript-eslint/no-unused-vars": "off",
+        "default-param-last": "off",
+        "no-array-constructor": "off",
       },
     },
     {

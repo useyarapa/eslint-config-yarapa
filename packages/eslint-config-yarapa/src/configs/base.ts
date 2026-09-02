@@ -77,6 +77,29 @@ const jsRecommendedRules: Linter.RulesRecord = {
   "valid-typeof": "error",
 };
 
+const modernJavaScriptRules: Linter.RulesRecord = {
+  "arrow-body-style": [
+    "error",
+    "as-needed",
+    { requireReturnForObjectLiteral: false },
+  ],
+  curly: ["error", "all"],
+  "default-param-last": "error",
+  "dot-notation": "error",
+  eqeqeq: ["error", "always"],
+  "no-array-constructor": "error",
+  "no-object-constructor": "error",
+  "no-var": "error",
+  "object-shorthand": ["error", "always"],
+  "prefer-const": "error",
+  "prefer-object-has-own": "error",
+  "prefer-object-spread": "error",
+  "prefer-rest-params": "error",
+  "prefer-spread": "error",
+  "prefer-template": "error",
+  radix: "error",
+};
+
 const promiseRecommended = required(
   promisePlugin.configs["flat/recommended"],
   "eslint-plugin-promise.configs.flat/recommended",
@@ -91,14 +114,18 @@ const regexpRecommended = regexpConfigs["flat/recommended"];
 
 /**
  * Universally relevant, non-type-aware JavaScript baseline: ESLint core
- * recommended coverage, Promise and asynchronous control-flow checks,
- * regular-expression checks, unused-import controls, and auditable ESLint
- * suppression comments.
+ * recommended coverage, deliberate modern JavaScript handwriting, Promise
+ * and asynchronous control-flow checks, regular-expression checks,
+ * unused-import controls, and auditable ESLint suppression comments.
  */
 export const base: Linter.Config[] = [
   {
     name: "yarapa/base/eslint-recommended",
     rules: jsRecommendedRules,
+  },
+  {
+    name: "yarapa/base/modern-js-handwriting",
+    rules: modernJavaScriptRules,
   },
   {
     name: "yarapa/base/eslint-comments-recommended",

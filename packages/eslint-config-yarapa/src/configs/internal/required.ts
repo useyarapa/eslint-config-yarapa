@@ -8,7 +8,7 @@ export function required<T>(
   value: null | T | undefined,
   label: string,
 ): T {
-  if (value == null) {
+  if (value === null || value === undefined) {
     throw new Error(`Missing required upstream config: ${label}`);
   }
 
