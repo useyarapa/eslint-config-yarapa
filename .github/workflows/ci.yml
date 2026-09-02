@@ -103,6 +103,44 @@ jobs:
           cache: true
       - run: pnpm --filter eslint-config-yarapa test:consumer
 
+  framework-compatibility:
+    name: framework-compatibility (${{ matrix.name }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: next-16.0.0
+            profile: next
+            version: 16.0.0
+          - name: next-16.3.4
+            profile: next
+            version: 16.3.4
+          - name: react-19.0.0
+            profile: react
+            version: 19.0.0
+          - name: react-19.2.7
+            profile: react
+            version: 19.2.7
+          - name: nest-12.0.0
+            profile: nest
+            version: 12.0.0
+          - name: nest-12.0.1
+            profile: nest
+            version: 12.0.1
+    env:
+      ESLINT_VERSION: 10.9.1
+      FRAMEWORK_PROFILE: ${{ matrix.profile }}
+      FRAMEWORK_VERSION: ${{ matrix.version }}
+      TYPESCRIPT_VERSION: 6.0.3
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          runtime: node@24.20.0
+          cache: true
+      - run: pnpm --filter eslint-config-yarapa test:consumer
+
   windows-consumer:
     name: windows-consumer
     runs-on: windows-latest
@@ -166,6 +204,7 @@ jobs:
       - build
       - consumer
       - compatibility
+      - framework-compatibility
       - windows-consumer
     runs-on: ubuntu-latest
     steps:
@@ -176,6 +215,7 @@ jobs:
           COMPATIBILITY_RESULT: ${{ needs.compatibility.result }}
           CONSUMER_RESULT: ${{ needs.consumer.result }}
           DIAGNOSTIC_RESULT: ${{ needs.diagnostic-snapshot.result }}
+          FRAMEWORK_COMPATIBILITY_RESULT: ${{ needs.framework-compatibility.result }}
           LINT_RESULT: ${{ needs.lint.result }}
           TEST_RESULT: ${{ needs.test.result }}
           WINDOWS_CONSUMER_RESULT: ${{ needs.windows-consumer.result }}
@@ -186,6 +226,7 @@ jobs:
             "$COMPATIBILITY_RESULT" \
             "$CONSUMER_RESULT" \
             "$DIAGNOSTIC_RESULT" \
+            "$FRAMEWORK_COMPATIBILITY_RESULT" \
             "$LINT_RESULT" \
             "$TEST_RESULT" \
             "$WINDOWS_CONSUMER_RESULT"
