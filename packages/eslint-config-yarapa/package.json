@@ -9,7 +9,7 @@
     "flat-config",
     "typescript"
   ],
-  "homepage": "https://github.com/useyarapa/eslint-config-yarapa/tree/main/packages/eslint-config-yarapa#readme",
+  "homepage": "https://github.com/useyarapa/eslint-config-yarapa/tree/main/packages/eslint-config-yarapa",
   "bugs": {
     "url": "https://github.com/useyarapa/eslint-config-yarapa/issues"
   },
