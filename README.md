@@ -153,6 +153,20 @@ Changes that alter consumer-visible diagnostics, rule severity/options, exported
 
 Before `1.0.0`, minor versions may carry consumer-visible changes; review release notes when upgrading.
 
+## Contributing releases
+
+This workspace uses [Changesets](https://github.com/changesets/changesets) for package versioning and release notes.
+
+For a release-impacting change:
+
+```sh
+pnpm changeset
+```
+
+Choose `eslint-config-yarapa`, select the semver impact, and write a user-facing summary. For changes with intentionally no package release impact, use `pnpm changeset --empty`.
+
+Merging normal PRs does not publish directly. Changesets creates or updates a `chore: version packages` PR on `main`; publishing occurs only after that version PR is merged and the npm Trusted Publisher path succeeds.
+
 ## Design heritage
 
 YARAPA modernizes durable conventions found in established JavaScript style guides, including Airbnb's JavaScript Style Guide, but `eslint-config-airbnb` is not a dependency, runtime preset, compatibility layer, or public API. Maintained ESLint core, `typescript-eslint`, `@stylistic`, framework plugins, and other explicit rule owners remain authoritative for implementation.
@@ -163,11 +177,11 @@ Do not disclose vulnerabilities in public issues. Follow [SECURITY.md](./SECURIT
 
 ## Releases
 
-Release Please maintains version/changelog release PRs and GitHub Releases. npm publication is designed for npm Trusted Publishing through GitHub Actions OIDC and does not use a long-lived `NPM_TOKEN`.
+Changesets maintains version/changelog PRs, package tags, and GitHub Releases. npm publication uses npm Trusted Publishing through GitHub Actions OIDC and does not use a long-lived `NPM_TOKEN`.
 
-The npm package must have a registry-side Trusted Publisher configured for this repository and the publish workflow before automated publication can succeed. Repository workflow files cannot configure that npm account setting by themselves.
+The npm package must have a registry-side Trusted Publisher configured for this repository and `.github/workflows/release.yml` before automated publication can succeed. Repository workflow files cannot configure that npm account setting by themselves.
 
-Every publish run rebuilds and executes the package verification path, including lint, type checking, tests, `publint`, AreTheTypesWrong, packing, installation, import, and real ESLint consumer smoke tests before `npm publish`.
+Every publish run rebuilds and executes the package verification path, including lint, type checking, tests, `publint`, AreTheTypesWrong, packing, installation, import, and real ESLint consumer smoke tests before registry publication.
 
 ## License
 
