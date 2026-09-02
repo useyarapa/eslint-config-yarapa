@@ -1,10 +1,11 @@
 import type { PageInput } from "../types.js";
+
 import { readSingleQueryValue } from "../lib/query.js";
 
 /**
  * Render an App Router-shaped page without external example dependencies.
  * @param input Page input.
- * @param input.searchParams Asynchronous search parameters from the page boundary.
+ * @param input.searchParams Search parameters supplied to the page.
  * @returns Rendered page text.
  * @throws {Error} When the required name parameter is missing or ambiguous.
  */
