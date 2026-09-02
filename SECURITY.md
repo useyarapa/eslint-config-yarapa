@@ -4,7 +4,7 @@
 
 Do not report security vulnerabilities through public GitHub Issues, pull requests, or Discussions.
 
-Use this repository's **Security** tab and choose **Report a vulnerability** to start a private GitHub Security Advisory when Private Vulnerability Reporting is available. If that option is not visible, contact the repository maintainers privately before disclosing technical details publicly.
+Use this repository's private GitHub Security Advisory reporting route at <https://github.com/useyarapa/eslint-config-yarapa/security/advisories/new>. Do not disclose technical vulnerability details publicly if GitHub does not expose that private reporting route; Private Vulnerability Reporting must be enabled as a repository-admin setting before external reporters can use it.
 
 Include the affected `eslint-config-yarapa` version, impact, reproduction details, and any known mitigation. Remove credentials, secrets, personal/customer data, and proprietary source code from reports.
 
