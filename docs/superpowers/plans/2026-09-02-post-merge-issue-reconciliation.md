@@ -57,6 +57,8 @@ Keep #16, #17, #18, #19, #30, #34, and #36 open. Record: Release Please cannot c
 - Modify: `examples/react/src/example.tsx`
 - Create: `examples/nest/src/message.repository.ts`
 - Modify: `examples/nest/src/example.service.ts`
+- Modify: `.github/workflows/ci.yml`
+- Modify: `README.md`
 
 **Interfaces:**
 - Consumes: existing example `eslint.config.mjs` files and `examples/tsconfig.json`.
@@ -84,16 +86,17 @@ Run through GitHub Actions on the pull request:
 
 ```sh
 pnpm --filter eslint-config-yarapa build
-pnpm exec eslint --config examples/next/eslint.config.mjs examples/next/app/page.tsx examples/next/lib/query.ts examples/next/types.ts
-pnpm exec eslint --config examples/nest/eslint.config.mjs examples/nest/src/example.service.ts examples/nest/src/message.repository.ts
-pnpm exec eslint --config examples/react/eslint.config.mjs examples/react/src/example.tsx examples/react/src/greeting.ts examples/react/src/types.ts
+pnpm exec tsc --noEmit -p examples/tsconfig.json
+pnpm exec eslint --config examples/next/eslint.config.mjs examples/next
+pnpm exec eslint --config examples/nest/eslint.config.mjs examples/nest
+pnpm exec eslint --config examples/react/eslint.config.mjs examples/react
 ```
 
-Expected: all commands pass with zero warnings/errors.
+Expected: TypeScript type checking and all three ESLint directory checks pass with zero errors or warnings.
 
-- [ ] **Step 3: Update the CI example job to lint every canonical example source file.**
+- [ ] **Step 3: Update the CI example job to typecheck and lint every canonical example source file.**
 
-Replace single-file commands with directory globs/paths that include the new helper/type files. Keep the built package as the config source.
+Run the shared examples TypeScript project before linting each complete example directory. Keep the built package as the ESLint config source.
 
 - [ ] **Step 4: Update README canonical-example wording only if needed.**
 
