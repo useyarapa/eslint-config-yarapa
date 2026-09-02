@@ -1,6 +1,6 @@
-export interface MessageRepository {
+export type MessageRepository = {
   findMessage(id: string): Promise<string | undefined>;
-}
+};
 
 /**
  * Small service boundary showing typed async work and explicit error handling.
