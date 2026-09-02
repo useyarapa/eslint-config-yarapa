@@ -56,16 +56,15 @@
     "test:coverage": "vitest run --coverage",
     "test:mutation": "stryker run",
     "test:watch": "vitest",
-    "verify": "pnpm check-types && pnpm build && pnpm lint && pnpm test && pnpm test:mutation && pnpm test:consumer"
+    "verify": "pnpm -w lint && pnpm check-types && pnpm build && pnpm test && pnpm test:mutation && pnpm test:consumer"
   },
   "dependencies": {
     "@eslint-community/eslint-plugin-eslint-comments": "4.7.2",
     "@eslint/js": "10.0.1",
     "@eslint/json": "2.0.1",
+    "@next/eslint-plugin-next": "16.3.4",
     "@stylistic/eslint-plugin": "5.10.0",
-    "@vitest/eslint-plugin": "1.6.27",
     "eslint-import-resolver-typescript": "4.4.5",
-    "eslint-plugin-ava": "17.0.1",
     "eslint-plugin-import-x": "4.17.1",
     "eslint-plugin-jsdoc": "64.3.1",
     "eslint-plugin-jsonc": "3.4.2",
@@ -73,10 +72,10 @@
     "eslint-plugin-package-json": "1.8.0",
     "eslint-plugin-perfectionist": "5.10.1",
     "eslint-plugin-promise": "7.3.0",
+    "eslint-plugin-react-hooks": "7.1.1",
     "eslint-plugin-regexp": "3.2.0",
     "eslint-plugin-security": "4.0.1",
     "eslint-plugin-sonarjs": "4.2.0",
-    "eslint-plugin-testing-library": "7.16.2",
     "eslint-plugin-unused-imports": "4.4.1",
     "globals": "17.11.0",
     "typescript-eslint": "8.68.0"
