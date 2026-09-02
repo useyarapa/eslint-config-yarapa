@@ -14,7 +14,7 @@ The package is ESM-only and uses ESLint Flat Config.
 
 ## Supported toolchain
 
-The declared ranges are intentionally limited to versions exercised by CI.
+The declared ranges are intentionally bounded by CI evidence. The versions listed below are representative boundary/current cases exercised by CI, not exhaustive tests of every version inside each declared range.
 
 | Dimension | Supported contract | CI evidence |
 | --- | --- | --- |
