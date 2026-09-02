@@ -141,19 +141,42 @@ jobs:
         with:
           runtime: node@24.15.0
           cache: true
-      - name: Print exact SonarJS 4.2.0 rule keys
-        working-directory: packages/eslint-config-yarapa
-        run: >-
-          node --input-type=module -e
-          "import sonarjs from 'eslint-plugin-sonarjs';
-          console.log(JSON.stringify(Object.keys(sonarjs.rules).sort()))"
-      - name: Generate framework dependency lockfile diff
+      - name: Build final dependency snapshot
         working-directory: packages/eslint-config-yarapa
         run: |
-          pnpm add --save-exact --lockfile-only \
+          pnpm remove \
+            @vitest/eslint-plugin \
+            eslint-plugin-ava \
+            eslint-plugin-testing-library
+          pnpm add --save-exact \
             @next/eslint-plugin-next@16.3.4 \
             eslint-plugin-react-hooks@7.1.1
-          git diff -- package.json ../../pnpm-lock.yaml
+          node --input-type=module <<'NODE'
+          import { writeFileSync } from "node:fs";
+          import nextPlugin from "@next/eslint-plugin-next";
+          import reactHooks from "eslint-plugin-react-hooks";
+          import sonarjs from "eslint-plugin-sonarjs";
+
+          const snapshot = {
+            nextRules: nextPlugin.configs.recommended.rules,
+            reactHooksRules: reactHooks.configs.flat.recommended.rules,
+            sonarRules: Object.keys(sonarjs.rules)
+              .filter(ruleName => ruleName !== "file-header")
+              .sort(),
+          };
+          writeFileSync(
+            "../../dependency-snapshot.json",
+            `${JSON.stringify(snapshot, null, 2)}\n`,
+          );
+          NODE
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: deterministic-snapshot
+          path: |
+            pnpm-lock.yaml
+            dependency-snapshot.json
+          if-no-files-found: error
+          retention-days: 1
 
   ci:
     name: ci
