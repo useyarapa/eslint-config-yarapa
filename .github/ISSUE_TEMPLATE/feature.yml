@@ -1,0 +1,30 @@
+name: Feature request
+description: Propose a concrete change to eslint-config-yarapa.
+title: "feat: "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for actionable feature requests. For usage questions or exploratory ideas, use GitHub Discussions instead.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What concrete limitation or use case should be addressed?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: Describe the smallest change that would address the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Optional alternatives, workarounds, or upstream conventions you considered.
+    validations:
+      required: false
