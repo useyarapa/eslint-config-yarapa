@@ -5,22 +5,6 @@ import { describe, expect, it } from "vitest";
 const PROFILE_NAMES = ["next", "nest", "react"] as const;
 
 /**
- * Load one semantic profile from its source entrypoint.
- * @param profileName Semantic profile name.
- * @returns The profile's Flat Config array.
- */
-async function loadProfile(
-  profileName: (typeof PROFILE_NAMES)[number],
-): Promise<Linter.Config[]> {
-  const moduleUrl = new URL(`../src/${profileName}.js`, import.meta.url);
-  const profileModule = await import(moduleUrl.href) as {
-    default: Linter.Config[];
-  };
-
-  return profileModule.default;
-}
-
-/**
  * Resolve the final configured value for one rule in a profile.
  * @param profile Flat Config array.
  * @param ruleName Fully qualified rule name.
@@ -41,6 +25,22 @@ function findRule(
   }
 
   return resolved;
+}
+
+/**
+ * Load one semantic profile from its source entrypoint.
+ * @param profileName Semantic profile name.
+ * @returns The profile's Flat Config array.
+ */
+async function loadProfile(
+  profileName: (typeof PROFILE_NAMES)[number],
+): Promise<Linter.Config[]> {
+  const moduleUrl = new URL(`../src/${profileName}.js`, import.meta.url);
+  const profileModule = await import(moduleUrl.href) as {
+    default: Linter.Config[];
+  };
+
+  return profileModule.default;
 }
 
 describe("semantic profiles", () => {
