@@ -1,6 +1,7 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 
 import yarapa from "./packages/eslint-config-yarapa/dist/index.mjs";
+import yarapaNest from "./packages/eslint-config-yarapa/dist/nest.mjs";
 
 const nodeToolingFiles = [
   "packages/eslint-config-yarapa/src/**/*.{ts,mts,cts}",
@@ -19,12 +20,8 @@ export default defineConfig(
   ),
   yarapa,
   {
+    extends: yarapaNest,
     files: nodeToolingFiles,
-    languageOptions: {
-      globals: {
-        process: "readonly",
-      },
-    },
     name: "yarapa/repository/node-tooling",
   },
   {
