@@ -56,12 +56,11 @@ describe("autofix safety and idempotence", () => {
   it("removes an unused import without changing the used export", async () => {
     const output = await fixTwice(
       yarapa,
-      "import { readFileSync } from \"node:fs\";\n\n"
-        + "export const value = 1;\n",
+      "import { readFileSync } from \"node:fs\";\n\nexport const value = 1;\n",
       "fixtures/autofix/unused-import.js",
     );
 
-    expect(output).toBe("\nexport const value = 1;\n");
+    expect(output).toBe("export const value = 1;\n");
   });
 
   it("keeps single-parameter block arrows idempotent", async () => {
