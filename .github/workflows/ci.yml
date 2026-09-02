@@ -40,11 +40,8 @@ jobs:
           cache: true
       - run: pnpm --filter eslint-config-yarapa test
 
-  # Temporary check-name bridge for repository ruleset 21984697.
-  # The job id remains `mutation`; only the reported check name is `inventory`.
-  # Remove this compatibility name after the ruleset is migrated to `ci`.
   mutation:
-    name: inventory
+    name: mutation
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -181,13 +178,33 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+  # Required-check compatibility gate for repository ruleset 21984697.
+  # `inventory` remains the required status name until the ruleset can be
+  # migrated to the stable aggregate `ci` check. It intentionally blocks on
+  # both mutation testing and diagnostic-snapshot verification.
+  inventory:
+    name: inventory
+    if: always()
+    needs:
+      - mutation
+      - diagnostic-snapshot
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require mutation and diagnostic snapshot
+        env:
+          DIAGNOSTIC_RESULT: ${{ needs.diagnostic-snapshot.result }}
+          MUTATION_RESULT: ${{ needs.mutation.result }}
+        run: |
+          test "$MUTATION_RESULT" = success
+          test "$DIAGNOSTIC_RESULT" = success
+
   ci:
     name: ci
     if: always()
     needs:
       - lint
       - test
-      - mutation
+      - inventory
       - check-types
       - build
       - consumer
@@ -201,8 +218,8 @@ jobs:
           CHECK_TYPES_RESULT: ${{ needs.check-types.result }}
           COMPATIBILITY_RESULT: ${{ needs.compatibility.result }}
           CONSUMER_RESULT: ${{ needs.consumer.result }}
+          INVENTORY_RESULT: ${{ needs.inventory.result }}
           LINT_RESULT: ${{ needs.lint.result }}
-          MUTATION_RESULT: ${{ needs.mutation.result }}
           TEST_RESULT: ${{ needs.test.result }}
           WINDOWS_CONSUMER_RESULT: ${{ needs.windows-consumer.result }}
         run: |
@@ -211,8 +228,8 @@ jobs:
             "$CHECK_TYPES_RESULT" \
             "$COMPATIBILITY_RESULT" \
             "$CONSUMER_RESULT" \
+            "$INVENTORY_RESULT" \
             "$LINT_RESULT" \
-            "$MUTATION_RESULT" \
             "$TEST_RESULT" \
             "$WINDOWS_CONSUMER_RESULT"
           do
