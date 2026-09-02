@@ -152,6 +152,34 @@ Deployment and release execution are out of scope for the current v1-readiness i
 - Do not merge, publish, tag, or deploy unless explicitly authorized.
 - Do not weaken failing checks merely to make CI green.
 
+## Merge readiness protocol
+
+Merge-readiness evidence is valid only for the exact pull-request head SHA on which it was collected.
+
+- Any new push, force-push, rebase, merge-from-base, or other head-SHA change invalidates all previous merge-readiness evidence immediately.
+- While implementation is still changing, prefer Draft/WIP mode and batch fixes instead of repeatedly treating intermediate commits as merge-ready.
+- After the last intended implementation push, wait for required CI and configured review bots to finish reviewing that head before deciding merge readiness.
+- Fetch the current PR head SHA and evaluate required checks only for that exact head.
+- Inspect every current review thread after the latest reviews have completed. Reply to actionable findings, fix valid issues, and resolve only threads that are actually addressed or explicitly tracked as accepted follow-up work.
+- `unresolved_review_threads` MUST equal `0` before merge readiness can be declared.
+- Required status checks MUST be successful for the exact current head. Optional successful checks do not substitute for required gates.
+- Required review-bot checks and repository ruleset requirements MUST be satisfied before merge.
+- Immediately before calling the merge API, re-fetch the PR head SHA, required checks, review state, and review threads. If the head SHA changed at any point, ABORT the merge attempt and restart the entire merge-readiness verification from the current head.
+- Never reuse a prior `unresolved = 0`, prior green CI run, or prior review result after a new push.
+
+Canonical merge-readiness sequence:
+
+1. freeze implementation changes;
+2. fetch current head SHA;
+3. wait for exact-head CI and review bots;
+4. verify all required checks are successful;
+5. inspect, reply to, and resolve all current review threads;
+6. verify `unresolved_review_threads = 0`;
+7. verify all repository ruleset requirements;
+8. re-fetch the head SHA and merge state immediately before merge;
+9. if the SHA changed, abort and restart from step 2;
+10. merge only when explicitly authorized.
+
 ## v1 readiness map
 
 - #14 semantic `/next`, `/nest`, `/react` API
