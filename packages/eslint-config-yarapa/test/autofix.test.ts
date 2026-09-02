@@ -3,9 +3,8 @@ import type { Linter } from "eslint";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { perfectionistNatural } from "../src/configs/internal/perfectionist.js";
 import { required } from "../src/configs/internal/required.js";
-import { configs } from "../src/index.js";
+import yarapa from "../src/index.js";
 import { eslintForConfigs, packageRoot } from "./helpers/eslint.js";
 
 /**
@@ -46,7 +45,7 @@ async function fixTwice(
 describe("autofix safety and idempotence", () => {
   it("normalizes representative stylistic source once", async () => {
     const output = await fixTwice(
-      configs.stylistic,
+      yarapa,
       "export const value = 'ok'\n",
       "fixtures/autofix/stylistic.js",
     );
@@ -56,8 +55,9 @@ describe("autofix safety and idempotence", () => {
 
   it("removes an unused import without changing the used export", async () => {
     const output = await fixTwice(
-      configs.base,
-      "import { readFileSync } from \"node:fs\";\n\nexport const value = 1;\n",
+      yarapa,
+      "import { readFileSync } from \"node:fs\";\n\n"
+        + "export const value = 1;\n",
       "fixtures/autofix/unused-import.js",
     );
 
@@ -66,7 +66,7 @@ describe("autofix safety and idempotence", () => {
 
   it("keeps single-parameter block arrows idempotent", async () => {
     const output = await fixTwice(
-      configs.recommended,
+      yarapa,
       "export const identity = (value) => { return value; };\n",
       "fixtures/autofix/arrow-parens.js",
     );
@@ -76,11 +76,13 @@ describe("autofix safety and idempotence", () => {
 
   it("orders imports deterministically", async () => {
     const output = await fixTwice(
-      perfectionistNatural,
+      yarapa,
       "import z from \"z\";\nimport a from \"a\";\n\nexport { a, z };\n",
       "fixtures/autofix/import-order.js",
     );
 
-    expect(output.indexOf("from \"a\"")).toBeLessThan(output.indexOf("from \"z\""));
+    expect(output.indexOf("from \"a\"")).toBeLessThan(
+      output.indexOf("from \"z\""),
+    );
   });
 });

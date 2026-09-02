@@ -18,14 +18,9 @@ const pnpm
 const node = process.execPath;
 const eslintVersion = process.env.ESLINT_VERSION ?? "10.9.1";
 const typescriptVersion = process.env.TYPESCRIPT_VERSION ?? "6.0.3";
-const builtEntryUrl = new URL("../dist/index.mjs", import.meta.url).href;
-const { configs } = (await import(builtEntryUrl)) as {
-  configs: Record<string, unknown>;
-};
-const expectedPresets = Object.keys(configs).sort();
 
 /**
- * Run a certification command and fail on any non-zero result.
+ * Run a consumer-verification command and fail on any non-zero result.
  * @param command Executable to run.
  * @param args Command arguments.
  * @param cwd Working directory for the command.
@@ -39,7 +34,9 @@ function run(command: string, args: string[], cwd: string): void {
 
   if (result.error) throw result.error;
   if (result.status !== 0) {
-    throw new Error(`${command} ${args.join(" ")} failed with ${result.status}`);
+    throw new Error(
+      `${command} ${args.join(" ")} failed with ${result.status}`,
+    );
   }
 }
 
@@ -76,9 +73,6 @@ try {
     )}\n`,
   );
 
-  // pnpm 11 blocks unreviewed dependency build scripts by default. The
-  // TypeScript import resolver requires unrs-resolver's postinstall, so the
-  // disposable smoke consumer explicitly approves only that known build.
   run(
     pnpm,
     [
@@ -94,11 +88,23 @@ try {
 
   writeFileSync(
     resolve(consumerDir, "verify.mjs"),
-    `import { configs } from "eslint-config-yarapa";\n\nconst expected = ${JSON.stringify(expectedPresets)};\nconst actual = Object.keys(configs).sort();\nif (JSON.stringify(actual) !== JSON.stringify(expected)) {\n  throw new Error(\`Unexpected public presets: \${actual.join(", ")}\`);\n}\n`,
+    [
+      'import yarapa from "eslint-config-yarapa";',
+      'import next from "eslint-config-yarapa/next";',
+      'import nest from "eslint-config-yarapa/nest";',
+      'import react from "eslint-config-yarapa/react";',
+      "",
+      "for (const profile of [yarapa, next, nest, react]) {",
+      "  if (!Array.isArray(profile) || profile.length === 0) {",
+      '    throw new Error("Expected non-empty Flat Config array");',
+      "  }",
+      "}",
+      "",
+    ].join("\n"),
   );
   writeFileSync(
     resolve(consumerDir, "eslint.config.mjs"),
-    `import { configs } from "eslint-config-yarapa";\n\nexport default configs.base;\n`,
+    'import yarapa from "eslint-config-yarapa";\n\nexport default yarapa;\n',
   );
   writeFileSync(
     resolve(consumerDir, "sample.js"),

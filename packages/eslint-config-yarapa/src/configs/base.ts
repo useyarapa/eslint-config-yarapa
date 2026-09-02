@@ -1,6 +1,5 @@
 import type { Linter } from "eslint";
 
-// eslint-disable-next-line import-x/default -- CJS default is intentional.
 import commentsPlugin, {
   configs as commentsConfigs,
 } from "@eslint-community/eslint-plugin-eslint-comments";
@@ -47,10 +46,6 @@ export const base: Linter.Config[] = [
     },
     rules: {
       ...commentsConfigs.recommended.rules,
-      // Every Waiver must include a meaningful description identifying
-      // the reason for the suppression; this rule makes an undescribed
-      // suppression directive itself a lint error, so waivers stay
-      // auditable rather than silent.
       "@eslint-community/eslint-comments/require-description": "error",
     },
   },
