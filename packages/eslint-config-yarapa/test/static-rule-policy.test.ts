@@ -35,13 +35,13 @@ describe("static rule policy", () => {
     vi.resetModules();
     vi.doMock("@eslint/js", async importOriginal => {
       const original = await importOriginal<typeof import("@eslint/js")>();
-      const recommended = original.default.configs.recommended;
+      const recommended = original.configs.recommended;
 
       return {
         default: {
-          ...original.default,
+          ...original,
           configs: {
-            ...original.default.configs,
+            ...original.configs,
             recommended: {
               ...recommended,
               rules: {
