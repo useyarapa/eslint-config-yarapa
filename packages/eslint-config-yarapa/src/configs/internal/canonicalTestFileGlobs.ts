@@ -1,9 +1,9 @@
 /**
- * Canonical test-file glob list, covering `*.test.*`/`*.spec.*` naming and
- * `test`/`tests`/`__tests__` directories for the supported JavaScript and
- * TypeScript extensions, plus runner-specific `test.js`/`test-*.js` names.
- * Shared by the `vitest`, `ava`, and `testingLibrary` presets so the
- * convenience scopes stay defined by naming convention, not by runner.
+ * Canonical internal test-file glob list, covering `*.test.*`/`*.spec.*`
+ * naming and `test`/`tests`/`__tests__` directories for supported JavaScript
+ * and TypeScript extensions, plus runner-style `test.js`/`test-*.js` names.
+ * Test-library semantics may use this scope when explicitly composed; the file
+ * naming convention does not imply a public runner-specific preset.
  */
 export const canonicalTestFileGlobs: string[] = [
   "**/*.test.{js,mjs,cjs,jsx,ts,mts,cts,tsx}",
