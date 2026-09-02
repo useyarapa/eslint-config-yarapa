@@ -16,7 +16,7 @@ export class ExampleService {
    * Load a required message.
    * @param id Message identifier.
    * @returns The stored message.
-   * @throws When the requested message does not exist.
+   * @throws {Error} When the requested message does not exist.
    */
   public async requireMessage(id: string): Promise<string> {
     const message = await this.repository.findMessage(id);
