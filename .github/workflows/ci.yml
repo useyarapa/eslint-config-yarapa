@@ -62,6 +62,20 @@ jobs:
           cache: true
       - run: pnpm --filter eslint-config-yarapa build
 
+  examples:
+    name: examples
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          runtime: node@24.20.0
+          cache: true
+      - run: pnpm --filter eslint-config-yarapa build
+      - run: pnpm exec eslint --config examples/next/eslint.config.mjs examples/next/app/page.tsx
+      - run: pnpm exec eslint --config examples/nest/eslint.config.mjs examples/nest/src/example.service.ts
+      - run: pnpm exec eslint --config examples/react/eslint.config.mjs examples/react/src/example.tsx
+
   consumer:
     name: consumer
     runs-on: ubuntu-latest
@@ -103,6 +117,47 @@ jobs:
           cache: true
       - run: pnpm --filter eslint-config-yarapa test:consumer
 
+  framework-compatibility:
+    name: framework-compatibility (${{ matrix.name }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: next-16.0.0-react-19.0.0
+            profile: next
+            react: 19.0.0
+            version: 16.0.0
+          - name: next-16.3.4-react-19.2.7
+            profile: next
+            react: 19.2.7
+            version: 16.3.4
+          - name: react-19.0.0
+            profile: react
+            version: 19.0.0
+          - name: react-19.2.7
+            profile: react
+            version: 19.2.7
+          - name: nest-12.0.0
+            profile: nest
+            version: 12.0.0
+          - name: nest-12.0.1
+            profile: nest
+            version: 12.0.1
+    env:
+      ESLINT_VERSION: 10.9.1
+      FRAMEWORK_PROFILE: ${{ matrix.profile }}
+      FRAMEWORK_REACT_VERSION: ${{ matrix.react }}
+      FRAMEWORK_VERSION: ${{ matrix.version }}
+      TYPESCRIPT_VERSION: 6.0.3
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          runtime: node@24.20.0
+          cache: true
+      - run: pnpm --filter eslint-config-yarapa test:consumer
+
   windows-consumer:
     name: windows-consumer
     runs-on: windows-latest
@@ -117,43 +172,164 @@ jobs:
           cache: true
       - run: pnpm --filter eslint-config-yarapa test:consumer
 
-  diagnostic-snapshot:
-    name: diagnostic-snapshot
+  dependency-review:
+    name: dependency-review
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          fetch-depth: 0
           persist-credentials: false
-      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
-        with:
-          runtime: node@24.15.0
-          cache: true
-      - name: Verify deterministic dependency snapshot
-        working-directory: packages/eslint-config-yarapa
+      - name: Probe GitHub Dependency Review availability
+        id: dependency-review-availability
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          node --input-type=module <<'NODE'
-          import nextPlugin from "@next/eslint-plugin-next";
-          import reactHooks from "eslint-plugin-react-hooks";
-          import sonarjs from "eslint-plugin-sonarjs";
+          set -euo pipefail
+          response="$RUNNER_TEMP/dependency-review-probe.json"
+          status="$(
+            curl --silent --show-error \
+              --output "$response" \
+              --write-out "%{http_code}" \
+              --header "Accept: application/vnd.github+json" \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/dependency-graph/compare/$BASE_SHA...$HEAD_SHA"
+          )"
 
-          const snapshot = {
-            nextRules: nextPlugin.configs.recommended.rules,
-            reactHooksRules: reactHooks.configs.flat.recommended.rules,
-            sonarRules: Object.keys(sonarjs.rules)
-              .filter(ruleName => ruleName !== "file-header")
-              .sort(),
-          };
+          if [ "$status" = 200 ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          elif [ "$status" = 403 ] && grep --ignore-case --quiet "dependency" "$response"; then
+            echo "::warning::GitHub Dependency Review is unavailable; using lockfile-scoped fallback."
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          elif [ "$status" = 503 ]; then
+            echo "::warning::GitHub Dependency Review is temporarily unavailable; using lockfile-scoped fallback."
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          else
+            cat "$response"
+            echo "::error::Dependency Review API probe failed with HTTP $status."
+            exit 1
+          fi
+      - name: Review dependency changes with GitHub
+        if: steps.dependency-review-availability.outputs.available == 'true'
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+      - name: Detect dependency graph changes for fallback
+        if: steps.dependency-review-availability.outputs.available == 'false'
+        id: dependency-change
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet "$BASE_SHA" "$HEAD_SHA" -- pnpm-lock.yaml; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No pnpm-lock.yaml changes; this pull request does not change the resolved dependency graph."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Set up pnpm for dependency audit fallback
+        if: steps.dependency-review-availability.outputs.available == 'false' && steps.dependency-change.outputs.changed == 'true'
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          runtime: node@24.20.0
+          cache: true
+      - name: Audit dependencies when the resolved graph changes
+        if: steps.dependency-review-availability.outputs.available == 'false' && steps.dependency-change.outputs.changed == 'true'
+        run: pnpm audit --audit-level high
 
-          if (Object.keys(snapshot.nextRules ?? {}).length === 0) {
-            throw new Error("Expected Next.js recommended rules");
-          }
-          if (Object.keys(snapshot.reactHooksRules ?? {}).length === 0) {
-            throw new Error("Expected React Hooks recommended rules");
-          }
-          if (snapshot.sonarRules.length === 0) {
-            throw new Error("Expected SonarJS rule surface");
-          }
-          NODE
+  gitleaks:
+    name: gitleaks
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install verified Gitleaks CLI
+        env:
+          GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+          GITLEAKS_VERSION: 8.30.1
+        run: |
+          set -euo pipefail
+          archive="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          release="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}"
+          mkdir -p "$RUNNER_TEMP/gitleaks"
+          curl --fail --location --silent --show-error \
+            --output "$RUNNER_TEMP/$archive" \
+            "$release/$archive"
+          curl --fail --location --silent --show-error \
+            --output "$RUNNER_TEMP/gitleaks-checksums.txt" \
+            "$release/gitleaks_${GITLEAKS_VERSION}_checksums.txt"
+          grep "  $archive$" "$RUNNER_TEMP/gitleaks-checksums.txt" \
+            > "$RUNNER_TEMP/gitleaks-archive.sha256"
+          grep --quiet "^${GITLEAKS_SHA256}  ${archive}$" \
+            "$RUNNER_TEMP/gitleaks-archive.sha256"
+          (
+            cd "$RUNNER_TEMP"
+            sha256sum --check gitleaks-archive.sha256
+          )
+          tar --extract --gzip \
+            --file "$RUNNER_TEMP/$archive" \
+            --directory "$RUNNER_TEMP/gitleaks" \
+            gitleaks
+      - name: Scan pull request commits for secrets
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          "$RUNNER_TEMP/gitleaks/gitleaks" git --redact --verbose \
+            --log-opts="$BASE_SHA..$HEAD_SHA" .
+      - name: Scan pushed commits for secrets
+        if: github.event_name == 'push'
+        env:
+          BASE_SHA: ${{ github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          zero_sha="0000000000000000000000000000000000000000"
+          if [ "$BASE_SHA" = "$zero_sha" ]; then
+            "$RUNNER_TEMP/gitleaks/gitleaks" git --redact --verbose \
+              --log-opts="$HEAD_SHA" .
+          else
+            "$RUNNER_TEMP/gitleaks/gitleaks" git --redact --verbose \
+              --log-opts="$BASE_SHA..$HEAD_SHA" .
+          fi
+
+  diagnostic-snapshot:
+    name: diagnostic-snapshot
+    if: always()
+    needs:
+      - lint
+      - test
+      - check-types
+      - build
+      - consumer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Preserve legacy required check during ruleset migration
+        env:
+          BUILD_RESULT: ${{ needs.build.result }}
+          CHECK_TYPES_RESULT: ${{ needs.check-types.result }}
+          CONSUMER_RESULT: ${{ needs.consumer.result }}
+          LINT_RESULT: ${{ needs.lint.result }}
+          TEST_RESULT: ${{ needs.test.result }}
+        run: |
+          for result in \
+            "$BUILD_RESULT" \
+            "$CHECK_TYPES_RESULT" \
+            "$CONSUMER_RESULT" \
+            "$LINT_RESULT" \
+            "$TEST_RESULT"
+          do
+            test "$result" = success
+          done
 
   ci:
     name: ci
@@ -161,12 +337,16 @@ jobs:
     needs:
       - lint
       - test
-      - diagnostic-snapshot
       - check-types
       - build
+      - examples
       - consumer
       - compatibility
+      - framework-compatibility
       - windows-consumer
+      - dependency-review
+      - gitleaks
+      - diagnostic-snapshot
     runs-on: ubuntu-latest
     steps:
       - name: Require all verification jobs
@@ -175,17 +355,31 @@ jobs:
           CHECK_TYPES_RESULT: ${{ needs.check-types.result }}
           COMPATIBILITY_RESULT: ${{ needs.compatibility.result }}
           CONSUMER_RESULT: ${{ needs.consumer.result }}
-          DIAGNOSTIC_RESULT: ${{ needs.diagnostic-snapshot.result }}
+          DEPENDENCY_REVIEW_RESULT: ${{ needs.dependency-review.result }}
+          DIAGNOSTIC_SNAPSHOT_RESULT: ${{ needs.diagnostic-snapshot.result }}
+          EVENT_NAME: ${{ github.event_name }}
+          EXAMPLES_RESULT: ${{ needs.examples.result }}
+          FRAMEWORK_COMPATIBILITY_RESULT: ${{ needs.framework-compatibility.result }}
+          GITLEAKS_RESULT: ${{ needs.gitleaks.result }}
           LINT_RESULT: ${{ needs.lint.result }}
           TEST_RESULT: ${{ needs.test.result }}
           WINDOWS_CONSUMER_RESULT: ${{ needs.windows-consumer.result }}
         run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            test "$DEPENDENCY_REVIEW_RESULT" = success
+          else
+            test "$DEPENDENCY_REVIEW_RESULT" = skipped
+          fi
+
           for result in \
             "$BUILD_RESULT" \
             "$CHECK_TYPES_RESULT" \
             "$COMPATIBILITY_RESULT" \
             "$CONSUMER_RESULT" \
-            "$DIAGNOSTIC_RESULT" \
+            "$DIAGNOSTIC_SNAPSHOT_RESULT" \
+            "$EXAMPLES_RESULT" \
+            "$FRAMEWORK_COMPATIBILITY_RESULT" \
+            "$GITLEAKS_RESULT" \
             "$LINT_RESULT" \
             "$TEST_RESULT" \
             "$WINDOWS_CONSUMER_RESULT"

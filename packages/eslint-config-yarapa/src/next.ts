@@ -4,6 +4,7 @@ import nextPlugin from "@next/eslint-plugin-next";
 import globals from "globals";
 
 import { asFlatPlugin } from "./configs/internal/eslintCompat.js";
+import { reactComponentNaming } from "./configs/internal/reactComponentNaming.js";
 import { reactHooks } from "./configs/internal/reactHooks.js";
 import { recommended } from "./configs/recommended.js";
 
@@ -14,6 +15,7 @@ import { recommended } from "./configs/recommended.js";
 const next: Linter.Config[] = [
   ...recommended,
   ...reactHooks,
+  ...reactComponentNaming,
   {
     files: [
       "**/*.js",

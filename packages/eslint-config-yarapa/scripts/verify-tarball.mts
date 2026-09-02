@@ -18,8 +18,83 @@ const pnpm
 const node = process.execPath;
 const eslintVersion = process.env.ESLINT_VERSION ?? "10.9.1";
 const typescriptVersion = process.env.TYPESCRIPT_VERSION ?? "6.0.3";
+const frameworkProfile = process.env.FRAMEWORK_PROFILE;
+const frameworkVersion = process.env.FRAMEWORK_VERSION;
+const frameworkReactVersion = process.env.FRAMEWORK_REACT_VERSION;
+const expectRuleCall = "await expectRule(";
 const nestSampleFile = "sample-nest.ts";
 const nestServiceFile = "sample-nest-service.ts";
+
+if ((frameworkProfile === undefined) !== (frameworkVersion === undefined)) {
+  throw new Error(
+    "FRAMEWORK_PROFILE and FRAMEWORK_VERSION must be provided together",
+  );
+}
+
+/**
+ * Resolve exact packages installed for one framework compatibility case.
+ * @param profile Selected semantic framework profile.
+ * @param version Framework version under test.
+ * @returns Exact package specifications for the temporary consumer.
+ */
+function frameworkInstallPackages(
+  profile: string | undefined,
+  version: string | undefined,
+): string[] {
+  if (profile === undefined) {
+    return [];
+  }
+  if (version === undefined) {
+    throw new Error("FRAMEWORK_VERSION is required for framework verification");
+  }
+
+  switch (profile) {
+    case "nest":
+      return [
+        `@nestjs/common@${version}`,
+        `@nestjs/core@${version}`,
+        "reflect-metadata@0.2.2",
+        "rxjs@7.8.2",
+      ];
+    case "next":
+      if (!frameworkReactVersion) {
+        throw new Error(
+          "FRAMEWORK_REACT_VERSION is required for Next.js verification",
+        );
+      }
+      return [
+        `next@${version}`,
+        `react@${frameworkReactVersion}`,
+        `react-dom@${frameworkReactVersion}`,
+      ];
+    case "react":
+      return [`react@${version}`, `react-dom@${version}`];
+    default:
+      throw new Error(`Unsupported FRAMEWORK_PROFILE: ${profile}`);
+  }
+}
+
+/**
+ * Resolve package names that must import in one compatibility case.
+ * @param profile Selected semantic framework profile.
+ * @returns Package names that must resolve in the packed consumer.
+ */
+function frameworkPackageNames(profile: string | undefined): string[] {
+  if (profile === undefined) {
+    return [];
+  }
+
+  switch (profile) {
+    case "nest":
+      return ["@nestjs/common", "@nestjs/core", "reflect-metadata", "rxjs"];
+    case "next":
+      return ["next", "react", "react-dom"];
+    case "react":
+      return ["react", "react-dom"];
+    default:
+      throw new Error(`Unsupported FRAMEWORK_PROFILE: ${profile}`);
+  }
+}
 
 /**
  * Run a consumer-verification command and fail on any non-zero result.
@@ -79,18 +154,27 @@ try {
     )}\n`,
   );
 
+  const frameworkPackages = frameworkInstallPackages(
+    frameworkProfile,
+    frameworkVersion,
+  );
+
   run(
     pnpm,
     [
+      "--allow-build=sharp",
       "--allow-build=unrs-resolver",
       "add",
       "--save-exact",
       `eslint@${eslintVersion}`,
       `typescript@${typescriptVersion}`,
+      ...frameworkPackages,
       tarball,
     ],
     consumerDir,
   );
+
+  const selectedFrameworkPackages = frameworkPackageNames(frameworkProfile);
 
   writeFileSync(
     resolve(consumerDir, "verify.mjs"),
@@ -105,6 +189,78 @@ try {
       "    throw new Error(\"Expected non-empty Flat Config array\");",
       "  }",
       "}",
+      "",
+      ...selectedFrameworkPackages.map(
+        packageName => `await import(${JSON.stringify(packageName)});`,
+      ),
+      "",
+    ].join("\n"),
+  );
+
+  writeFileSync(
+    resolve(consumerDir, "verify-behavior.mjs"),
+    [
+      "import { ESLint } from \"eslint\";",
+      "import yarapa from \"eslint-config-yarapa\";",
+      "import next from \"eslint-config-yarapa/next\";",
+      "import react from \"eslint-config-yarapa/react\";",
+      "",
+      "async function expectRule(config, filePath, source, expectedRule) {",
+      "  const eslint = new ESLint({",
+      "    cwd: process.cwd(),",
+      "    overrideConfig: config,",
+      "    overrideConfigFile: true,",
+      "  });",
+      "  const [result] = await eslint.lintText(source, { filePath });",
+      "  if (!result) throw new Error(`No lint result for ${filePath}`);",
+      "  const ruleIds = result.messages.map(message => message.ruleId);",
+      "  if (!ruleIds.includes(expectedRule)) {",
+      "    throw new Error(",
+      "      `Expected ${expectedRule} for ${filePath}; got ${ruleIds.join(\", \")}`",
+      "    );",
+      "  }",
+      "}",
+      "",
+      expectRuleCall,
+      "  yarapa,",
+      "  \"sample-invalid.js\",",
+      "  \"export function value() { var answer = 42; return answer; }\\n\",",
+      "  \"no-var\",",
+      ");",
+      "",
+      frameworkProfile === "next"
+        ? [
+            expectRuleCall,
+            "  next,",
+            "  \"sample-next-invalid.jsx\",",
+            "  [",
+            "    \"/** @returns {object} Rendered page. */\",",
+            "    \"export function Page() {\",",
+            "    \"  return <img alt=\\\"YARAPA\\\" src=\\\"/logo.png\\\" />;\",",
+            "    \"}\",",
+            "  ].join(\"\\n\"),",
+            "  \"@next/next/no-img-element\",",
+            ");",
+          ].join("\n")
+        : "",
+      "",
+      frameworkProfile === "react"
+        ? [
+            expectRuleCall,
+            "  react,",
+            "  \"sample-react-invalid.jsx\",",
+            "  [",
+            "    \"import { useState } from \\\"react\\\";\",",
+            "    \"/** @returns {object | null} Rendered component. */\",",
+            "    \"export function Component({ enabled }) {\",",
+            "    \"  if (enabled) useState(0);\",",
+            "    \"  return null;\",",
+            "    \"}\",",
+            "  ].join(\"\\n\"),",
+            "  \"react-hooks/rules-of-hooks\",",
+            ");",
+          ].join("\n")
+        : "",
       "",
     ].join("\n"),
   );
@@ -187,6 +343,7 @@ try {
   );
 
   run(node, ["verify.mjs"], consumerDir);
+  run(node, ["verify-behavior.mjs"], consumerDir);
   run(
     pnpm,
     ["exec", "eslint", "-c", "eslint.root.config.mjs", "sample.js"],

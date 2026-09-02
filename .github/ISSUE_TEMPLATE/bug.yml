@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Report reproducible behavior against a supported Node.js, ESLint, and TypeScript combination. Do not include secrets or proprietary source code.
+        Report reproducible behavior against a supported Node.js, ESLint, and TypeScript combination. Do not include credentials, secrets, personal/customer data, or proprietary source code.
   - type: input
     id: version
     attributes:
@@ -18,13 +18,13 @@ body:
     id: environment
     attributes:
       label: Environment
-      description: Include Node.js, ESLint, TypeScript, OS, package manager, and the YARAPA presets composed.
+      description: Include Node.js, ESLint, TypeScript, OS, package manager, and the YARAPA profile used.
       placeholder: |
         Node.js: 24.20.0
         ESLint: 10.9.1
         TypeScript: 6.0.3
         OS: Ubuntu 24.04
-        Presets: recommended, node
+        Profile: next
     validations:
       required: true
   - type: textarea
@@ -51,5 +51,5 @@ body:
     attributes:
       label: Safety
       options:
-        - label: I removed credentials, secrets, customer data, and proprietary banking source code from this report.
+        - label: I removed credentials, secrets, personal/customer data, and proprietary source code from this report.
           required: true
