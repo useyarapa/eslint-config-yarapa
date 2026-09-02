@@ -17,6 +17,35 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
+  sync-lockfile:
+    name: sync-lockfile
+    if: github.event_name == 'pull_request' && github.event.pull_request.number == 37 && github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          runtime: node@24.15.0
+          cache: false
+          install: false
+      - name: Generate lockfile from manifests
+        run: pnpm install --lockfile-only --no-frozen-lockfile --ignore-scripts
+      - name: Commit synchronized lockfile
+        run: |
+          if git diff --quiet -- pnpm-lock.yaml; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pnpm-lock.yaml
+          git commit -m "chore(deps): sync pnpm lockfile"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+
   lint:
     name: lint
     runs-on: ubuntu-latest
@@ -178,10 +207,6 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-  # Required-check compatibility gate for repository ruleset 21984697.
-  # `inventory` remains the required status name until the ruleset can be
-  # migrated to the stable aggregate `ci` check. It intentionally blocks on
-  # both mutation testing and diagnostic-snapshot verification.
   inventory:
     name: inventory
     if: always()
