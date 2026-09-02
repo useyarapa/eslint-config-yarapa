@@ -9,7 +9,7 @@ import promisePlugin from "eslint-plugin-promise";
 import { configs as regexpConfigs } from "eslint-plugin-regexp";
 import securityPlugin from "eslint-plugin-security";
 import { configs as tseslintConfigs } from "typescript-eslint";
-import { describe, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 /**
  * Temporary diagnostic used only to capture the exact pinned upstream rule
@@ -18,6 +18,7 @@ import { describe, it } from "vitest";
  */
 describe("upstream rule snapshot", () => {
   it("prints pinned rule maps", () => {
+    // eslint-disable-next-line import-x/no-named-as-default-member -- CJS interop.
     const securityConfigs = securityPlugin.configs;
     const snapshot = {
       commentsRecommended: commentsConfigs.recommended.rules,
@@ -36,11 +37,13 @@ describe("upstream rule snapshot", () => {
       promiseRecommended: promisePlugin.configs["flat/recommended"]?.rules,
       regexpRecommended: regexpConfigs["flat/recommended"]?.rules,
       securityRecommended: securityConfigs.recommended?.rules,
-      typescriptRecommended: tseslintConfigs.recommended?.map(config => config.rules),
+      typescriptRecommended:
+        tseslintConfigs.recommended?.map(config => config.rules),
       typescriptRecommendedTypeChecked:
         tseslintConfigs.recommendedTypeChecked?.map(config => config.rules),
     };
 
+    expect(Object.keys(snapshot).length).toBeGreaterThan(0);
     console.log(`YARAPA_UPSTREAM_SNAPSHOT=${JSON.stringify(snapshot)}`);
   });
 });
