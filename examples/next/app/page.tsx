@@ -1,14 +1,16 @@
-import { readSingleQueryValue } from "../lib/query.js";
 import type { PageInput } from "../types.js";
+import { readSingleQueryValue } from "../lib/query.js";
 
 /**
- * Render a small App Router-shaped page without external example dependencies.
+ * Render an App Router-shaped page without external example dependencies.
  * @param input Page input.
- * @param input.searchParams Asynchronous search parameters supplied by the page boundary.
+ * @param input.searchParams Asynchronous search parameters from the page boundary.
  * @returns Rendered page text.
- * @throws {Error} When the required name query parameter is missing or ambiguous.
+ * @throws {Error} When the required name parameter is missing or ambiguous.
  */
-export default async function Page({ searchParams }: PageInput): Promise<string> {
+export default async function Page(
+  { searchParams }: PageInput,
+): Promise<string> {
   const query = await searchParams;
   const name = readSingleQueryValue(query.name);
 
