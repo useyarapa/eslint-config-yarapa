@@ -1,8 +1,10 @@
 import { configs as commentsConfigs } from "@eslint-community/eslint-plugin-eslint-comments";
 import js from "@eslint/js";
+import stylisticPlugin from "@stylistic/eslint-plugin";
 import { configs as importXConfigs } from "eslint-plugin-import-x";
 import { configs as jsdocConfigs } from "eslint-plugin-jsdoc";
 import { configs as jsoncConfigs } from "eslint-plugin-jsonc";
+import nPlugin from "eslint-plugin-n";
 import { configs as packageJsonConfigs } from "eslint-plugin-package-json";
 import { configs as perfectionistConfigs } from "eslint-plugin-perfectionist";
 import promisePlugin from "eslint-plugin-promise";
@@ -20,6 +22,15 @@ describe("upstream rule snapshot", () => {
   it("prints pinned rule maps", () => {
     // eslint-disable-next-line import-x/no-named-as-default-member -- CJS interop.
     const securityConfigs = securityPlugin.configs;
+    const stylisticCustomized = stylisticPlugin.configs.customize({
+      arrowParens: false,
+      braceStyle: "1tbs",
+      commaDangle: "always-multiline",
+      indent: 2,
+      quoteProps: "as-needed",
+      quotes: "double",
+      semi: true,
+    });
     const snapshot = {
       commentsRecommended: commentsConfigs.recommended.rules,
       eslintRecommended: js.configs.recommended.rules,
@@ -30,6 +41,7 @@ describe("upstream rule snapshot", () => {
         jsdocConfigs["flat/recommended-typescript-error"]?.rules,
       jsoncRecommended:
         jsoncConfigs["flat/recommended-with-jsonc"]?.map(config => config.rules),
+      nodeRecommended: nPlugin.configs["flat/recommended-module"]?.rules,
       packageJsonRecommended: packageJsonConfigs.recommended?.rules,
       packageJsonStylistic: packageJsonConfigs.stylistic?.rules,
       perfectionistNatural:
@@ -37,6 +49,7 @@ describe("upstream rule snapshot", () => {
       promiseRecommended: promisePlugin.configs["flat/recommended"]?.rules,
       regexpRecommended: regexpConfigs["flat/recommended"]?.rules,
       securityRecommended: securityConfigs.recommended?.rules,
+      stylisticCustomized: stylisticCustomized.rules,
       typescriptRecommended:
         tseslintConfigs.recommended?.map(config => config.rules),
       typescriptRecommendedTypeChecked:
