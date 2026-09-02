@@ -348,6 +348,8 @@ git commit -m "ci: replace Release Please with Changesets"
 
 ### Task 3: Make missing Changesets a normal CI failure, not a custom policy system
 
+> **Execution correction:** `changesets/action@v2.1.1` creates version branches as `changeset-release/<base>`. A version PR has already consumed its `.changeset/*.md` files, so `changeset status --since` correctly fails there. The CI job therefore recognizes that upstream branch convention and skips only the status command for Changesets-generated version PRs; every other PR still runs the official CLI check.
+
 **Files:**
 - Modify: `.github/workflows/ci.yml`
 - Modify: `README.md`
