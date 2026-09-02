@@ -35,7 +35,6 @@ updates:
         patterns:
           - vitest
           - "@vitest/coverage-v8"
-          - "@stryker-mutator/*"
           - tsdown
           - turbo
           - knip

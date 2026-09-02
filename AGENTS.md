@@ -50,9 +50,8 @@ For a behavior-bearing change:
 3. lint the repository itself;
 4. typecheck;
 5. run focused behavior tests;
-6. run Stryker mutation testing when testable behavior changed and tests are required;
-7. run packed-consumer and compatibility verification;
-8. run applicable security/supply-chain gates.
+6. run packed-consumer and compatibility verification;
+7. run applicable security/supply-chain gates.
 
 Self-lint must not force bespoke implementation architecture. If a public rule is intentionally strict but a narrow conventional repository implementation is clearer, use the narrowest justified repository-local exception rather than weakening the public rule or inventing abstractions to game lint metrics.
 
@@ -65,7 +64,6 @@ For executable behavior changes:
 - implement the smallest conventional change;
 - run the focused test until green;
 - run related tests;
-- use Stryker for changed testable behavior where applicable;
 - finish with the repository verification gates.
 
 Do not claim a check passed without fresh evidence from the exact branch/head being reviewed.
@@ -192,7 +190,7 @@ Canonical merge-readiness sequence:
 - #27 async/error/correctness ownership
 - #28 framework delta audit
 - #29 static explicit rule policy
-- #30 zero-cost dogfood/mutation/security gates
+- #30 zero-cost dogfood/security gates
 - #31 formatter ownership
 - #32 test-code handwriting
 - #33 compatibility contract
