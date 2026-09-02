@@ -4,6 +4,11 @@ import { describe, expect, it } from "vitest";
 
 const PROFILE_NAMES = ["next", "nest", "react"] as const;
 
+/**
+ * Load one semantic profile from its source entrypoint.
+ * @param profileName Semantic profile name.
+ * @returns The profile's Flat Config array.
+ */
 async function loadProfile(
   profileName: (typeof PROFILE_NAMES)[number],
 ): Promise<Linter.Config[]> {
@@ -15,16 +20,42 @@ async function loadProfile(
   return profileModule.default;
 }
 
-describe("semantic profiles", () => {
-  it.each(PROFILE_NAMES)("/%s exports a non-empty Flat Config array", async profileName => {
-    const profile = await loadProfile(profileName);
+/**
+ * Resolve the final configured value for one rule in a profile.
+ * @param profile Flat Config array.
+ * @param ruleName Fully qualified rule name.
+ * @returns The final rule entry when configured.
+ */
+function findRule(
+  profile: Linter.Config[],
+  ruleName: string,
+): Linter.RuleEntry | undefined {
+  let resolved: Linter.RuleEntry | undefined;
 
-    expect(Array.isArray(profile)).toBe(true);
-    expect(profile.length).toBeGreaterThan(0);
-  });
+  for (const config of profile) {
+    const rule = Reflect.get(config.rules ?? {}, ruleName) as
+      | Linter.RuleEntry
+      | undefined;
+
+    if (rule !== undefined) resolved = rule;
+  }
+
+  return resolved;
+}
+
+describe("semantic profiles", () => {
+  it.each(PROFILE_NAMES)(
+    "/%s exports a non-empty Flat Config array",
+    async profileName => {
+      const profile = await loadProfile(profileName);
+
+      expect(Array.isArray(profile)).toBe(true);
+      expect(profile.length).toBeGreaterThan(0);
+    },
+  );
 
   it("shares canonical handwriting across all profiles", async () => {
-    const [next, nest, react] = await Promise.all(
+    const profiles = await Promise.all(
       PROFILE_NAMES.map(profileName => loadProfile(profileName)),
     );
 
@@ -34,15 +65,11 @@ describe("semantic profiles", () => {
       "@typescript-eslint/no-floating-promises",
       "import-x/no-duplicates",
     ]) {
-      const resolved = [next, nest, react].map(profile =>
-        profile
-          .filter(config => config.rules?.[ruleName] !== undefined)
-          .at(-1)?.rules?.[ruleName],
-      );
+      const resolved = profiles.map(profile => findRule(profile, ruleName));
+      const [first, ...rest] = resolved;
 
-      expect(resolved[0]).toBeDefined();
-      expect(resolved[1]).toStrictEqual(resolved[0]);
-      expect(resolved[2]).toStrictEqual(resolved[0]);
+      expect(first).toBeDefined();
+      for (const value of rest) expect(value).toStrictEqual(first);
     }
   });
 });
