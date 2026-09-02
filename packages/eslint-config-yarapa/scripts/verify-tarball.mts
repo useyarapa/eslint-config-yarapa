@@ -102,17 +102,90 @@ try {
       "",
     ].join("\n"),
   );
+
+  const profileConfigs = {
+    root: "eslint-config-yarapa",
+    next: "eslint-config-yarapa/next",
+    nest: "eslint-config-yarapa/nest",
+    react: "eslint-config-yarapa/react",
+  } as const;
+
+  for (const [name, specifier] of Object.entries(profileConfigs)) {
+    writeFileSync(
+      resolve(consumerDir, `eslint.${name}.config.mjs`),
+      [
+        `import config from \"${specifier}\";`,
+        "",
+        "export default config;",
+        "",
+      ].join("\n"),
+    );
+  }
+
   writeFileSync(
-    resolve(consumerDir, "eslint.config.mjs"),
-    "import yarapa from \"eslint-config-yarapa\";\n\nexport default yarapa;\n",
+    resolve(consumerDir, "tsconfig.json"),
+    `${JSON.stringify(
+      {
+        compilerOptions: {
+          module: "NodeNext",
+          moduleResolution: "NodeNext",
+          strict: true,
+          target: "ES2024",
+        },
+        include: ["sample-nest.ts"],
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
+  writeFileSync(resolve(consumerDir, "sample.js"), "export const answer = 42;\n");
+  writeFileSync(
+    resolve(consumerDir, "sample-next.jsx"),
+    [
+      "/** Render the Next.js smoke-test page. */",
+      "export function Page() {",
+      "  return <main>YARAPA</main>;",
+      "}",
+      "",
+    ].join("\n"),
   );
   writeFileSync(
-    resolve(consumerDir, "sample.js"),
-    "export const answer = 42;\n",
+    resolve(consumerDir, "sample-react.jsx"),
+    [
+      "/** Render the React smoke-test component. */",
+      "export function Component() {",
+      "  return <div>YARAPA</div>;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+  writeFileSync(
+    resolve(consumerDir, "sample-nest.ts"),
+    "export const port = 3000;\n",
   );
 
   run(node, ["verify.mjs"], consumerDir);
-  run(pnpm, ["exec", "eslint", "sample.js"], consumerDir);
+  run(
+    pnpm,
+    ["exec", "eslint", "-c", "eslint.root.config.mjs", "sample.js"],
+    consumerDir,
+  );
+  run(
+    pnpm,
+    ["exec", "eslint", "-c", "eslint.next.config.mjs", "sample-next.jsx"],
+    consumerDir,
+  );
+  run(
+    pnpm,
+    ["exec", "eslint", "-c", "eslint.nest.config.mjs", "sample-nest.ts"],
+    consumerDir,
+  );
+  run(
+    pnpm,
+    ["exec", "eslint", "-c", "eslint.react.config.mjs", "sample-react.jsx"],
+    consumerDir,
+  );
 } finally {
   rmSync(tempRoot, { force: true, recursive: true });
 }
