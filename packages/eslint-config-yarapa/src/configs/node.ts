@@ -30,5 +30,21 @@ export const node: Linter.Config[] = [
     name: "yarapa/node/recommended",
     plugins: { n: nodeRecommendedPlugin },
     rules: { ...nodeRecommended.rules },
+    settings: {
+      node: {
+        tryExtensions: [
+          ".js",
+          ".jsx",
+          ".mjs",
+          ".cjs",
+          ".json",
+          ".node",
+          ".ts",
+          ".tsx",
+          ".mts",
+          ".cts",
+        ],
+      },
+    },
   },
 ];
