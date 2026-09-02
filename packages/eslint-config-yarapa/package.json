@@ -1,7 +1,7 @@
 {
   "name": "eslint-config-yarapa",
   "version": "0.1.0",
-  "description": "Strict, high-assurance ESLint Flat Config presets for JavaScript and TypeScript projects.",
+  "description": "One deterministic ESLint Flat Config handwriting for modern JavaScript and TypeScript projects.",
   "keywords": [
     "eslint",
     "eslintconfig",
@@ -38,15 +38,13 @@
     "build": "tsdown",
     "check-types": "tsc --noEmit -p tsconfig.json",
     "dev": "tsdown --watch",
-    "inventory:check": "pnpm build && node scripts/generate-rule-inventory.mts --check",
-    "inventory:generate": "pnpm build && node scripts/generate-rule-inventory.mts",
     "lint": "eslint .",
     "test": "vitest run",
     "test:consumer": "pnpm build && node scripts/verify-tarball.mts",
     "test:coverage": "vitest run --coverage",
     "test:mutation": "stryker run",
     "test:watch": "vitest",
-    "verify": "pnpm check-types && pnpm build && pnpm test && pnpm inventory:check && pnpm test:consumer"
+    "verify": "pnpm check-types && pnpm build && pnpm lint && pnpm test && pnpm test:consumer"
   },
   "dependencies": {
     "@eslint-community/eslint-plugin-eslint-comments": "4.7.2",

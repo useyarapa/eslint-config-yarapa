@@ -62,17 +62,6 @@ jobs:
           cache: true
       - run: pnpm --filter eslint-config-yarapa build
 
-  inventory:
-    name: inventory
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
-        with:
-          runtime: node@24.15.0
-          cache: true
-      - run: pnpm --filter eslint-config-yarapa inventory:check
-
   consumer:
     name: consumer
     runs-on: ubuntu-latest
@@ -127,3 +116,38 @@ jobs:
           runtime: node@24.20.0
           cache: true
       - run: pnpm --filter eslint-config-yarapa test:consumer
+
+  ci:
+    name: ci
+    if: always()
+    needs:
+      - lint
+      - test
+      - check-types
+      - build
+      - consumer
+      - compatibility
+      - windows-consumer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require all verification jobs
+        env:
+          BUILD_RESULT: ${{ needs.build.result }}
+          CHECK_TYPES_RESULT: ${{ needs.check-types.result }}
+          COMPATIBILITY_RESULT: ${{ needs.compatibility.result }}
+          CONSUMER_RESULT: ${{ needs.consumer.result }}
+          LINT_RESULT: ${{ needs.lint.result }}
+          TEST_RESULT: ${{ needs.test.result }}
+          WINDOWS_CONSUMER_RESULT: ${{ needs.windows-consumer.result }}
+        run: |
+          for result in \
+            "$BUILD_RESULT" \
+            "$CHECK_TYPES_RESULT" \
+            "$COMPATIBILITY_RESULT" \
+            "$CONSUMER_RESULT" \
+            "$LINT_RESULT" \
+            "$TEST_RESULT" \
+            "$WINDOWS_CONSUMER_RESULT"
+          do
+            test "$result" = success
+          done
