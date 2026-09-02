@@ -20,6 +20,7 @@ const eslintVersion = process.env.ESLINT_VERSION ?? "10.9.1";
 const typescriptVersion = process.env.TYPESCRIPT_VERSION ?? "6.0.3";
 const frameworkProfile = process.env.FRAMEWORK_PROFILE;
 const frameworkVersion = process.env.FRAMEWORK_VERSION;
+const frameworkReactVersion = process.env.FRAMEWORK_REACT_VERSION;
 const nestSampleFile = "sample-nest.ts";
 const nestServiceFile = "sample-nest-service.ts";
 
@@ -30,7 +31,50 @@ if ((frameworkProfile === undefined) !== (frameworkVersion === undefined)) {
 }
 
 /**
- * Resolve the framework packages expected by one explicit compatibility case.
+ * Resolve exact packages installed for one explicit framework compatibility case.
+ * @param profile Selected semantic framework profile.
+ * @param version Framework version under test.
+ * @returns Exact package specifications for the temporary consumer.
+ */
+function frameworkInstallPackages(
+  profile: string | undefined,
+  version: string | undefined,
+): string[] {
+  if (profile === undefined) {
+    return [];
+  }
+  if (version === undefined) {
+    throw new Error("FRAMEWORK_VERSION is required for framework verification");
+  }
+
+  switch (profile) {
+    case "nest":
+      return [
+        `@nestjs/common@${version}`,
+        `@nestjs/core@${version}`,
+        "reflect-metadata@0.2.2",
+        "rxjs@7.8.2",
+      ];
+    case "next":
+      if (!frameworkReactVersion) {
+        throw new Error(
+          "FRAMEWORK_REACT_VERSION is required for Next.js verification",
+        );
+      }
+      return [
+        `next@${version}`,
+        `react@${frameworkReactVersion}`,
+        `react-dom@${frameworkReactVersion}`,
+      ];
+    case "react":
+      return [`react@${version}`, `react-dom@${version}`];
+    default:
+      throw new Error(`Unsupported FRAMEWORK_PROFILE: ${profile}`);
+  }
+}
+
+/**
+ * Resolve package names that must import successfully in one compatibility case.
  * @param profile Selected semantic framework profile.
  * @returns Package names that must resolve in the packed consumer.
  */
@@ -39,11 +83,11 @@ function frameworkPackageNames(profile: string | undefined): string[] {
     case undefined:
       return [];
     case "nest":
-      return ["@nestjs/core"];
+      return ["@nestjs/common", "@nestjs/core", "reflect-metadata", "rxjs"];
     case "next":
-      return ["next"];
+      return ["next", "react", "react-dom"];
     case "react":
-      return ["react"];
+      return ["react", "react-dom"];
     default:
       throw new Error(`Unsupported FRAMEWORK_PROFILE: ${profile}`);
   }
@@ -107,6 +151,11 @@ try {
     )}\n`,
   );
 
+  const frameworkPackages = frameworkInstallPackages(
+    frameworkProfile,
+    frameworkVersion,
+  );
+
   run(
     pnpm,
     [
@@ -115,6 +164,7 @@ try {
       "--save-exact",
       `eslint@${eslintVersion}`,
       `typescript@${typescriptVersion}`,
+      ...frameworkPackages,
       tarball,
     ],
     consumerDir,
