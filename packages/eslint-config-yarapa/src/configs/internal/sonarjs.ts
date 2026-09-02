@@ -1,5 +1,7 @@
 import type { Linter } from "eslint";
+
 import sonarjsPlugin from "eslint-plugin-sonarjs";
+
 /**
  * Strict SonarJS coverage pinned to the explicitly reviewed 4.2.0 rule set.
  * `file-header` remains consumer-owned because a shared config cannot infer a
