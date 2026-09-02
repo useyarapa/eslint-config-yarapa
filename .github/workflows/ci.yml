@@ -207,6 +207,9 @@ jobs:
           elif [ "$status" = 403 ] && grep --ignore-case --quiet "dependency" "$response"; then
             echo "::warning::GitHub Dependency Review is unavailable; using lockfile-scoped fallback."
             echo "available=false" >> "$GITHUB_OUTPUT"
+          elif [ "$status" = 503 ]; then
+            echo "::warning::GitHub Dependency Review is temporarily unavailable; using lockfile-scoped fallback."
+            echo "available=false" >> "$GITHUB_OUTPUT"
           else
             cat "$response"
             echo "::error::Dependency Review API probe failed with HTTP $status."
