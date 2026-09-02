@@ -31,7 +31,7 @@ if ((frameworkProfile === undefined) !== (frameworkVersion === undefined)) {
 }
 
 /**
- * Resolve exact packages installed for one explicit framework compatibility case.
+ * Resolve exact packages installed for one framework compatibility case.
  * @param profile Selected semantic framework profile.
  * @param version Framework version under test.
  * @returns Exact package specifications for the temporary consumer.
@@ -74,7 +74,7 @@ function frameworkInstallPackages(
 }
 
 /**
- * Resolve package names that must import successfully in one compatibility case.
+ * Resolve package names that must import in one compatibility case.
  * @param profile Selected semantic framework profile.
  * @returns Package names that must resolve in the packed consumer.
  */
@@ -195,6 +195,74 @@ try {
     ].join("\n"),
   );
 
+  writeFileSync(
+    resolve(consumerDir, "verify-behavior.mjs"),
+    [
+      "import { ESLint } from \"eslint\";",
+      "import yarapa from \"eslint-config-yarapa\";",
+      "import next from \"eslint-config-yarapa/next\";",
+      "import react from \"eslint-config-yarapa/react\";",
+      "",
+      "async function expectRule(config, filePath, source, expectedRule) {",
+      "  const eslint = new ESLint({",
+      "    cwd: process.cwd(),",
+      "    overrideConfig: config,",
+      "    overrideConfigFile: true,",
+      "  });",
+      "  const [result] = await eslint.lintText(source, { filePath });",
+      "  if (!result) throw new Error(`No lint result for ${filePath}`);",
+      "  const ruleIds = result.messages.map(message => message.ruleId);",
+      "  if (!ruleIds.includes(expectedRule)) {",
+      "    throw new Error(",
+      "      `Expected ${expectedRule} for ${filePath}; got ${ruleIds.join(\", \")}`,
+      "    );",
+      "  }",
+      "}",
+      "",
+      "await expectRule(",
+      "  yarapa,",
+      "  \"sample-invalid.js\",",
+      "  \"export function value() { var answer = 42; return answer; }\\n\",",
+      "  \"no-var\",",
+      ");",
+      "",
+      frameworkProfile === "next"
+        ? [
+            "await expectRule(",
+            "  next,",
+            "  \"sample-next-invalid.jsx\",",
+            "  [",
+            "    \"/** @returns {object} Rendered page. */\",",
+            "    \"export function Page() {\",",
+            "    \"  return <img alt=\\\"YARAPA\\\" src=\\\"/logo.png\\\" />;\",",
+            "    \"}\",",
+            "  ].join(\"\\n\"),",
+            "  \"@next/next/no-img-element\",",
+            ");",
+          ].join("\n")
+        : "",
+      "",
+      frameworkProfile === "react"
+        ? [
+            "await expectRule(",
+            "  react,",
+            "  \"sample-react-invalid.jsx\",",
+            "  [",
+            "    \"import { useState } from \\\"react\\\";\",",
+            "    \"/** @returns {object | null} Rendered component. */\",",
+            "    \"export function Component({ enabled }) {\",",
+            "    \"  if (enabled) useState(0);\",",
+            "    \"  return null;\",",
+            "    \"}\",",
+            "  ].join(\"\\n\"),",
+            "  \"react-hooks/rules-of-hooks\",",
+            ");",
+          ].join("\n")
+        : "",
+      "",
+    ].join("\n"),
+  );
+
   const profileConfigs = {
     nest: "eslint-config-yarapa/nest",
     next: "eslint-config-yarapa/next",
@@ -273,6 +341,7 @@ try {
   );
 
   run(node, ["verify.mjs"], consumerDir);
+  run(node, ["verify-behavior.mjs"], consumerDir);
   run(
     pnpm,
     ["exec", "eslint", "-c", "eslint.root.config.mjs", "sample.js"],
