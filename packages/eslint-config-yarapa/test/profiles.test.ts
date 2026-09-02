@@ -63,7 +63,14 @@ describe("semantic profiles", () => {
       "@stylistic/semi",
       "@typescript-eslint/consistent-type-imports",
       "@typescript-eslint/no-floating-promises",
+      "arrow-body-style",
+      "eqeqeq",
       "import-x/no-duplicates",
+      "no-var",
+      "object-shorthand",
+      "prefer-const",
+      "prefer-object-spread",
+      "prefer-template",
     ]) {
       const resolved = profiles.map(profile => findRule(profile, ruleName));
       const [first, ...rest] = resolved;

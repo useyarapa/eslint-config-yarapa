@@ -22,6 +22,10 @@ function messageSummary(result: ESLint.LintResult): object[] {
 
 describe("shared YARAPA behavior", () => {
   const eslint = eslintForConfigs(yarapa);
+  const javascriptFixture = resolve(
+    packageRoot,
+    "fixtures/valid/base/case.js",
+  );
   const projectRoot = resolve(packageRoot, "fixtures/projects/typed");
 
   it("accepts a typed project source file", async () => {
@@ -46,12 +50,36 @@ describe("shared YARAPA behavior", () => {
 
   it("rejects unused JavaScript variables", async () => {
     const [result] = await eslint.lintText("const unused = 1;\n", {
-      filePath: resolve(packageRoot, "fixtures/valid/base/case.js"),
+      filePath: javascriptFixture,
     });
     const lintResult = required(result, "unused variable lint result");
 
     expect(lintResult.messages.map(message => message.ruleId)).toContain(
       "unused-imports/no-unused-vars",
+    );
+  });
+
+  it("rejects var in shared JavaScript handwriting", async () => {
+    const [result] = await eslint.lintText(
+      "export function increment(value) { var next = value + 1; return next; }\n",
+      { filePath: javascriptFixture },
+    );
+    const lintResult = required(result, "var lint result");
+
+    expect(lintResult.messages.map(message => message.ruleId)).toContain(
+      "no-var",
+    );
+  });
+
+  it("requires strict equality in shared JavaScript handwriting", async () => {
+    const [result] = await eslint.lintText(
+      "export const equivalent = (left, right) => left == right;\n",
+      { filePath: javascriptFixture },
+    );
+    const lintResult = required(result, "equality lint result");
+
+    expect(lintResult.messages.map(message => message.ruleId)).toContain(
+      "eqeqeq",
     );
   });
 });
