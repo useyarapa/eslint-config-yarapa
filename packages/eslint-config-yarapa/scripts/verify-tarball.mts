@@ -146,7 +146,7 @@ try {
     [
       "/**",
       " * Render the Next.js smoke-test page.",
-      " * @returns {JSX.Element} Rendered page.",
+      " * @returns {object} Rendered page.",
       " */",
       "export function Page() {",
       "  return <main>YARAPA</main>;",
@@ -159,7 +159,7 @@ try {
     [
       "/**",
       " * Render the React smoke-test component.",
-      " * @returns {JSX.Element} Rendered component.",
+      " * @returns {object} Rendered component.",
       " */",
       "export function Component() {",
       "  return <div>YARAPA</div>;",
