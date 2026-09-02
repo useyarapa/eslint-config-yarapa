@@ -23,8 +23,6 @@ export const typescript: Linter.Config[] = asFlatConfigArray(
       files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
       name: "yarapa/typescript/recommended",
       rules: {
-        "default-param-last": "off",
-        "no-array-constructor": "off",
         "@typescript-eslint/ban-ts-comment": [
           "error",
           {
@@ -49,6 +47,8 @@ export const typescript: Linter.Config[] = asFlatConfigArray(
         // typescript-eslint rule must stay off to avoid duplicate/
         // conflicting reports on the same bindings.
         "@typescript-eslint/no-unused-vars": "off",
+        "default-param-last": "off",
+        "no-array-constructor": "off",
       },
     },
     {
