@@ -18,6 +18,7 @@ const pnpm
 const node = process.execPath;
 const eslintVersion = process.env.ESLINT_VERSION ?? "10.9.1";
 const typescriptVersion = process.env.TYPESCRIPT_VERSION ?? "6.0.3";
+const nestSampleFile = "sample-nest.ts";
 
 /**
  * Run a consumer-verification command and fail on any non-zero result.
@@ -104,17 +105,17 @@ try {
   );
 
   const profileConfigs = {
-    root: "eslint-config-yarapa",
-    next: "eslint-config-yarapa/next",
     nest: "eslint-config-yarapa/nest",
+    next: "eslint-config-yarapa/next",
     react: "eslint-config-yarapa/react",
+    root: "eslint-config-yarapa",
   } as const;
 
   for (const [name, specifier] of Object.entries(profileConfigs)) {
     writeFileSync(
       resolve(consumerDir, `eslint.${name}.config.mjs`),
       [
-        `import config from \"${specifier}\";`,
+        `import config from "${specifier}";`,
         "",
         "export default config;",
         "",
@@ -132,7 +133,7 @@ try {
           strict: true,
           target: "ES2024",
         },
-        include: ["sample-nest.ts"],
+        include: [nestSampleFile],
       },
       null,
       2,
@@ -143,7 +144,10 @@ try {
   writeFileSync(
     resolve(consumerDir, "sample-next.jsx"),
     [
-      "/** Render the Next.js smoke-test page. */",
+      "/**",
+      " * Render the Next.js smoke-test page.",
+      " * @returns {JSX.Element} Rendered page.",
+      " */",
       "export function Page() {",
       "  return <main>YARAPA</main>;",
       "}",
@@ -153,7 +157,10 @@ try {
   writeFileSync(
     resolve(consumerDir, "sample-react.jsx"),
     [
-      "/** Render the React smoke-test component. */",
+      "/**",
+      " * Render the React smoke-test component.",
+      " * @returns {JSX.Element} Rendered component.",
+      " */",
       "export function Component() {",
       "  return <div>YARAPA</div>;",
       "}",
@@ -161,7 +168,7 @@ try {
     ].join("\n"),
   );
   writeFileSync(
-    resolve(consumerDir, "sample-nest.ts"),
+    resolve(consumerDir, nestSampleFile),
     "export const port = 3000;\n",
   );
 
@@ -178,7 +185,7 @@ try {
   );
   run(
     pnpm,
-    ["exec", "eslint", "-c", "eslint.nest.config.mjs", "sample-nest.ts"],
+    ["exec", "eslint", "-c", "eslint.nest.config.mjs", nestSampleFile],
     consumerDir,
   );
   run(
