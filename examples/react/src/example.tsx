@@ -1,6 +1,6 @@
-type GreetingProps = {
-  readonly name: string;
-};
+import type { GreetingProps } from "./types.js";
+
+import { formatGreeting } from "./greeting.js";
 
 /**
  * Render a typed React component without framework-specific global state.
@@ -9,5 +9,14 @@ type GreetingProps = {
  * @returns Rendered greeting text.
  */
 export function Greeting({ name }: GreetingProps): string {
-  return `Hello, ${name}`;
+  return useGreeting(name);
+}
+
+/**
+ * Compose greeting behavior behind a React custom-hook boundary.
+ * @param name Name included in the greeting.
+ * @returns Normalized greeting text.
+ */
+export function useGreeting(name: string): string {
+  return formatGreeting(name);
 }

@@ -72,9 +72,10 @@ jobs:
           runtime: node@24.20.0
           cache: true
       - run: pnpm --filter eslint-config-yarapa build
-      - run: pnpm exec eslint --config examples/next/eslint.config.mjs examples/next/app/page.tsx
-      - run: pnpm exec eslint --config examples/nest/eslint.config.mjs examples/nest/src/example.service.ts
-      - run: pnpm exec eslint --config examples/react/eslint.config.mjs examples/react/src/example.tsx
+      - run: pnpm exec tsc --noEmit -p examples/tsconfig.json
+      - run: pnpm exec eslint --config examples/next/eslint.config.mjs examples/next
+      - run: pnpm exec eslint --config examples/nest/eslint.config.mjs examples/nest
+      - run: pnpm exec eslint --config examples/react/eslint.config.mjs examples/react
 
   consumer:
     name: consumer

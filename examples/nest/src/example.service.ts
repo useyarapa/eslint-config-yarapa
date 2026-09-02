@@ -1,6 +1,4 @@
-export type MessageRepository = {
-  findMessage(id: string): Promise<string | undefined>;
-};
+import type { MessageRepository } from "./message.repository.js";
 
 /**
  * Small service boundary showing typed async work and explicit error handling.
