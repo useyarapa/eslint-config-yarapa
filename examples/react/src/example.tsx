@@ -1,12 +1,13 @@
-interface GreetingProps {
+type GreetingProps = {
   readonly name: string;
-}
+};
 
 /**
  * Render a typed React component without framework-specific global state.
  * @param props Greeting properties.
- * @returns Rendered greeting.
+ * @param props.name Name included in the rendered greeting.
+ * @returns Rendered greeting text.
  */
-export function Greeting({ name }: GreetingProps) {
-  return <strong>Hello, {name}</strong>;
+export function Greeting({ name }: GreetingProps): string {
+  return `Hello, ${name}`;
 }
