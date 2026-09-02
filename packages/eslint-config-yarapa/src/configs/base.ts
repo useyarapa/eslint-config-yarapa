@@ -12,6 +12,11 @@ import unusedImportsPlugin from "eslint-plugin-unused-imports";
 import { asFlatPlugin } from "./internal/eslintCompat.js";
 import { required } from "./internal/required.js";
 
+const jsRecommendedRules = required(
+  js.configs.recommended.rules,
+  "@eslint/js.configs.recommended.rules",
+);
+
 const promiseRecommended = required(
   promisePlugin.configs["flat/recommended"],
   "eslint-plugin-promise.configs.flat/recommended",
@@ -33,7 +38,7 @@ const regexpRecommended = regexpConfigs["flat/recommended"];
 export const base: Linter.Config[] = [
   {
     name: "yarapa/base/eslint-recommended",
-    rules: { ...js.configs.recommended.rules },
+    rules: { ...jsRecommendedRules },
   },
   {
     name: "yarapa/base/eslint-comments-recommended",

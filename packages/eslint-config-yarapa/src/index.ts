@@ -1,5 +1,7 @@
 import type { Linter } from "eslint";
 
+import type { presetNames } from "./configs/presetNames.js";
+
 import { ava } from "./configs/ava.js";
 import { base } from "./configs/base.js";
 import { browser } from "./configs/browser.js";
@@ -23,22 +25,7 @@ import { vitest } from "./configs/vitest.js";
  * named `configs` export.
  */
 type YarapaConfigs = {
-  ava: Linter.Config[];
-  base: Linter.Config[];
-  browser: Linter.Config[];
-  disableTypeChecked: Linter.Config[];
-  ignores: Linter.Config[];
-  jsdoc: Linter.Config[];
-  json: Linter.Config[];
-  node: Linter.Config[];
-  packageJson: Linter.Config[];
-  recommended: Linter.Config[];
-  security: Linter.Config[];
-  stylistic: Linter.Config[];
-  testingLibrary: Linter.Config[];
-  typeChecked: Linter.Config[];
-  typescript: Linter.Config[];
-  vitest: Linter.Config[];
+  [PresetName in (typeof presetNames)[number]]: Linter.Config[];
 };
 
 /**

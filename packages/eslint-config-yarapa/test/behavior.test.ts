@@ -1,13 +1,13 @@
-import { ESLint } from "eslint";
+import type { ESLint } from "eslint";
+
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-import { required } from "../src/configs/internal/required.js";
-import { configs } from "../src/index.js";
+import type { configs } from "../src/index.js";
 
-const packageRoot = fileURLToPath(new URL("../", import.meta.url));
+import { required } from "../src/configs/internal/required.js";
+import { eslintFor, packageRoot } from "./helpers/eslint.js";
 
 type FixtureCase = {
   compose?: PresetName[];
@@ -26,21 +26,6 @@ type PresetName = keyof typeof configs;
 const fixtureCases = JSON.parse(
   readFileSync(resolve(packageRoot, "fixtures/cases.json"), "utf8"),
 ) as FixtureCase[];
-
-/**
- * Create ESLint for a composed public-preset list.
- * @param presets Public presets to compose.
- * @returns ESLint instance using only the supplied presets.
- */
-function eslintFor(presets: PresetName[]): ESLint {
-  return new ESLint({
-    cwd: packageRoot,
-    overrideConfig: presets.flatMap(preset =>
-      Reflect.get(configs, preset),
-    ),
-    overrideConfigFile: true,
-  });
-}
 
 /**
  * Reduce a lint result to stable diagnostic fields for assertions.

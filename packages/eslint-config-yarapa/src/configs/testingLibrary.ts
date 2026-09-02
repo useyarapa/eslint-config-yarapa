@@ -2,7 +2,13 @@ import type { Linter } from "eslint";
 
 import testingLibraryPlugin from "eslint-plugin-testing-library";
 
-import { vitestFileGlobs } from "./vitest.js";
+import { canonicalTestFileGlobs } from "./internal/canonicalTestFileGlobs.js";
+import { required } from "./internal/required.js";
+
+const domRecommended = required(
+  testingLibraryPlugin.configs["flat/dom"],
+  "eslint-plugin-testing-library.configs.flat/dom",
+);
 
 /**
  * DOM Testing Library capability preset. Add this only to test files that
@@ -13,8 +19,8 @@ import { vitestFileGlobs } from "./vitest.js";
  */
 export const testingLibrary: Linter.Config[] = [
   {
-    ...testingLibraryPlugin.configs["flat/dom"],
-    files: vitestFileGlobs,
+    ...domRecommended,
+    files: canonicalTestFileGlobs,
     name: "yarapa/testing-library/dom",
   },
 ];

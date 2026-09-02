@@ -69,7 +69,7 @@ All values under `configs` are Flat Config arrays and can be passed directly to 
 | `ignores` | Common generated/build-output ignores only. |
 | `security` | Security-focused plugin coverage. |
 | `testingLibrary` | Testing Library rules for applicable tests. |
-| `vitest` | Vitest test-runner rules/globals. |
+| `vitest` | Vitest test-runner rules scoped to the canonical test-file globs. |
 | `ava` | AVA test-runner rules. |
 | `json` | JSON, JSONC, and JSON5 linting. |
 | `packageJson` | `package.json` validity, consistency, and style checks. |

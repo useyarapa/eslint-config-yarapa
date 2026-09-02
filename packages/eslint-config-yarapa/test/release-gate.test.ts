@@ -3,30 +3,15 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
+import { presetNames } from "../src/configs/presetNames.js";
+
 const packageRoot = fileURLToPath(new URL("../", import.meta.url));
 const repoRoot = resolve(packageRoot, "../..");
 const packageJson = JSON.parse(
   readFileSync(resolve(packageRoot, "package.json"), "utf8"),
 ) as { scripts?: Record<string, string> };
 
-const REQUIRED_PRESET_NAMES = [
-  "recommended",
-  "base",
-  "typescript",
-  "typeChecked",
-  "disableTypeChecked",
-  "node",
-  "browser",
-  "stylistic",
-  "ignores",
-  "security",
-  "testingLibrary",
-  "vitest",
-  "ava",
-  "json",
-  "packageJson",
-  "jsdoc",
-] as const;
+const REQUIRED_PRESET_NAMES = presetNames;
 
 describe("release gate structure", () => {
   it.each([

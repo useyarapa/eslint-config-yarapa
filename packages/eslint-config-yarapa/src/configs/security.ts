@@ -3,10 +3,15 @@ import type { Linter } from "eslint";
 // eslint-disable-next-line import-x/default -- CJS default is intentional.
 import securityPlugin from "eslint-plugin-security";
 
-const securityConfigs = securityPlugin["configs"];
-
 import { asFlatPlugin } from "./internal/eslintCompat.js";
 import { required } from "./internal/required.js";
+
+// eslint-plugin-security is CommonJS and its bundled @types declare named
+// exports that Node's CJS interop does not provide at runtime, so the
+// namespace must be reached through the default import, so the rule below
+// is suppressed for this audited access.
+// eslint-disable-next-line import-x/no-named-as-default-member -- CJS interop.
+const { configs: securityConfigs } = securityPlugin;
 
 const securityRecommended = required(
   securityConfigs.recommended,

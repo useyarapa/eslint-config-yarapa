@@ -23,8 +23,9 @@ const jsRecommendedRules = required(
 
 /**
  * Import resolution and dependency-boundary checks. Not independently
- * exported: `docs/POLICY.md` lists import-x as a `recommended`-only
- * universal control. Applies the TypeScript resolver settings to
+ * exported: import-x is a `recommended`-only universal control, so it is
+ * folded into `recommended` rather than exposed as its own preset. Applies
+ * the TypeScript resolver settings to
  * TypeScript files so import-x can resolve `.ts`/`.tsx`/`.cts`/`.mts`
  * specifiers against the nearest TypeScript project (backed by the
  * `eslint-import-resolver-typescript` direct dependency, activated via
