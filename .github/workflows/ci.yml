@@ -142,16 +142,18 @@ jobs:
           runtime: node@24.15.0
           cache: true
       - name: Print exact SonarJS 4.2.0 rule keys
+        working-directory: packages/eslint-config-yarapa
         run: >-
           node --input-type=module -e
           "import sonarjs from 'eslint-plugin-sonarjs';
           console.log(JSON.stringify(Object.keys(sonarjs.rules).sort()))"
       - name: Generate framework dependency lockfile diff
+        working-directory: packages/eslint-config-yarapa
         run: |
-          pnpm --filter eslint-config-yarapa add --save-exact --lockfile-only \
+          pnpm add --save-exact --lockfile-only \
             @next/eslint-plugin-next@16.3.4 \
             eslint-plugin-react-hooks@7.1.1
-          git diff -- packages/eslint-config-yarapa/package.json pnpm-lock.yaml
+          git diff -- package.json ../../pnpm-lock.yaml
 
   ci:
     name: ci
