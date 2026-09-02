@@ -235,9 +235,9 @@ jobs:
         with:
           runtime: node@24.20.0
           cache: true
-      - name: Audit production dependencies when the resolved graph changes
+      - name: Audit dependencies when the resolved graph changes
         if: steps.dependency-review-availability.outputs.available == 'false' && steps.dependency-change.outputs.changed == 'true'
-        run: pnpm audit --prod --audit-level high
+        run: pnpm audit --audit-level high
 
   gitleaks:
     name: gitleaks
