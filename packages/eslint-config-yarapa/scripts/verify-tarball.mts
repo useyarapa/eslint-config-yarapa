@@ -79,9 +79,11 @@ function frameworkInstallPackages(
  * @returns Package names that must resolve in the packed consumer.
  */
 function frameworkPackageNames(profile: string | undefined): string[] {
+  if (profile === undefined) {
+    return [];
+  }
+
   switch (profile) {
-    case undefined:
-      return [];
     case "nest":
       return ["@nestjs/common", "@nestjs/core", "reflect-metadata", "rxjs"];
     case "next":
