@@ -89,14 +89,14 @@ try {
   writeFileSync(
     resolve(consumerDir, "verify.mjs"),
     [
-      'import yarapa from "eslint-config-yarapa";',
-      'import next from "eslint-config-yarapa/next";',
-      'import nest from "eslint-config-yarapa/nest";',
-      'import react from "eslint-config-yarapa/react";',
+      "import yarapa from \"eslint-config-yarapa\";",
+      "import next from \"eslint-config-yarapa/next\";",
+      "import nest from \"eslint-config-yarapa/nest\";",
+      "import react from \"eslint-config-yarapa/react\";",
       "",
       "for (const profile of [yarapa, next, nest, react]) {",
       "  if (!Array.isArray(profile) || profile.length === 0) {",
-      '    throw new Error("Expected non-empty Flat Config array");',
+      "    throw new Error(\"Expected non-empty Flat Config array\");",
       "  }",
       "}",
       "",
@@ -104,7 +104,7 @@ try {
   );
   writeFileSync(
     resolve(consumerDir, "eslint.config.mjs"),
-    'import yarapa from "eslint-config-yarapa";\n\nexport default yarapa;\n',
+    "import yarapa from \"eslint-config-yarapa\";\n\nexport default yarapa;\n",
   );
   writeFileSync(
     resolve(consumerDir, "sample.js"),
