@@ -6,6 +6,10 @@ import { describe, expect, it } from "vitest";
 
 const packageRoot = fileURLToPath(new URL("../", import.meta.url));
 const repoRoot = resolve(packageRoot, "../..");
+const gitExecutable
+  = process.platform === "win32"
+    ? "C:\\Program Files\\Git\\cmd\\git.exe"
+    : "/usr/bin/git";
 
 /**
  * Read a repository-owned text file for governance assertions.
@@ -70,7 +74,7 @@ describe("enterprise repository gates", () => {
   });
 
   it("keeps the legacy Markdown reset in effect", () => {
-    const trackedMarkdown = execFileSync("/usr/bin/git", ["ls-files", "*.md"], {
+    const trackedMarkdown = execFileSync(gitExecutable, ["ls-files", "*.md"], {
       cwd: repoRoot,
       encoding: "utf8",
     }).trim();
