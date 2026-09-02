@@ -220,7 +220,8 @@ jobs:
             --directory "$RUNNER_TEMP/gitleaks" \
             gitleaks
       - name: Scan Git history for secrets
-        run: "$RUNNER_TEMP/gitleaks/gitleaks" git --redact --verbose .
+        run: |
+          "$RUNNER_TEMP/gitleaks/gitleaks" git --redact --verbose .
 
   ci:
     name: ci
