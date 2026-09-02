@@ -1,6 +1,9 @@
+import type eslintJs from "@eslint/js";
 import type { Linter } from "eslint";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
+
+const ESLINT_JS_MODULE = "@eslint/js";
 
 /**
  * Resolve the final configured value for one rule across a config array.
@@ -26,15 +29,15 @@ function findRule(
 }
 
 afterEach(() => {
-  vi.doUnmock("@eslint/js");
+  vi.doUnmock(ESLINT_JS_MODULE);
   vi.resetModules();
 });
 
 describe("static rule policy", () => {
   it("does not inherit newly exported upstream rules implicitly", async () => {
     vi.resetModules();
-    vi.doMock("@eslint/js", async importOriginal => {
-      const original = await importOriginal<typeof import("@eslint/js")>();
+    vi.doMock(ESLINT_JS_MODULE, async importOriginal => {
+      const original = await importOriginal<typeof eslintJs>();
       const recommended = original.configs.recommended;
 
       return {
