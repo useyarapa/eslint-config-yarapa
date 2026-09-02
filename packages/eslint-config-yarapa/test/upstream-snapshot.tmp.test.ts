@@ -20,7 +20,7 @@ import { describe, expect, it } from "vitest";
  */
 describe("upstream rule snapshot", () => {
   it("prints pinned rule maps", () => {
-    // eslint-disable-next-line import-x/no-named-as-default-member -- CJS interop.
+    // eslint-disable-next-line import-x/no-named-as-default-member -- CJS.
     const securityConfigs = securityPlugin.configs;
     const stylisticCustomized = stylisticPlugin.configs.customize({
       arrowParens: false,
