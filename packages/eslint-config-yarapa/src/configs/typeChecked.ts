@@ -25,11 +25,13 @@ export const typeChecked: Linter.Config[] = asFlatConfigArray(
     },
     name: "yarapa/type-checked/recommended",
     rules: {
+      "dot-notation": "off",
       "@typescript-eslint/await-thenable": "error",
       "@typescript-eslint/consistent-type-exports": [
         "error",
         { fixMixedExportsWithInlineTypeSpecifier: false },
       ],
+      "@typescript-eslint/dot-notation": "error",
       "@typescript-eslint/no-floating-promises": "error",
       "@typescript-eslint/no-misused-promises": "error",
       "@typescript-eslint/no-unnecessary-type-assertion": "error",

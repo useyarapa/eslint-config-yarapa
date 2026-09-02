@@ -23,6 +23,8 @@ export const typescript: Linter.Config[] = asFlatConfigArray(
       files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
       name: "yarapa/typescript/recommended",
       rules: {
+        "default-param-last": "off",
+        "no-array-constructor": "off",
         "@typescript-eslint/ban-ts-comment": [
           "error",
           {
@@ -37,6 +39,8 @@ export const typescript: Linter.Config[] = asFlatConfigArray(
           "error",
           { fixStyle: "separate-type-imports", prefer: "type-imports" },
         ],
+        "@typescript-eslint/default-param-last": "error",
+        "@typescript-eslint/no-array-constructor": "error",
         "@typescript-eslint/no-import-type-side-effects": "error",
         "@typescript-eslint/no-non-null-assertion": "error",
         // `unused-imports/no-unused-vars` (from `base`) is the active

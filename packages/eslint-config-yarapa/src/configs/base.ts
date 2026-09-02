@@ -83,12 +83,21 @@ const modernJavaScriptRules: Linter.RulesRecord = {
     "as-needed",
     { requireReturnForObjectLiteral: false },
   ],
+  curly: ["error", "all"],
+  "default-param-last": "error",
+  "dot-notation": "error",
   eqeqeq: ["error", "always"],
+  "no-array-constructor": "error",
+  "no-object-constructor": "error",
   "no-var": "error",
   "object-shorthand": ["error", "always"],
   "prefer-const": "error",
+  "prefer-object-has-own": "error",
   "prefer-object-spread": "error",
+  "prefer-rest-params": "error",
+  "prefer-spread": "error",
   "prefer-template": "error",
+  radix: "error",
 };
 
 const promiseRecommended = required(
