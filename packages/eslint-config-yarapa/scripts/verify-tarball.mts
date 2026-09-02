@@ -21,6 +21,7 @@ const typescriptVersion = process.env.TYPESCRIPT_VERSION ?? "6.0.3";
 const frameworkProfile = process.env.FRAMEWORK_PROFILE;
 const frameworkVersion = process.env.FRAMEWORK_VERSION;
 const frameworkReactVersion = process.env.FRAMEWORK_REACT_VERSION;
+const expectRuleCall = "await expectRule(";
 const nestSampleFile = "sample-nest.ts";
 const nestServiceFile = "sample-nest-service.ts";
 
@@ -161,6 +162,7 @@ try {
   run(
     pnpm,
     [
+      "--allow-build=sharp",
       "--allow-build=unrs-resolver",
       "add",
       "--save-exact",
@@ -219,7 +221,7 @@ try {
       "  }",
       "}",
       "",
-      "await expectRule(",
+      expectRuleCall,
       "  yarapa,",
       "  \"sample-invalid.js\",",
       "  \"export function value() { var answer = 42; return answer; }\\n\",",
@@ -228,7 +230,7 @@ try {
       "",
       frameworkProfile === "next"
         ? [
-            "await expectRule(",
+            expectRuleCall,
             "  next,",
             "  \"sample-next-invalid.jsx\",",
             "  [",
@@ -244,7 +246,7 @@ try {
       "",
       frameworkProfile === "react"
         ? [
-            "await expectRule(",
+            expectRuleCall,
             "  react,",
             "  \"sample-react-invalid.jsx\",",
             "  [",
