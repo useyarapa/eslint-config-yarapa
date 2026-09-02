@@ -4,7 +4,7 @@
 
 **Goal:** Replace Release Please with Changesets v3 + changesets/action v2 as the single release/versioning system while preserving npm Trusted Publishing/OIDC, provenance, package verification, and GitHub Releases.
 
-**Architecture:** Changeset files in feature PRs become the release source of truth. A push to `main` runs the official Changesets v2 split sub-actions: `select-mode` decides whether to create/update a Version Packages PR or publish; `version` gets only GitHub write permissions; `pack` verifies and packages with read-only repository access; `publish` alone receives `id-token: write` and creates npm releases/tags/GitHub Releases. Release Please is removed completely, and the migration carries one bootstrap minor changeset so the already-unreleased work since `eslint-config-yarapa@0.2.0` becomes the replacement `0.3.0` Version Packages PR after migration.
+**Architecture:** Changeset files in feature PRs become the release source of truth. A push to `main` runs the official Changesets v2 split sub-actions: `select-mode` decides whether to create/update a Version Packages PR or publish; `version` gets only GitHub write permissions; `pack` rebuilds/verifies and creates the publish artifact with read-only repository access; `publish` alone receives `id-token: write` and creates npm releases/tags/GitHub Releases. Release Please is removed completely, and the migration carries one bootstrap minor Changeset so the unreleased work since `eslint-config-yarapa@0.2.0` becomes the replacement `0.3.0` Version Packages PR after migration.
 
 **Tech Stack:** pnpm 11, Node.js 24.20.0 in release automation, `@changesets/cli@3.0.1`, `changesets/action@v2.1.1` pinned to commit `8488615a623b1b9c987934bb89eae8af6a946ac1`, GitHub Actions, npm Trusted Publishing/OIDC.
 
@@ -13,12 +13,12 @@
 ## Global Constraints
 
 - Changesets is the only release/versioning source of truth after migration; no Release Please fallback remains.
-- Use `@changesets/cli` v3 and `changesets/action` v2 official actions; do not write a custom release state machine or release helper script.
-- Pin `changesets/action` to immutable commit `8488615a623b1b9c987934bb89eae8af6a946ac1` (v2.1.1).
+- Use `@changesets/cli` v3 and official `changesets/action` v2 sub-actions; do not write a custom release state machine or release helper script.
+- Pin every Changesets action use to immutable commit `8488615a623b1b9c987934bb89eae8af6a946ac1` (v2.1.1).
 - Keep npm Trusted Publishing/OIDC; do not add `NPM_TOKEN`, PATs, GitHub App secrets, or other release credentials.
 - Grant `id-token: write` only to the publish job.
 - Keep `@repo/typescript-config-yarapa` private and non-publishable.
-- Preserve existing `lint`, typecheck, build, tests, `publint`, `attw`, and packed-consumer verification before publish.
+- Preserve existing lint, typecheck, build, tests, `publint`, `attw`, and packed-consumer verification before publish.
 - Do not publish, tag, or merge an automatically generated Version Packages PR during migration.
 - Close Release Please PR #46 without merging before the migration PR is merged.
 - Do not weaken existing CI, rulesets, or security checks.
@@ -60,19 +60,15 @@ Expected: root `package.json` gains `@changesets/cli: 3.0.1` in `devDependencies
 
 - [ ] **Step 3: Add standard root scripts**
 
-Set these entries in root `package.json`:
+Add these entries to the existing root `scripts` object without changing the current scripts:
 
 ```json
 {
-  "scripts": {
-    "changeset": "changeset",
-    "changeset:status": "changeset status --since main",
-    "version-packages": "changeset version"
-  }
+  "changeset": "changeset",
+  "changeset:status": "changeset status --since main",
+  "version-packages": "changeset version"
 }
 ```
-
-Keep every existing script unchanged.
 
 - [ ] **Step 4: Create standard Changesets configuration with private-package publishing disabled**
 
@@ -101,7 +97,7 @@ Do not add a custom changelog module or release plugin.
 
 Create `.changeset/README.md` with this content:
 
-```md
+````md
 # Changesets
 
 Release-impacting pull requests should include a Changeset.
@@ -121,7 +117,7 @@ pnpm changeset --empty
 ```
 
 `eslint-config-yarapa` is publishable. `@repo/typescript-config-yarapa` is private and must not be published.
-```
+````
 
 - [ ] **Step 6: Add one bootstrap Changeset for the already-unreleased work since 0.2.0**
 
@@ -135,7 +131,7 @@ Create `.changeset/bootstrap-v0-3-0.md`:
 Complete the v1 ESLint configuration surface and repository-readiness work, including canonical framework presets and packed-consumer verification.
 ```
 
-This deliberately replaces the release intent represented by Release Please PR #46 so the first Changesets Version Packages PR targets `0.3.0`, not `0.2.1`.
+This replaces the release intent represented by Release Please PR #46 so the first Changesets Version Packages PR targets `0.3.0`, not `0.2.1`.
 
 - [ ] **Step 7: Verify CLI/config/package selection locally**
 
@@ -166,7 +162,6 @@ Expected: PASS.
 
 ```bash
 git add package.json pnpm-lock.yaml .changeset
-
 git commit -m "build: adopt Changesets release metadata"
 ```
 
@@ -179,7 +174,7 @@ git commit -m "build: adopt Changesets release metadata"
 - Delete: `.github/workflows/release-please.yml`
 
 **Interfaces:**
-- Consumes: `@changesets/cli@3.0.1`, `.changeset/config.json`, existing `pnpm --filter eslint-config-yarapa verify` command.
+- Consumes: `@changesets/cli@3.0.1`, `.changeset/config.json`, and existing `pnpm --filter eslint-config-yarapa verify`.
 - Produces: mode selection, Version Packages PR creation/update, verified packed publish artifact, Trusted Publishing/OIDC npm publish, git tags, and GitHub Releases.
 
 - [ ] **Step 1: Record the old workflow dependency before replacement**
@@ -192,9 +187,9 @@ grep -n "release-please-action" .github/workflows/release-please.yml
 
 Expected before implementation: at least one match.
 
-- [ ] **Step 2: Create `.github/workflows/release.yml` using only maintained actions**
+- [ ] **Step 2: Create `.github/workflows/release.yml` using maintained actions and upstream permission isolation**
 
-Create the workflow exactly around this job/permission structure:
+Create:
 
 ```yaml
 name: Release
@@ -204,12 +199,11 @@ on:
     branches:
       - main
 
-permissions:
-  contents: read
-
 concurrency:
-  group: release-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
+
+permissions: {}
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -325,28 +319,28 @@ Run:
 git rm .github/workflows/release-please.yml
 ```
 
-- [ ] **Step 4: Verify immutable action pinning and permission isolation**
+- [ ] **Step 4: Verify immutable pinning and permission isolation**
 
 Run:
 
 ```bash
 grep -n "changesets/action/" .github/workflows/release.yml
-grep -n "id-token: write" .github/workflows/release.yml
+test "$(grep -c "id-token: write" .github/workflows/release.yml)" -eq 1
 ! grep -R "release-please-action" .github/workflows
 ! grep -R -E "NPM_TOKEN|NODE_AUTH_TOKEN|_authToken" .github/workflows/release.yml
 ```
 
 Expected:
-- every Changesets sub-action is pinned to `8488615a623b1b9c987934bb89eae8af6a946ac1`;
-- exactly one `id-token: write` exists and it is in `publish`;
+- all four Changesets sub-actions use `8488615a623b1b9c987934bb89eae8af6a946ac1`;
+- exactly one `id-token: write` exists and it is under `publish`;
 - no Release Please action remains;
 - no token-based npm auth remains.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add .github/workflows/release.yml .github/workflows/release-please.yml
-
+git add .github/workflows/release.yml
+git add -u .github/workflows/release-please.yml
 git commit -m "ci: replace Release Please with Changesets"
 ```
 
@@ -359,7 +353,7 @@ git commit -m "ci: replace Release Please with Changesets"
 - Modify: `README.md`
 
 **Interfaces:**
-- Consumes: official `changeset status --since <ref>` behavior from `@changesets/cli`.
+- Consumes: official `pnpm exec changeset status --since "$BASE_SHA"` behavior.
 - Produces: PR-only `changesets` CI job and inclusion in aggregate `ci`; contributor instructions in the main README.
 
 - [ ] **Step 1: Add a PR-only Changesets status job to `ci.yml`**
@@ -389,7 +383,7 @@ Add this job before `diagnostic-snapshot`:
         run: pnpm exec changeset status --since "$BASE_SHA"
 ```
 
-This intentionally uses Changesets' own package-diff logic. Do not add path allowlists, labels, a custom bot, or a custom exemption script.
+Do not add path allowlists, labels, a custom bot, or a custom exemption script.
 
 - [ ] **Step 2: Add `changesets` to aggregate `ci` without breaking push builds**
 
@@ -399,7 +393,7 @@ Add `changesets` under `ci.needs`, add:
           CHANGESETS_RESULT: ${{ needs.changesets.result }}
 ```
 
-and extend the existing event-specific block to require:
+and change the existing event-specific block to:
 
 ```sh
 if [ "$EVENT_NAME" = "pull_request" ]; then
@@ -411,13 +405,13 @@ else
 fi
 ```
 
-Keep all existing required job assertions unchanged.
+Keep every existing success assertion unchanged.
 
 - [ ] **Step 3: Document the developer flow in `README.md`**
 
-Add a concise `## Contributing releases` section near existing development/contribution guidance:
+Add this section near development/contribution guidance:
 
-```md
+````md
 ## Contributing releases
 
 This workspace uses [Changesets](https://github.com/changesets/changesets) for package versioning and release notes.
@@ -431,7 +425,7 @@ pnpm changeset
 Choose `eslint-config-yarapa`, select the semver impact, and write a user-facing summary. For changes with intentionally no package release impact, use `pnpm changeset --empty`.
 
 Merging normal PRs does not publish directly. Changesets creates or updates a `chore: version packages` PR on `main`; publishing occurs only after that version PR is merged and the npm Trusted Publisher path succeeds.
-```
+````
 
 Do not document Conventional Commits as the source of semver intent.
 
@@ -461,7 +455,6 @@ Expected: PASS.
 
 ```bash
 git add .github/workflows/ci.yml README.md
-
 git commit -m "ci: require Changesets release intent"
 ```
 
@@ -475,7 +468,7 @@ git commit -m "ci: require Changesets release intent"
 
 **Interfaces:**
 - Consumes: Changesets workflow/config from Tasks 1-3.
-- Produces: repository tree with no Release Please source of truth.
+- Produces: repository tree with no Release Please executable source of truth.
 
 - [ ] **Step 1: Delete Release Please state files**
 
@@ -485,7 +478,7 @@ Run:
 git rm release-please-config.json .release-please-manifest.json
 ```
 
-- [ ] **Step 2: Prove no Release Please configuration/action reference remains**
+- [ ] **Step 2: Prove no executable Release Please reference remains**
 
 Run:
 
@@ -493,7 +486,7 @@ Run:
 ! git grep -n -i "release-please" -- ':!docs/superpowers/**'
 ```
 
-Expected: exit 0; historical design/plan docs may mention the migration but executable repository configuration does not.
+Expected: exit 0; historical design/plan documents may mention the migration, but executable repository configuration does not.
 
 - [ ] **Step 3: Prove only one publish architecture exists**
 
@@ -506,7 +499,7 @@ grep -R -n "changesets/action/publish" .github/workflows
 ```
 
 Expected:
-- exactly one release workflow owns publication: `.github/workflows/release.yml`;
+- `.github/workflows/release.yml` is the only release publication workflow;
 - publication is delegated to `changesets/action/publish`;
 - no independent raw `npm publish` path remains.
 
@@ -525,8 +518,7 @@ Expected: all commands PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add release-please-config.json .release-please-manifest.json
-
+git add -u release-please-config.json .release-please-manifest.json
 git commit -m "chore: remove Release Please state"
 ```
 
@@ -538,7 +530,7 @@ git commit -m "chore: remove Release Please state"
 - No repository file changes expected unless review requires corrections.
 
 **Interfaces:**
-- Consumes: completed migration branch with Tasks 1-4 committed.
+- Consumes: completed `refactor/changesets-release` implementation branch with Tasks 1-4 committed.
 - Produces: PR #46 closed without merge; one migration PR linked to #47; green CI/review gates; no release/publish side effect.
 
 - [ ] **Step 1: Re-read PR #46 immediately before mutation**
@@ -557,11 +549,6 @@ Run:
 
 ```bash
 gh pr close 46 -R useyarapa/eslint-config-yarapa --comment "Superseded by #47. Release automation is migrating to Changesets v3; this Release Please PR must not be merged."
-```
-
-Then verify:
-
-```bash
 gh pr view 46 -R useyarapa/eslint-config-yarapa --json state,mergedAt
 ```
 
@@ -574,10 +561,10 @@ Run:
 ```bash
 git diff --check main...HEAD
 git diff --stat main...HEAD
-git diff main...HEAD -- package.json .changeset .github/workflows README.md release-please-config.json .release-please-manifest.json
+git diff main...HEAD -- package.json pnpm-lock.yaml .changeset .github/workflows README.md release-please-config.json .release-please-manifest.json
 ```
 
-Reject the branch if any of these are present:
+Reject the branch if any of these are present in executable configuration:
 
 ```text
 NPM_TOKEN
@@ -602,17 +589,17 @@ gh pr create \
   --body $'Closes #47\n\nReplaces Release Please with Changesets v3 + changesets/action v2 split sub-actions. Keeps npm Trusted Publishing/OIDC, isolates id-token permission to publish, preserves package verification, and removes the hybrid release path.\n\nMigration safety: this PR does not publish, create tags, or merge an automated version PR.'
 ```
 
-If execution uses a different implementation branch name, substitute only the actual branch name; do not retarget the spec-only branch.
-
-- [ ] **Step 5: Wait for and inspect all required checks**
+- [ ] **Step 5: Resolve the migration PR number and wait for all required checks**
 
 Run:
 
 ```bash
-gh pr checks <MIGRATION_PR_NUMBER> -R useyarapa/eslint-config-yarapa --watch
+migration_pr="$(gh pr list -R useyarapa/eslint-config-yarapa --head refactor/changesets-release --state open --json number --jq '.[0].number')"
+test -n "$migration_pr"
+gh pr checks "$migration_pr" -R useyarapa/eslint-config-yarapa --watch
 ```
 
-Expected required gates include the existing CI topology plus the new `changesets` job and aggregate `ci`. Resolve every actionable review conversation before merge; do not bypass rulesets.
+Expected required gates include the existing CI topology, the new `changesets` job, aggregate `ci`, and configured review integrations. Resolve every actionable review conversation before merge; do not bypass rulesets.
 
 - [ ] **Step 6: Verify no publish/tag/release was triggered by the migration PR itself**
 
@@ -625,22 +612,26 @@ gh api repos/useyarapa/eslint-config-yarapa/tags --jq '.[0:10] | map(.name)'
 
 Expected: no new release/tag attributable to the migration branch or PR.
 
-- [ ] **Step 7: Merge only the migration PR after all gates pass**
+- [ ] **Step 7: Re-read the migration head and merge only that PR after all gates pass**
 
-Use the repository-supported squash merge and expected head SHA:
+Run:
 
 ```bash
-gh pr merge <MIGRATION_PR_NUMBER> \
+migration_pr="$(gh pr list -R useyarapa/eslint-config-yarapa --head refactor/changesets-release --state open --json number --jq '.[0].number')"
+head_sha="$(gh pr view "$migration_pr" -R useyarapa/eslint-config-yarapa --json headRefOid --jq .headRefOid)"
+test -n "$head_sha"
+gh pr merge "$migration_pr" \
   -R useyarapa/eslint-config-yarapa \
   --squash \
-  --delete-branch
+  --delete-branch \
+  --match-head-commit "$head_sha"
 ```
 
 Do not merge any generated `chore: version packages` PR in this task.
 
-- [ ] **Step 8: Verify the first post-migration `main` run enters Changesets version mode**
+- [ ] **Step 8: Verify the first post-migration `main` Release run enters version mode**
 
-After the migration PR lands, inspect the `Release` workflow run and verify:
+Inspect the Release workflow run created by the migration merge and verify:
 
 ```text
 select-mode = success
@@ -650,13 +641,7 @@ pack = skipped
 publish = skipped
 ```
 
-Then verify GitHub contains an open Changesets-generated PR titled:
-
-```text
-chore: version packages
-```
-
-and that its version change for `eslint-config-yarapa` is `0.2.0 -> 0.3.0` because of `.changeset/bootstrap-v0-3-0.md`.
+Then verify GitHub contains an open Changesets-generated PR titled `chore: version packages` and its version change for `eslint-config-yarapa` is `0.2.0 -> 0.3.0` because of `.changeset/bootstrap-v0-3-0.md`.
 
 - [ ] **Step 9: Stop before publishing and record the registry-side prerequisite**
 
