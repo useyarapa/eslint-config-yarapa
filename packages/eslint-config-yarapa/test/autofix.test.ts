@@ -88,12 +88,12 @@ describe("autofix safety and idempotence", () => {
   it("normalizes template strings and object shorthand once", async () => {
     const output = await fixTwice(
       yarapa,
-      "export function greet(name) { const value = \"Hello \" + name; return { value: value }; }\n",
+      "export const greet = name => { const value = \"Hello \" + name; return { value: value }; };\n",
       "fixtures/autofix/modern-js.js",
     );
 
     expect(output).toBe(
-      "export function greet(name) { const value = `Hello ${name}`; return { value }; }\n",
+      "export const greet = name => { const value = `Hello ${name}`; return { value }; };\n",
     );
   });
 
