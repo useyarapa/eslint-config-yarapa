@@ -8,7 +8,7 @@ const packageRoot = fileURLToPath(new URL("../", import.meta.url));
 const repoRoot = resolve(packageRoot, "../..");
 const gitExecutable
   = process.platform === "win32"
-    ? "C:\\Program Files\\Git\\cmd\\git.exe"
+    ? "git.exe"
     : "/usr/bin/git";
 
 /**
