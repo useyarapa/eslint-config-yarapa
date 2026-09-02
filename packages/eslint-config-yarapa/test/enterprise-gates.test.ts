@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -5,6 +6,10 @@ import { describe, expect, it } from "vitest";
 
 const packageRoot = fileURLToPath(new URL("../", import.meta.url));
 const repoRoot = resolve(packageRoot, "../..");
+const gitExecutable
+  = process.platform === "win32"
+    ? "git.exe"
+    : "/usr/bin/git";
 
 /**
  * Read a repository-owned text file for governance assertions.
@@ -57,10 +62,9 @@ describe("enterprise repository gates", () => {
     expect(ci).toContain(domain);
   });
 
-  it("has non-empty collaboration governance files", () => {
+  it("has non-empty non-documentation governance files", () => {
     for (const relativePath of [
       ".github/CODEOWNERS",
-      ".github/pull_request_template.md",
       ".github/dependabot.yml",
     ]) {
       const absolutePath = resolve(repoRoot, relativePath);
@@ -69,8 +73,25 @@ describe("enterprise repository gates", () => {
     }
   });
 
-  it("does not expose the Turborepo starter README", () => {
-    expect(readRepoFile("README.md")).not.toContain("# Turborepo starter");
+  it("keeps the legacy Markdown reset in effect", () => {
+    const trackedMarkdown = execFileSync(gitExecutable, ["ls-files", "*.md"], {
+      cwd: repoRoot,
+      encoding: "utf8",
+    }).trim();
+
+    expect(trackedMarkdown).toBe("");
+
+    for (const relativePath of [
+      ".github/pull_request_template.md",
+      "AGENTS.md",
+      "CLAUDE.md",
+      "CONTEXT.md",
+      "GEMINI.md",
+      "README.md",
+      "packages/eslint-config-yarapa/README.md",
+    ]) {
+      expect(existsSync(resolve(repoRoot, relativePath))).toBe(false);
+    }
   });
 
   it("uses ESLint as the sole repository formatting path", () => {
