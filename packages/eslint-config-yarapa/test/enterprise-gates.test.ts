@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -69,6 +70,13 @@ describe("enterprise repository gates", () => {
   });
 
   it("keeps the legacy Markdown reset in effect", () => {
+    const trackedMarkdown = execFileSync("git", ["ls-files", "*.md"], {
+      cwd: repoRoot,
+      encoding: "utf8",
+    }).trim();
+
+    expect(trackedMarkdown).toBe("");
+
     for (const relativePath of [
       ".github/pull_request_template.md",
       "AGENTS.md",
