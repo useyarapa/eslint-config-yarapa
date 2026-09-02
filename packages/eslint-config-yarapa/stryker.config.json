@@ -5,7 +5,8 @@
   "testRunner": "vitest",
   "reporters": ["html", "clear-text", "progress"],
   "coverageAnalysis": "perTest",
-  "mutate": ["src/**/*.ts", "!src/**/*.d.ts"],
+  "disableTypeChecks": "src/**/*.ts",
+  "mutate": ["src/**/*.ts"],
   "thresholds": {
     "high": 80,
     "low": 60,
