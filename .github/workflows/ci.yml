@@ -180,7 +180,47 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+      - name: Probe GitHub Dependency Review availability
+        id: dependency-review-availability
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          response="$RUNNER_TEMP/dependency-review-probe.json"
+          status="$(
+            curl --silent --show-error \
+              --output "$response" \
+              --write-out "%{http_code}" \
+              --header "Accept: application/vnd.github+json" \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/dependency-graph/compare/$BASE_SHA...$HEAD_SHA"
+          )"
+
+          if [ "$status" = 200 ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          elif [ "$status" = 403 ] && grep --ignore-case --quiet "dependency" "$response"; then
+            echo "::warning::GitHub Dependency Review is unavailable; using pnpm audit fallback."
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          else
+            cat "$response"
+            echo "::error::Dependency Review API probe failed with HTTP $status."
+            exit 1
+          fi
+      - name: Review dependency changes with GitHub
+        if: steps.dependency-review-availability.outputs.available == 'true'
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+      - name: Set up pnpm for dependency audit fallback
+        if: steps.dependency-review-availability.outputs.available == 'false'
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          runtime: node@24.20.0
+          cache: true
+      - name: Audit production dependencies when GitHub review is unavailable
+        if: steps.dependency-review-availability.outputs.available == 'false'
+        run: pnpm audit --prod --audit-level high
 
   gitleaks:
     name: gitleaks
@@ -242,6 +282,35 @@ jobs:
               --log-opts="$BASE_SHA..$HEAD_SHA" .
           fi
 
+  diagnostic-snapshot:
+    name: diagnostic-snapshot
+    if: always()
+    needs:
+      - lint
+      - test
+      - check-types
+      - build
+      - consumer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Preserve legacy required check during ruleset migration
+        env:
+          BUILD_RESULT: ${{ needs.build.result }}
+          CHECK_TYPES_RESULT: ${{ needs.check-types.result }}
+          CONSUMER_RESULT: ${{ needs.consumer.result }}
+          LINT_RESULT: ${{ needs.lint.result }}
+          TEST_RESULT: ${{ needs.test.result }}
+        run: |
+          for result in \
+            "$BUILD_RESULT" \
+            "$CHECK_TYPES_RESULT" \
+            "$CONSUMER_RESULT" \
+            "$LINT_RESULT" \
+            "$TEST_RESULT"
+          do
+            test "$result" = success
+          done
+
   ci:
     name: ci
     if: always()
@@ -257,6 +326,7 @@ jobs:
       - windows-consumer
       - dependency-review
       - gitleaks
+      - diagnostic-snapshot
     runs-on: ubuntu-latest
     steps:
       - name: Require all verification jobs
@@ -266,6 +336,7 @@ jobs:
           COMPATIBILITY_RESULT: ${{ needs.compatibility.result }}
           CONSUMER_RESULT: ${{ needs.consumer.result }}
           DEPENDENCY_REVIEW_RESULT: ${{ needs.dependency-review.result }}
+          DIAGNOSTIC_SNAPSHOT_RESULT: ${{ needs.diagnostic-snapshot.result }}
           EVENT_NAME: ${{ github.event_name }}
           EXAMPLES_RESULT: ${{ needs.examples.result }}
           FRAMEWORK_COMPATIBILITY_RESULT: ${{ needs.framework-compatibility.result }}
@@ -285,6 +356,7 @@ jobs:
             "$CHECK_TYPES_RESULT" \
             "$COMPATIBILITY_RESULT" \
             "$CONSUMER_RESULT" \
+            "$DIAGNOSTIC_SNAPSHOT_RESULT" \
             "$EXAMPLES_RESULT" \
             "$FRAMEWORK_COMPATIBILITY_RESULT" \
             "$GITLEAKS_RESULT" \
