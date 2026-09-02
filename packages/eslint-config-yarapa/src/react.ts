@@ -2,15 +2,16 @@ import type { Linter } from "eslint";
 
 import globals from "globals";
 
+import { reactHooks } from "./configs/internal/reactHooks.js";
 import { recommended } from "./configs/recommended.js";
 
 /**
- * React component-library profile: shared YARAPA handwriting plus browser and
- * JSX language semantics. React-specific plugin deltas are layered separately
- * once their behavior is covered by framework-focused tests.
+ * React component-library profile: shared YARAPA handwriting plus browser,
+ * JSX, and maintained React Hooks correctness semantics.
  */
 const react: Linter.Config[] = [
   ...recommended,
+  ...reactHooks,
   {
     languageOptions: {
       globals: { ...globals.browser },
