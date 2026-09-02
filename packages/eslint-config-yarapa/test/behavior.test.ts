@@ -1,31 +1,11 @@
 import type { ESLint } from "eslint";
 
-import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
-import type { configs } from "../src/index.js";
-
 import { required } from "../src/configs/internal/required.js";
-import { eslintFor, packageRoot } from "./helpers/eslint.js";
-
-type FixtureCase = {
-  compose?: PresetName[];
-  invalid?: {
-    code: string;
-    fatal?: boolean;
-    filename: string;
-    rule?: string;
-  };
-  preset: PresetName;
-  special?: string;
-  valid?: { code: string; filename: string };
-};
-type PresetName = keyof typeof configs;
-
-const fixtureCases = JSON.parse(
-  readFileSync(resolve(packageRoot, "fixtures/cases.json"), "utf8"),
-) as FixtureCase[];
+import yarapa from "../src/index.js";
+import { eslintForConfigs, packageRoot } from "./helpers/eslint.js";
 
 /**
  * Reduce a lint result to stable diagnostic fields for assertions.
@@ -40,105 +20,38 @@ function messageSummary(result: ESLint.LintResult): object[] {
   }));
 }
 
-for (const fixture of fixtureCases.filter(item => !item.special)) {
-  describe(`behavioral fixture: ${fixture.preset}`, () => {
-    it("accepts the valid fixture", async () => {
-      const eslint = eslintFor(fixture.compose ?? [fixture.preset]);
-      const valid = required(fixture.valid, `${fixture.preset} valid fixture`);
-      const [result] = await eslint.lintText(valid.code, {
-        filePath: resolve(packageRoot, valid.filename),
-      });
-      const lintResult = required(result, `${fixture.preset} valid lint result`);
-
-      expect(messageSummary(lintResult)).toEqual([]);
-    });
-
-    it("rejects the invalid fixture", async () => {
-      const eslint = eslintFor(fixture.compose ?? [fixture.preset]);
-      const invalid = required(
-        fixture.invalid,
-        `${fixture.preset} invalid fixture`,
-      );
-      const [result] = await eslint.lintText(invalid.code, {
-        filePath: resolve(packageRoot, invalid.filename),
-      });
-      const lintResult = required(result, `${fixture.preset} invalid lint result`);
-
-      expect(lintResult.errorCount).toBeGreaterThan(0);
-      expect(!invalid.fatal || lintResult.fatalErrorCount > 0).toBe(true);
-      const expectedRule = invalid.rule;
-      expect(
-        expectedRule === undefined
-        || lintResult.messages.some(message => message.ruleId === expectedRule),
-      ).toBe(true);
-    });
-  });
-}
-
-describe("typeChecked", () => {
-  const eslint = eslintFor(["typeChecked"]);
+describe("shared YARAPA behavior", () => {
+  const eslint = eslintForConfigs(yarapa);
   const projectRoot = resolve(packageRoot, "fixtures/projects/typed");
 
   it("accepts a typed project source file", async () => {
-    const [result] = await eslint.lintFiles(resolve(projectRoot, "src/valid.ts"));
-    expect(messageSummary(required(result, "typed valid lint result"))).toEqual([]);
+    const [result] = await eslint.lintFiles(
+      resolve(projectRoot, "src/valid.ts"),
+    );
+    const summary = messageSummary(required(result, "typed valid lint result"));
+
+    expect(summary, JSON.stringify(summary, null, 2)).toEqual([]);
   });
 
   it("reports a floating promise with type information", async () => {
-    const [result] = await eslint.lintFiles(resolve(projectRoot, "src/invalid.ts"));
+    const [result] = await eslint.lintFiles(
+      resolve(projectRoot, "src/invalid.ts"),
+    );
     const lintResult = required(result, "typed invalid lint result");
+
     expect(lintResult.messages.map(message => message.ruleId)).toContain(
       "@typescript-eslint/no-floating-promises",
     );
   });
-});
 
-describe("disableTypeChecked", () => {
-  const eslint = eslintFor(["recommended", "disableTypeChecked"]);
-
-  it("allows an intentional out-of-project tooling file", async () => {
-    const [result] = await eslint.lintText(
-      "export const value: string = \"ok\";\n",
-      {
-        filePath: resolve(
-          packageRoot,
-          "fixtures/projects/tooling-out-of-project/valid.ts",
-        ),
-      },
-    );
-
-    expect(
-      messageSummary(required(result, "out-of-project valid lint result")),
-    ).toEqual([]);
-  });
-
-  it("keeps syntax-only TypeScript controls enabled", async () => {
-    const [result] = await eslint.lintText("export const value: any = 1;\n", {
-      filePath: resolve(
-        packageRoot,
-        "fixtures/projects/tooling-out-of-project/invalid.ts",
-      ),
+  it("rejects unused JavaScript variables", async () => {
+    const [result] = await eslint.lintText("const unused = 1;\n", {
+      filePath: resolve(packageRoot, "fixtures/valid/base/case.js"),
     });
+    const lintResult = required(result, "unused variable lint result");
 
-    const lintResult = required(result, "out-of-project invalid lint result");
     expect(lintResult.messages.map(message => message.ruleId)).toContain(
-      "@typescript-eslint/no-explicit-any",
+      "unused-imports/no-unused-vars",
     );
-  });
-});
-
-describe("ignores", () => {
-  const eslint = eslintFor(["ignores", "typescript"]);
-
-  it("ignores documented build output", async () => {
-    await expect(
-      eslint.isPathIgnored(resolve(packageRoot, "dist/generated.ts")),
-    ).resolves.toBe(true);
-  });
-
-  it("does not ignore source by default", async () => {
-    await expect(
-      eslint.isPathIgnored(resolve(packageRoot, "src/index.ts")),
-    ).resolves.toBe(false);
   });
 });

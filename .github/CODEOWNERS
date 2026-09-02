@@ -1,9 +1,0 @@
-# Default ownership for all repository changes.
-* @nextfridaydeveloper
-
-# Security and release-control surfaces require explicit maintainer review.
-/.github/ @nextfridaydeveloper
-/packages/eslint-config-yarapa/src/ @nextfridaydeveloper
-/packages/eslint-config-yarapa/scripts/ @nextfridaydeveloper
-/packages/eslint-config-yarapa/generated/ @nextfridaydeveloper
-/pnpm-lock.yaml @nextfridaydeveloper

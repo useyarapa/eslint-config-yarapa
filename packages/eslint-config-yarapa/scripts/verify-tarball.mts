@@ -18,14 +18,11 @@ const pnpm
 const node = process.execPath;
 const eslintVersion = process.env.ESLINT_VERSION ?? "10.9.1";
 const typescriptVersion = process.env.TYPESCRIPT_VERSION ?? "6.0.3";
-const builtEntryUrl = new URL("../dist/index.mjs", import.meta.url).href;
-const { configs } = (await import(builtEntryUrl)) as {
-  configs: Record<string, unknown>;
-};
-const expectedPresets = Object.keys(configs).sort();
+const nestSampleFile = "sample-nest.ts";
+const nestServiceFile = "sample-nest-service.ts";
 
 /**
- * Run a certification command and fail on any non-zero result.
+ * Run a consumer-verification command and fail on any non-zero result.
  * @param command Executable to run.
  * @param args Command arguments.
  * @param cwd Working directory for the command.
@@ -39,7 +36,9 @@ function run(command: string, args: string[], cwd: string): void {
 
   if (result.error) throw result.error;
   if (result.status !== 0) {
-    throw new Error(`${command} ${args.join(" ")} failed with ${result.status}`);
+    throw new Error(
+      `${command} ${args.join(" ")} failed with ${result.status}`,
+    );
   }
 }
 
@@ -76,9 +75,6 @@ try {
     )}\n`,
   );
 
-  // pnpm 11 blocks unreviewed dependency build scripts by default. The
-  // TypeScript import resolver requires unrs-resolver's postinstall, so the
-  // disposable smoke consumer explicitly approves only that known build.
   run(
     pnpm,
     [
@@ -94,19 +90,119 @@ try {
 
   writeFileSync(
     resolve(consumerDir, "verify.mjs"),
-    `import { configs } from "eslint-config-yarapa";\n\nconst expected = ${JSON.stringify(expectedPresets)};\nconst actual = Object.keys(configs).sort();\nif (JSON.stringify(actual) !== JSON.stringify(expected)) {\n  throw new Error(\`Unexpected public presets: \${actual.join(", ")}\`);\n}\n`,
+    [
+      "import yarapa from \"eslint-config-yarapa\";",
+      "import next from \"eslint-config-yarapa/next\";",
+      "import nest from \"eslint-config-yarapa/nest\";",
+      "import react from \"eslint-config-yarapa/react\";",
+      "",
+      "for (const profile of [yarapa, next, nest, react]) {",
+      "  if (!Array.isArray(profile) || profile.length === 0) {",
+      "    throw new Error(\"Expected non-empty Flat Config array\");",
+      "  }",
+      "}",
+      "",
+    ].join("\n"),
+  );
+
+  const profileConfigs = {
+    nest: "eslint-config-yarapa/nest",
+    next: "eslint-config-yarapa/next",
+    react: "eslint-config-yarapa/react",
+    root: "eslint-config-yarapa",
+  } as const;
+
+  for (const [name, specifier] of Object.entries(profileConfigs)) {
+    writeFileSync(
+      resolve(consumerDir, `eslint.${name}.config.mjs`),
+      [
+        `import config from "${specifier}";`,
+        "",
+        "export default config;",
+        "",
+      ].join("\n"),
+    );
+  }
+
+  writeFileSync(
+    resolve(consumerDir, "tsconfig.json"),
+    `${JSON.stringify(
+      {
+        compilerOptions: {
+          module: "NodeNext",
+          moduleResolution: "NodeNext",
+          strict: true,
+          target: "ES2022",
+        },
+        include: [nestSampleFile, nestServiceFile],
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
+  writeFileSync(resolve(consumerDir, "sample.js"), "export const answer = 42;\n");
+  writeFileSync(
+    resolve(consumerDir, "sample-next.jsx"),
+    [
+      "/**",
+      " * Render the Next.js smoke-test page.",
+      " * @returns {object} Rendered page.",
+      " */",
+      "export function Page() {",
+      "  return <main>YARAPA</main>;",
+      "}",
+      "",
+    ].join("\n"),
   );
   writeFileSync(
-    resolve(consumerDir, "eslint.config.mjs"),
-    `import { configs } from "eslint-config-yarapa";\n\nexport default configs.base;\n`,
+    resolve(consumerDir, "sample-react.jsx"),
+    [
+      "/**",
+      " * Render the React smoke-test component.",
+      " * @returns {object} Rendered component.",
+      " */",
+      "export function Component() {",
+      "  return <div>YARAPA</div>;",
+      "}",
+      "",
+    ].join("\n"),
   );
   writeFileSync(
-    resolve(consumerDir, "sample.js"),
-    "export const answer = 42;\n",
+    resolve(consumerDir, nestServiceFile),
+    "export const port = 3000;\n",
+  );
+  writeFileSync(
+    resolve(consumerDir, nestSampleFile),
+    [
+      "import \"./sample-nest-service\";",
+      "",
+      "export const configuredPort = 3000;",
+      "",
+    ].join("\n"),
   );
 
   run(node, ["verify.mjs"], consumerDir);
-  run(pnpm, ["exec", "eslint", "sample.js"], consumerDir);
+  run(
+    pnpm,
+    ["exec", "eslint", "-c", "eslint.root.config.mjs", "sample.js"],
+    consumerDir,
+  );
+  run(
+    pnpm,
+    ["exec", "eslint", "-c", "eslint.next.config.mjs", "sample-next.jsx"],
+    consumerDir,
+  );
+  run(
+    pnpm,
+    ["exec", "eslint", "-c", "eslint.nest.config.mjs", nestSampleFile, nestServiceFile],
+    consumerDir,
+  );
+  run(
+    pnpm,
+    ["exec", "eslint", "-c", "eslint.react.config.mjs", "sample-react.jsx"],
+    consumerDir,
+  );
 } finally {
   rmSync(tempRoot, { force: true, recursive: true });
 }

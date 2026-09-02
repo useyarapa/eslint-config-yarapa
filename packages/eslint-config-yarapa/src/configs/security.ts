@@ -1,6 +1,5 @@
 import type { Linter } from "eslint";
 
-// eslint-disable-next-line import-x/default -- CJS default is intentional.
 import securityPlugin from "eslint-plugin-security";
 
 import { asFlatPlugin } from "./internal/eslintCompat.js";
@@ -29,8 +28,8 @@ const securityRecommendedRules = required(
 );
 
 /**
- * `eslint-plugin-security` recommended coverage with every recommended
- * warning promoted to error, per the mandatory plugin policy.
+ * Security-plugin recommended coverage with every recommended warning
+ * promoted to error under YARAPA's zero-warning policy.
  */
 export const security: Linter.Config[] = [
   {

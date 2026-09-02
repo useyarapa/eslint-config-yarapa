@@ -9,7 +9,8 @@
     "src/**/*.ts",
     "scripts/**/*.ts",
     "scripts/**/*.mts",
-    "test/**/*.ts"
+    "test/**/*.ts",
+    "*.config.ts"
   ],
   "exclude": ["dist", "node_modules"]
 }
