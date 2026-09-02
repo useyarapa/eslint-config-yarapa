@@ -214,7 +214,7 @@ try {
       "  const ruleIds = result.messages.map(message => message.ruleId);",
       "  if (!ruleIds.includes(expectedRule)) {",
       "    throw new Error(",
-      "      `Expected ${expectedRule} for ${filePath}; got ${ruleIds.join(\", \")}`,
+      "      `Expected ${expectedRule} for ${filePath}; got ${ruleIds.join(\", \")}`",
       "    );",
       "  }",
       "}",
