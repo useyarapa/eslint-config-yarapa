@@ -311,21 +311,33 @@ jobs:
       contents: read
     steps:
       - name: Recognize Changesets version PR
-        if: startsWith(github.head_ref, 'changeset-release/')
+        if: >-
+          github.head_ref == format('changeset-release/{0}', github.base_ref) &&
+          github.event.pull_request.user.login == 'github-actions[bot]' &&
+          github.event.pull_request.head.repo.full_name == github.repository
         run: echo "Changesets version PR already contains consumed release intent."
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        if: ${{ !startsWith(github.head_ref, 'changeset-release/') }}
+        if: >-
+          github.head_ref != format('changeset-release/{0}', github.base_ref) ||
+          github.event.pull_request.user.login != 'github-actions[bot]' ||
+          github.event.pull_request.head.repo.full_name != github.repository
         with:
           fetch-depth: 0
           persist-credentials: false
       - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
-        if: ${{ !startsWith(github.head_ref, 'changeset-release/') }}
+        if: >-
+          github.head_ref != format('changeset-release/{0}', github.base_ref) ||
+          github.event.pull_request.user.login != 'github-actions[bot]' ||
+          github.event.pull_request.head.repo.full_name != github.repository
         with:
           runtime: node@24.20.0
           cache: true
           require-lockfile: true
       - name: Require release intent for changed packages
-        if: ${{ !startsWith(github.head_ref, 'changeset-release/') }}
+        if: >-
+          github.head_ref != format('changeset-release/{0}', github.base_ref) ||
+          github.event.pull_request.user.login != 'github-actions[bot]' ||
+          github.event.pull_request.head.repo.full_name != github.repository
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: pnpm exec changeset status --since "$BASE_SHA"
