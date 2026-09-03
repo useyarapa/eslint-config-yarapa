@@ -14,15 +14,6 @@ const customized = stylisticPlugin.configs.customize({
   semi: true,
 });
 
-/**
- * The mandatory stylistic standard for JavaScript and TypeScript source:
- * two-space indentation, no tabs, semicolons, double quotes, trailing
- * commas wherever the grammar allows them, spaced brackets, `avoid`-style
- * arrow parens, LF line endings (enforced repository-wide through
- * `.gitattributes`, not through this preset), and an 80-character line
- * limit with exemptions for URLs, string literals, template literals, and
- * regular expressions that cannot be split without changing their value.
- */
 export const stylistic: Linter.Config[] = [
   {
     name: "yarapa/stylistic/recommended",
@@ -52,12 +43,6 @@ export const stylistic: Linter.Config[] = [
     files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
     name: "yarapa/stylistic/typescript-type-definitions",
     rules: {
-      // The mandatory stylistic standard selects `type` as the standard
-      // object-shape form. `.d.ts` files may still declare `interface`
-      // for cases such as declaration merging that only interfaces
-      // support; this rule stays enabled there too because that use is
-      // an explicitly justified, reviewable exception rather than a
-      // blanket carve-out.
       "@typescript-eslint/consistent-type-definitions": ["error", "type"],
     },
   },

@@ -4,11 +4,6 @@ import reactHooksPlugin from "eslint-plugin-react-hooks";
 
 import { asFlatPlugin } from "./eslintCompat.js";
 
-/**
- * React Hooks correctness shared by React and Next.js profiles. The rule set
- * is an explicit snapshot of the maintained 7.1.1 flat recommended config;
- * YARAPA promotes upstream warnings to errors to preserve zero-warning CI.
- */
 export const reactHooks: Linter.Config[] = [
   {
     files: [

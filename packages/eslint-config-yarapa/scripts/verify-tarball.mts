@@ -31,12 +31,6 @@ if ((frameworkProfile === undefined) !== (frameworkVersion === undefined)) {
   );
 }
 
-/**
- * Resolve exact packages installed for one framework compatibility case.
- * @param profile Selected semantic framework profile.
- * @param version Framework version under test.
- * @returns Exact package specifications for the temporary consumer.
- */
 function frameworkInstallPackages(
   profile: string | undefined,
   version: string | undefined,
@@ -74,11 +68,6 @@ function frameworkInstallPackages(
   }
 }
 
-/**
- * Resolve package names that must import in one compatibility case.
- * @param profile Selected semantic framework profile.
- * @returns Package names that must resolve in the packed consumer.
- */
 function frameworkPackageNames(profile: string | undefined): string[] {
   if (profile === undefined) {
     return [];
@@ -96,12 +85,6 @@ function frameworkPackageNames(profile: string | undefined): string[] {
   }
 }
 
-/**
- * Run a consumer-verification command and fail on any non-zero result.
- * @param command Executable to run.
- * @param args Command arguments.
- * @param cwd Working directory for the command.
- */
 function run(command: string, args: string[], cwd: string): void {
   const result = spawnSync(command, args, {
     cwd,

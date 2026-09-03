@@ -1,8 +1,7 @@
 /**
- * Return a required upstream value or fail with context.
- * @param value Candidate upstream value.
- * @param label Human-readable upstream config label.
- * @returns The non-null upstream value.
+ * @param value - value to assert is non-null
+ * @param label - name of the required config for error messages
+ * @returns the value, guaranteed non-null
  */
 export function required<T>(
   value: null | T | undefined,

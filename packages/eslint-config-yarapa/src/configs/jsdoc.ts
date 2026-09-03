@@ -21,12 +21,6 @@ const tsRecommendedPlugin = required(
   "eslint-plugin-jsdoc.configs.flat/recommended-typescript-error.plugins.jsdoc",
 );
 
-/**
- * JSDoc recommended-error coverage for JavaScript and TypeScript files.
- * TypeScript files use the TypeScript-flavored recommended variant so that
- * type-annotation-only JSDoc tags are not required when the type is already
- * expressed in TypeScript syntax.
- */
 export const jsdoc: Linter.Config[] = [
   {
     files: ["**/*.js", "**/*.mjs", "**/*.cjs", "**/*.jsx"],
