@@ -115,20 +115,6 @@ Test files keep the same generic YARAPA handwriting as production source. YARAPA
 
 When a project needs runner-specific correctness rules, compose the maintained runner/library Flat Config explicitly and scope it to the project's test files. Keep generic formatting, imports, TypeScript safety, async/error handling, naming, and suppression discipline on the shared YARAPA owners.
 
-## Canonical examples
-
-The repository contains executable examples under:
-
-- `examples/next`
-- `examples/nest`
-- `examples/react`
-
-Their repository-local `eslint.config.mjs` files load the built workspace artifact so CI can lint the examples before publication. Consumer projects should use the package imports shown in the quick starts above.
-
-Together the examples demonstrate value imports and type-only imports, typed module boundaries, async work and explicit error handling, an App Router-shaped Next.js page boundary, React component/custom-hook composition, and a NestJS service/repository boundary.
-
-The examples are intentionally dependency-light. Real framework package installation and config loading are verified separately through packed-consumer compatibility jobs.
-
 ## Troubleshooting
 
 ### TypeScript file is not part of a project

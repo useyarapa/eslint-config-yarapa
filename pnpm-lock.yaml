@@ -92,9 +92,6 @@ importers:
       eslint-plugin-regexp:
         specifier: 3.2.0
         version: 3.2.0(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))
-      eslint-plugin-security:
-        specifier: 4.0.1
-        version: 4.0.1
       eslint-plugin-sonarjs:
         specifier: 4.2.0
         version: 4.2.0(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))
@@ -117,9 +114,6 @@ importers:
       '@types/eslint-plugin-promise':
         specifier: 7.3.0
         version: 7.3.0
-      '@types/eslint-plugin-security':
-        specifier: 3.0.1
-        version: 3.0.1
       '@types/node':
         specifier: 26.4.0
         version: 26.4.0
@@ -964,9 +958,6 @@ packages:
 
   '@types/eslint-plugin-promise@7.3.0':
     resolution: {integrity: sha512-ewgA05z38/jROcbOEs1VFZ5A5rEOYxSQvsWl1xALLUAvwEEdHO7xHS0Y1UQrOgh1w05CUaRIxXyM1HkjeeG5Iw==}
-
-  '@types/eslint-plugin-security@3.0.1':
-    resolution: {integrity: sha512-z+v78aGgONHyq7mMaXgzG+10HonH0HBubSLDbTXdNGyCLtM3c29MdDc9hQzHO9pDan4WYHWdULVOJyzszqDuqg==}
 
   '@types/eslint@9.6.1':
     resolution: {integrity: sha512-FXx2pKgId/WyYo2jXw63kk7/+TY7u7AziEJxJAnSFzHlqTAS3Ync6SvgYAN/k4/PQpnnVuzoMuVnByKK2qp0ag==}
@@ -1896,10 +1887,6 @@ packages:
     peerDependencies:
       eslint: '>=9.38.0'
 
-  eslint-plugin-security@4.0.1:
-    resolution: {integrity: sha512-/lZCkOxPOWaf1jXAqgICrS8St3BMBccIPvhOSUYuV6VCr1o5nFVG998FnTLt6w2Nxb8Uo0nM8fzmnhp+GY/aEg==}
-    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
-
   eslint-plugin-sonarjs@4.2.0:
     resolution: {integrity: sha512-bqADfuNtTL7VK6RU29eoiFTtaaBKIpVPuX3bOl+rBpWSBa0zIBVZlqZNZQjfP6s4iXkAJokv5IsD8OsACkwApg==}
     peerDependencies:
@@ -2586,10 +2573,6 @@ packages:
     resolution: {integrity: sha512-sZuz1dYW/ZsfG17WSAG7eS85r5a0dDsvg+7BiiYR5o6lKCAtUrEwdmRmaGF6rwVj3LcmAeYkOWKEPlbPzN3Y3A==}
     engines: {node: ^12.0.0 || ^14.0.0 || >=16.0.0}
 
-  regexp-tree@0.1.27:
-    resolution: {integrity: sha512-iETxpjK6YoRWJG5o6hXLwvjYAoW+FEZn9os0PD/b6AP6xQwsa/Y7lCVgIixBbUPMfhu+i2LtdeAqVTgGlQarfA==}
-    hasBin: true
-
   require-directory@2.1.1:
     resolution: {integrity: sha512-fGxEI7+wsG9xrvdjsrlmL22OMTTiHRwAMroiEeMgq8gzoLC/PQr7RsRDSTLUg/bZAZtF+TVIkHc6/4RIKrui+Q==}
     engines: {node: '>=0.10.0'}
@@ -2650,9 +2633,6 @@ packages:
   sade@1.8.1:
     resolution: {integrity: sha512-xal3CZX1Xlo/k4ApwCFrHVACi9fBqJ7V+mwhBsuf/1IOKbBy098Fex+Wa/5QMubw09pSZ/u8EY8PWgevJsXp1A==}
     engines: {node: '>=6'}
-
-  safe-regex@2.1.1:
-    resolution: {integrity: sha512-rx+x8AMzKb5Q5lQ95Zoi6ZbJqwCLkqi3XuJXp5P3rT8OEc6sZCJG5AE5dU3lsgRr/F4Bs31jSlVN+j5KrsGu9A==}
 
   scslre@0.3.0:
     resolution: {integrity: sha512-3A6sD0WYP7+QrjbfNA2FN3FsOaGGFoekCVgTyypy53gPxhbkCIjtO6YWgdrfM+n/8sI8JeXZOIxsHjMTNxQ4nQ==}
@@ -3889,10 +3869,6 @@ snapshots:
     dependencies:
       '@types/eslint': 9.6.1
 
-  '@types/eslint-plugin-security@3.0.1':
-    dependencies:
-      '@types/eslint': 9.6.1
-
   '@types/eslint@9.6.1':
     dependencies:
       '@types/estree': 1.0.9
@@ -4682,10 +4658,6 @@ snapshots:
       regexp-ast-analysis: 0.7.1
       scslre: 0.3.0
 
-  eslint-plugin-security@4.0.1:
-    dependencies:
-      safe-regex: 2.1.1
-
   eslint-plugin-sonarjs@4.2.0(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0)):
     dependencies:
       '@eslint-community/regexpp': 4.12.2
@@ -5348,8 +5320,6 @@ snapshots:
       '@eslint-community/regexpp': 4.12.2
       refa: 0.12.1
 
-  regexp-tree@0.1.27: {}
-
   require-directory@2.1.1: {}
 
   require-from-string@2.0.2: {}
@@ -5408,10 +5378,6 @@ snapshots:
   sade@1.8.1:
     dependencies:
       mri: 1.2.0
-
-  safe-regex@2.1.1:
-    dependencies:
-      regexp-tree: 0.1.27
 
   scslre@0.3.0:
     dependencies:

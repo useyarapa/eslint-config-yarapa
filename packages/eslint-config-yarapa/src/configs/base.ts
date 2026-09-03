@@ -1,7 +1,8 @@
 import type { Linter } from "eslint";
 
-import commentsPlugin, {
+import {
   configs as commentsConfigs,
+  rules as commentsRules,
 } from "@eslint-community/eslint-plugin-eslint-comments";
 import promisePlugin from "eslint-plugin-promise";
 import { configs as regexpConfigs } from "eslint-plugin-regexp";
@@ -9,6 +10,9 @@ import unusedImportsPlugin from "eslint-plugin-unused-imports";
 
 import { asFlatPlugin } from "./internal/eslintCompat.js";
 import { required } from "./internal/required.js";
+
+const { configs: promiseConfigs } = promisePlugin;
+const { rules: unusedImportsRules } = unusedImportsPlugin;
 
 const jsRecommendedRules: Linter.RulesRecord = {
   "constructor-super": "error",
@@ -101,7 +105,7 @@ const modernJavaScriptRules: Linter.RulesRecord = {
 };
 
 const promiseRecommended = required(
-  promisePlugin.configs["flat/recommended"],
+  promiseConfigs["flat/recommended"],
   "eslint-plugin-promise.configs.flat/recommended",
 );
 const promiseRecommendedPlugin = asFlatPlugin(
@@ -112,12 +116,6 @@ const promiseRecommendedPlugin = asFlatPlugin(
 );
 const regexpRecommended = regexpConfigs["flat/recommended"];
 
-/**
- * Universally relevant, non-type-aware JavaScript baseline: ESLint core
- * recommended coverage, deliberate modern JavaScript handwriting, Promise
- * and asynchronous control-flow checks, regular-expression checks,
- * unused-import controls, and auditable ESLint suppression comments.
- */
 export const base: Linter.Config[] = [
   {
     name: "yarapa/base/eslint-recommended",
@@ -130,7 +128,7 @@ export const base: Linter.Config[] = [
   {
     name: "yarapa/base/eslint-comments-recommended",
     plugins: {
-      "@eslint-community/eslint-comments": commentsPlugin,
+      "@eslint-community/eslint-comments": asFlatPlugin({ rules: commentsRules }),
     },
     rules: {
       ...commentsConfigs.recommended.rules,
@@ -156,7 +154,7 @@ export const base: Linter.Config[] = [
   },
   {
     name: "yarapa/base/unused-imports",
-    plugins: { "unused-imports": unusedImportsPlugin },
+    plugins: { "unused-imports": asFlatPlugin({ rules: unusedImportsRules }) },
     rules: {
       "no-unused-vars": "off",
       "unused-imports/no-unused-imports": "error",

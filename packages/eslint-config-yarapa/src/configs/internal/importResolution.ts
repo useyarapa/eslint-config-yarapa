@@ -21,21 +21,6 @@ const jsRecommendedRules = required(
   "eslint-plugin-import-x.configs.flat/recommended.rules",
 );
 
-/**
- * Import resolution and dependency-boundary checks. Not independently
- * exported: import-x is a `recommended`-only universal control, so it is
- * folded into `recommended` rather than exposed as its own preset. Applies
- * the TypeScript resolver settings to
- * TypeScript files so import-x can resolve `.ts`/`.tsx`/`.cts`/`.mts`
- * specifiers against the nearest TypeScript project (backed by the
- * `eslint-import-resolver-typescript` direct dependency, activated via
- * `settings["import-x/resolver"]` below, exactly as the upstream
- * `flat/typescript` preset configures it).
- *
- * Per the mandatory plugin policy, every recommended warning is promoted
- * to error so a repository without `--max-warnings=0` cannot pass CI
- * while violating the Banking Baseline.
- */
 export const importResolution: Linter.Config[] = [
   {
     name: "yarapa/internal/import-x-recommended",

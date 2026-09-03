@@ -14,11 +14,6 @@ const nodeRecommendedPlugin = required(
   "eslint-plugin-n.configs.flat/recommended-module.plugins.n",
 );
 
-/**
- * Node.js runtime capability preset. Applies Node.js globals and the
- * `eslint-plugin-n` recommended-module Upstream Baseline. Scope this preset
- * to files that actually run on Node.js; do not apply it to browser files.
- */
 export const node: Linter.Config[] = [
   {
     languageOptions: {

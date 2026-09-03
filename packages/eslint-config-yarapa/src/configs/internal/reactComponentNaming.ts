@@ -1,9 +1,5 @@
 import type { Linter } from "eslint";
 
-/**
- * React component naming shared by React and Next.js semantic profiles.
- * SonarJS keeps validating function names while allowing PascalCase components.
- */
 export const reactComponentNaming: Linter.Config[] = [
   {
     files: [

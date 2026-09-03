@@ -8,10 +8,6 @@ import { reactComponentNaming } from "./configs/internal/reactComponentNaming.js
 import { reactHooks } from "./configs/internal/reactHooks.js";
 import { recommended } from "./configs/recommended.js";
 
-/**
- * Next.js application profile: shared YARAPA handwriting plus browser, Node,
- * JSX, React Hooks, and maintained Next.js framework correctness semantics.
- */
 const next: Linter.Config[] = [
   ...recommended,
   ...reactHooks,
