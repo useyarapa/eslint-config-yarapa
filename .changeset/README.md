@@ -16,4 +16,4 @@ For changes with intentionally no package release impact, use the standard empty
 pnpm changeset --empty
 ```
 
-`eslint-config-yarapa` is publishable. `@repo/typescript-config-yarapa` is private and must not be published.
+`eslint-config-yarapa` is the only package in this monorepo and is publishable.

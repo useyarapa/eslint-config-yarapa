@@ -108,9 +108,6 @@ importers:
       '@arethetypeswrong/cli':
         specifier: 0.18.5
         version: 0.18.5
-      '@repo/typescript-config-yarapa':
-        specifier: workspace:*
-        version: link:../typescript-config-yarapa
       '@types/eslint-plugin-promise':
         specifier: 7.3.0
         version: 7.3.0
@@ -135,8 +132,6 @@ importers:
       vitest:
         specifier: 4.1.11
         version: 4.1.11(@types/node@26.4.0)(@vitest/coverage-v8@4.1.11)(vite@8.2.2(@types/node@26.4.0)(jiti@2.7.0)(yaml@2.9.0))
-
-  packages/typescript-config-yarapa: {}
 
 packages:
 

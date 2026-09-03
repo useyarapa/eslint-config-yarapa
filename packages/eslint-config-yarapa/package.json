@@ -80,7 +80,6 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
-    "@repo/typescript-config-yarapa": "workspace:*",
     "@types/eslint-plugin-promise": "7.3.0",
     "@types/node": "26.4.0",
     "@vitest/coverage-v8": "4.1.11",
