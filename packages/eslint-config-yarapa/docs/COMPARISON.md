@@ -6,17 +6,17 @@ A comprehensive technical comparison evaluating `eslint-config-yarapa` against l
 
 ## 1. Global Benchmark Matrix
 
-| Feature / Standard                    | `eslint-config-yarapa`                | `@antfu/eslint-config`               | Airbnb (`airbnb-typescript`)      | Vercel (`@vercel/style-guide`) | Shopify (`@shopify/eslint-plugin`) | Google (`gts`)            |
-| :------------------------------------ | :------------------------------------ | :----------------------------------- | :-------------------------------- | :----------------------------- | :--------------------------------- | :------------------------ |
-| **Native ESLint 9/10 Flat Config**    | 🟢 **100% Native Pure Arrays**        | 🟢 Factory Function                  | 🔴 Legacy `.eslintrc` only        | 🟡 Partial / WIP               | 🔴 Legacy `.eslintrc`              | 🔴 Legacy `.eslintrc`     |
-| **Type-Aware via `projectService`**   | 🟢 **Built-in First-Class**           | 🟡 Opt-in (Disabled by default)      | 🔴 Slow (`parserOptions.project`) | 🟡 Opt-in                      | 🔴 Slow legacy parser              | 🟡 Opt-in                 |
-| **Cognitive Complexity (`sonarjs`)**  | 🟢 **Integrated**                     | 🔴 No                                | 🔴 No                             | 🔴 No                          | 🔴 No                              | 🔴 No                     |
-| **Anti-ReDoS Protection (`regexp`)**  | 🟢 **Integrated**                     | 🔴 No                                | 🔴 No                             | 🔴 No                          | 🔴 No                              | 🔴 No                     |
-| **Natural Sorting (`perfectionist`)** | 🟢 **Integrated**                     | 🟢 Integrated                        | 🔴 No                             | 🔴 No                          | 🔴 No                              | 🔴 No                     |
-| **Zero Inline Suppression Policy**    | 🟢 **Enforced by Contract**           | 🔴 Permissive                        | 🔴 Permissive                     | 🔴 Permissive                  | 🔴 Permissive                      | 🔴 Permissive             |
-| **Deterministic (Anti-Magic)**        | 🟢 **100% Explicit**                  | 🔴 Ambient Sniffing (`package.json`) | 🟢 Explicit                       | 🟢 Explicit                    | 🟢 Explicit                        | 🟢 Explicit               |
-| **Modern Stylistic (`@stylistic`)**   | 🟢 **Integrated (Replaces Prettier)** | 🟢 Integrated                        | 🔴 Deprecated Core Rules          | 🟡 Uses External Prettier      | 🟡 Uses External Prettier          | 🟡 Uses External Prettier |
-| **Regulated / Banking Target**        | 🟢 **Core Purpose**                   | 🔴 General Community                 | 🔴 General Web                    | 🟡 Web Apps / Next.js          | 🟡 E-Commerce Apps                 | 🟡 General TypeScript     |
+| Feature / Standard                    | `eslint-config-yarapa`         | `@antfu/eslint-config` | Airbnb (`airbnb-typescript`)    | Vercel (`@vercel/style-guide`) | Shopify (`@shopify/eslint-plugin`) | Google (`gts`)          |
+| :------------------------------------ | :----------------------------- | :--------------------- | :------------------------------ | :----------------------------- | :--------------------------------- | :---------------------- |
+| **Native ESLint 9/10 Flat Config**    | **YES (100% Pure Arrays)**     | YES (Factory Function) | NO (Legacy .eslintrc)           | PARTIAL (In progress)          | NO (Legacy .eslintrc)              | NO (Legacy .eslintrc)   |
+| **Type-Aware via `projectService`**   | **YES (Built-in First-Class)** | PARTIAL (Opt-in only)  | NO (Slow parserOptions.project) | PARTIAL (Opt-in only)          | NO (Slow legacy parser)            | PARTIAL (Opt-in only)   |
+| **Cognitive Complexity (`sonarjs`)**  | **YES (Integrated)**           | NO                     | NO                              | NO                             | NO                                 | NO                      |
+| **Anti-ReDoS Protection (`regexp`)**  | **YES (Integrated)**           | NO                     | NO                              | NO                             | NO                                 | NO                      |
+| **Natural Sorting (`perfectionist`)** | **YES (Integrated)**           | YES (Integrated)       | NO                              | NO                             | NO                                 | NO                      |
+| **Zero Inline Suppression Policy**    | **YES (Enforced)**             | NO (Permissive)        | NO (Permissive)                 | NO (Permissive)                | NO (Permissive)                    | NO (Permissive)         |
+| **Deterministic (Anti-Magic)**        | **YES (100% Explicit)**        | NO (Ambient Sniffing)  | YES (Explicit)                  | YES (Explicit)                 | YES (Explicit)                     | YES (Explicit)          |
+| **Modern Stylistic (`@stylistic`)**   | **YES (Integrated)**           | YES (Integrated)       | NO (Deprecated Core)            | NO (External Prettier)         | NO (External Prettier)             | NO (External Prettier)  |
+| **Regulated / Banking Target**        | **YES (Core Purpose)**         | NO (General Community) | NO (General Web)                | NO (Web Apps / Next.js)        | NO (E-Commerce Apps)               | NO (General TypeScript) |
 
 ---
 

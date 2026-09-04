@@ -180,7 +180,7 @@ export default [
 
 ### JetBrains IDEs (WebStorm / IntelliJ IDEA)
 
-1. Open **Settings / Preferences** (`⌘,` or `Ctrl+Alt+S`) → **Languages & Frameworks** → **JavaScript** → **Code Quality Tools** → **ESLint**.
+1. Open **Settings / Preferences** (`Cmd+,` or `Ctrl+Alt+S`) → **Languages & Frameworks** → **JavaScript** → **Code Quality Tools** → **ESLint**.
 2. Select **Manual ESLint configuration**.
 3. Choose your Node.js interpreter and set **ESLint package** to your project's local `eslint` package.
 4. Check **Run eslint --fix on save**.
@@ -252,4 +252,4 @@ pnpm dlx @eslint/config-inspector
 
 ## License
 
-[MIT](https://github.com/useyarapa/eslint-config-yarapa/blob/main/LICENSE) © YARAPA
+[MIT](https://github.com/useyarapa/eslint-config-yarapa/blob/main/LICENSE) (c) YARAPA

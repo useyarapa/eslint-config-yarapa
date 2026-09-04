@@ -1,0 +1,44 @@
+name: DCO Verification
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  dco:
+    name: DCO Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify Developer Certificate of Origin
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          missing=0
+          for commit in $(git rev-list "$BASE_SHA..$HEAD_SHA"); do
+            msg="$(git log -1 --format=%B "$commit")"
+            if ! grep -q "^Signed-off-by: " <<<"$msg"; then
+              echo "Error: Commit $commit is missing 'Signed-off-by: Author <email>' line (DCO requirement)." >&2
+              missing=$((missing + 1))
+            fi
+          done
+
+          if [ "$missing" -gt 0 ]; then
+            echo "" >&2
+            echo "DCO check failed for $missing commit(s)." >&2
+            echo "Please sign off your commits using: git commit --amend --signoff (or git commit -s)" >&2
+            echo "See CONTRIBUTING.md for more details." >&2
+            exit 1
+          fi
+          echo "All commits in this PR satisfy the Developer Certificate of Origin (DCO)."

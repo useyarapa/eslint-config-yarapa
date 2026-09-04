@@ -62,6 +62,20 @@ pnpm changeset --empty
 
 Refer to [.changeset/README.md](.changeset/README.md) for details.
 
+## Developer Certificate of Origin (DCO)
+
+To ensure clear intellectual property ownership and open-source integrity, all contributions must include a **Signed-off-by** line matching your Git author identity:
+
+```sh
+git commit -s -m "feat(scope): your commit message"
+```
+
+If you forgot to sign off a commit, you can sign off an existing commit with:
+
+```sh
+git commit --amend --no-edit --signoff
+```
+
 ## Pull Requests
 
 - Keep pull requests focused on a single change or cohesive feature.
