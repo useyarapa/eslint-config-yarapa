@@ -7,13 +7,29 @@
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": ["dist/**"]
     },
+    "check:attw": {
+      "dependsOn": ["build"]
+    },
+    "check:publint": {
+      "dependsOn": ["build"]
+    },
     "clean": {
+      "cache": false
+    },
+    "clean:dist": {
+      "cache": false
+    },
+    "clean:test": {
       "cache": false
     },
     "dev": {
       "cache": false,
       "persistent": true
     },
+    "format": {
+      "cache": false
+    },
+    "format:check": {},
     "lint": {
       "dependsOn": ["^lint"]
     },
@@ -27,6 +43,10 @@
       "cache": false
     },
     "test": {},
+    "test:consumer": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
     "test:coverage": {
       "outputs": ["coverage/**"]
     },
