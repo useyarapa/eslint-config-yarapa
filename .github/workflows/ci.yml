@@ -307,39 +307,11 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: pnpm exec changeset status --since "$BASE_SHA"
 
-  diagnostic-snapshot:
-    name: diagnostic-snapshot
-    if: always()
-    needs:
-      - lint
-      - test
-      - check-types
-      - build
-      - consumer
-    runs-on: ubuntu-latest
-    steps:
-      - name: Preserve legacy required check during ruleset migration
-        env:
-          BUILD_RESULT: ${{ needs.build.result }}
-          CHECK_TYPES_RESULT: ${{ needs.check-types.result }}
-          CONSUMER_RESULT: ${{ needs.consumer.result }}
-          LINT_RESULT: ${{ needs.lint.result }}
-          TEST_RESULT: ${{ needs.test.result }}
-        run: |
-          for result in \
-            "$BUILD_RESULT" \
-            "$CHECK_TYPES_RESULT" \
-            "$CONSUMER_RESULT" \
-            "$LINT_RESULT" \
-            "$TEST_RESULT"
-          do
-            test "$result" = success
-          done
-
   ci:
     name: ci
     if: always()
     needs:
+      - actionlint
       - lint
       - test
       - check-types
@@ -351,18 +323,17 @@ jobs:
       - dependency-review
       - gitleaks
       - changesets
-      - diagnostic-snapshot
     runs-on: ubuntu-latest
     steps:
       - name: Require all verification jobs
         env:
+          ACTIONLINT_RESULT: ${{ needs.actionlint.result }}
           BUILD_RESULT: ${{ needs.build.result }}
           CHANGESETS_RESULT: ${{ needs.changesets.result }}
           CHECK_TYPES_RESULT: ${{ needs.check-types.result }}
           COMPATIBILITY_RESULT: ${{ needs.compatibility.result }}
           CONSUMER_RESULT: ${{ needs.consumer.result }}
           DEPENDENCY_REVIEW_RESULT: ${{ needs.dependency-review.result }}
-          DIAGNOSTIC_SNAPSHOT_RESULT: ${{ needs.diagnostic-snapshot.result }}
           EVENT_NAME: ${{ github.event_name }}
           FRAMEWORK_COMPATIBILITY_RESULT: ${{ needs.framework-compatibility.result }}
           GITLEAKS_RESULT: ${{ needs.gitleaks.result }}
@@ -379,11 +350,11 @@ jobs:
           fi
 
           for result in \
+            "$ACTIONLINT_RESULT" \
             "$BUILD_RESULT" \
             "$CHECK_TYPES_RESULT" \
             "$COMPATIBILITY_RESULT" \
             "$CONSUMER_RESULT" \
-            "$DIAGNOSTIC_SNAPSHOT_RESULT" \
             "$FRAMEWORK_COMPATIBILITY_RESULT" \
             "$GITLEAKS_RESULT" \
             "$LINT_RESULT" \
