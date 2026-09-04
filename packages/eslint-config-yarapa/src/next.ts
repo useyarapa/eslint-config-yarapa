@@ -1,17 +1,41 @@
 import type { Linter } from "eslint";
 
 import nextPlugin from "@next/eslint-plugin-next";
+import reactHooksPlugin from "eslint-plugin-react-hooks";
 import globals from "globals";
 
-import { asFlatPlugin } from "./configs/internal/eslintCompat.js";
-import { reactComponentNaming } from "./configs/internal/reactComponentNaming.js";
-import { reactHooksRecommended } from "./configs/internal/reactHooks.js";
+import { browser } from "./configs/browser.js";
 import { recommended } from "./configs/recommended.js";
+import { asFlatPlugin } from "./utils/compat.js";
+
+const reactHooksRecommended: Linter.Config[] = [
+  reactHooksPlugin.configs.flat["recommended-latest"],
+];
+
+const reactComponentNaming: Linter.Config[] = [
+  {
+    files: [
+      "**/*.js",
+      "**/*.mjs",
+      "**/*.cjs",
+      "**/*.jsx",
+      "**/*.ts",
+      "**/*.mts",
+      "**/*.cts",
+      "**/*.tsx",
+    ],
+    name: "yarapa/internal/react-component-naming",
+    rules: {
+      "sonarjs/function-name": ["error", { format: "^[_a-zA-Z][a-zA-Z0-9]*$" }],
+    },
+  },
+];
 
 const next: Linter.Config[] = [
   ...recommended,
   ...reactHooksRecommended,
   ...reactComponentNaming,
+  ...browser,
   {
     files: [
       "**/*.js",

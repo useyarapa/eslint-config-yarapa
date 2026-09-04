@@ -2,7 +2,7 @@ import type { Linter } from "eslint";
 
 import { configs as jsoncConfigs } from "eslint-plugin-jsonc";
 
-import { required } from "./internal/required.js";
+import { required } from "../utils/compat.js";
 
 const jsoncRecommendedConfigs = required(
   jsoncConfigs["flat/recommended-with-jsonc"],

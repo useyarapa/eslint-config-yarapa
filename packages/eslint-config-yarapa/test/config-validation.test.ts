@@ -1,4 +1,4 @@
-import { resolve } from "node:path";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import yarapa from "../src/index.js";
@@ -15,7 +15,7 @@ describe("Flat Config validation", () => {
     async (_name, profile) => {
       await expect(
         eslintForConfigs(profile).calculateConfigForFile(
-          resolve(packageRoot, "fixtures/projects/typed/src/valid.ts"),
+          path.resolve(packageRoot, "fixtures/projects/typed/src/valid.ts"),
         ),
       ).resolves.toBeDefined();
     },

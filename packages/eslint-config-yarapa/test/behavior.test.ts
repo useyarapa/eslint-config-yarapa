@@ -1,11 +1,11 @@
 import type { ESLint } from "eslint";
 
-import { resolve } from "node:path";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { required } from "../src/configs/internal/required.js";
 import yarapa from "../src/index.js";
 import react from "../src/react.js";
+import { required } from "../src/utils/compat.js";
 import { eslintForConfigs, packageRoot } from "./helpers/eslint.js";
 
 /**
@@ -23,15 +23,15 @@ function messageSummary(result: ESLint.LintResult): object[] {
 
 describe("shared YARAPA behavior", () => {
   const eslint = eslintForConfigs(yarapa);
-  const javascriptFixture = resolve(
+  const javascriptFixture = path.resolve(
     packageRoot,
     "fixtures/valid/base/case.js",
   );
-  const projectRoot = resolve(packageRoot, "fixtures/projects/typed");
+  const projectRoot = path.resolve(packageRoot, "fixtures/projects/typed");
 
   it("accepts a typed project source file", async () => {
     const [result] = await eslint.lintFiles(
-      resolve(projectRoot, "src/valid.ts"),
+      path.resolve(projectRoot, "src/valid.ts"),
     );
     const summary = messageSummary(required(result, "typed valid lint result"));
 
@@ -40,7 +40,7 @@ describe("shared YARAPA behavior", () => {
 
   it("reports a floating promise with type information", async () => {
     const [result] = await eslint.lintFiles(
-      resolve(projectRoot, "src/invalid.ts"),
+      path.resolve(projectRoot, "src/invalid.ts"),
     );
     const lintResult = required(result, "typed invalid lint result");
 
@@ -167,7 +167,7 @@ describe("shared YARAPA behavior", () => {
       "",
     ].join("\n");
     const [result] = await reactEslint.lintText(source, {
-      filePath: resolve(packageRoot, "fixtures/react-hooks.jsx"),
+      filePath: path.resolve(packageRoot, "fixtures/react-hooks.jsx"),
     });
     const lintResult = required(result, "React Hooks behavior result");
 
@@ -179,12 +179,24 @@ describe("shared YARAPA behavior", () => {
   it("reports unresolved imports through the official import-x preset", async () => {
     const [result] = await eslint.lintText(
       "import missing from \"./does-not-exist.js\";\nexport { missing };\n",
-      { filePath: resolve(packageRoot, "fixtures/import-resolution.js") },
+      { filePath: path.resolve(packageRoot, "fixtures/import-resolution.js") },
     );
     const lintResult = required(result, "import-x behavior result");
 
     expect(lintResult.messages.map(message => message.ruleId)).toContain(
       "import-x/no-unresolved",
+    );
+  });
+
+  it("reports node protocol violations through the official unicorn preset", async () => {
+    const [result] = await eslint.lintText(
+      "import fs from \"fs\";\nexport { fs };\n",
+      { filePath: path.resolve(packageRoot, "fixtures/unicorn-sample.js") },
+    );
+    const lintResult = required(result, "unicorn behavior result");
+
+    expect(lintResult.messages.map(message => message.ruleId)).toContain(
+      "unicorn/prefer-node-protocol",
     );
   });
 });

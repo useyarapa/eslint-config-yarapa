@@ -8,8 +8,7 @@ import promisePlugin from "eslint-plugin-promise";
 import { configs as regexpConfigs } from "eslint-plugin-regexp";
 import unusedImportsPlugin from "eslint-plugin-unused-imports";
 
-import { asFlatPlugin } from "./internal/eslintCompat.js";
-import { required } from "./internal/required.js";
+import { asFlatPlugin, required } from "../utils/compat.js";
 
 const { configs: promiseConfigs } = promisePlugin;
 const { rules: unusedImportsRules } = unusedImportsPlugin;

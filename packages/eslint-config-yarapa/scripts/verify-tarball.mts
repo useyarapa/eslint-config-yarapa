@@ -7,25 +7,17 @@ import {
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const packageRoot = fileURLToPath(new URL("../", import.meta.url));
-const pnpm
-  = process.platform === "win32"
-    ? resolve(process.env.PNPM_HOME ?? "", "pnpm.exe")
-    : "pnpm";
-const node = process.execPath;
-const eslintVersion = process.env.ESLINT_VERSION ?? "10.9.1";
-const typescriptVersion = process.env.TYPESCRIPT_VERSION ?? "6.0.3";
-const frameworkProfile = process.env.FRAMEWORK_PROFILE;
-const frameworkVersion = process.env.FRAMEWORK_VERSION;
-const frameworkReactVersion = process.env.FRAMEWORK_REACT_VERSION;
-const expectRuleCall = "await expectRule(";
-const nestSampleFile = "sample-nest.ts";
-const nestServiceFile = "sample-nest-service.ts";
+if (process.platform === "win32" && !process.env.PNPM_HOME) {
+  throw new Error("PNPM_HOME is required for the Windows consumer smoke test");
+}
 
-if ((frameworkProfile === undefined) !== (frameworkVersion === undefined)) {
+if (
+  (process.env.FRAMEWORK_PROFILE === undefined)
+  !== (process.env.FRAMEWORK_VERSION === undefined)
+) {
   throw new Error(
     "FRAMEWORK_PROFILE and FRAMEWORK_VERSION must be provided together",
   );
@@ -48,14 +40,15 @@ function frameworkInstallPackages(
   }
 
   switch (profile) {
-    case "nest":
+    case "nest": {
       return [
         `@nestjs/common@${version}`,
         `@nestjs/core@${version}`,
         "reflect-metadata@0.2.2",
         "rxjs@7.8.2",
       ];
-    case "next":
+    }
+    case "next": {
       if (!frameworkReactVersion) {
         throw new Error(
           "FRAMEWORK_REACT_VERSION is required for Next.js verification",
@@ -66,10 +59,13 @@ function frameworkInstallPackages(
         `react@${frameworkReactVersion}`,
         `react-dom@${frameworkReactVersion}`,
       ];
-    case "react":
+    }
+    case "react": {
       return [`react@${version}`, `react-dom@${version}`];
-    default:
+    }
+    default: {
       throw new Error(`Unsupported FRAMEWORK_PROFILE: ${profile}`);
+    }
   }
 }
 
@@ -83,24 +79,28 @@ function frameworkPackageNames(profile: string | undefined): string[] {
   }
 
   switch (profile) {
-    case "nest":
+    case "nest": {
       return ["@nestjs/common", "@nestjs/core", "reflect-metadata", "rxjs"];
-    case "next":
+    }
+    case "next": {
       return ["next", "react", "react-dom"];
-    case "react":
+    }
+    case "react": {
       return ["react", "react-dom"];
-    default:
+    }
+    default: {
       throw new Error(`Unsupported FRAMEWORK_PROFILE: ${profile}`);
+    }
   }
 }
 
 /**
  * @param command - command binary to execute
- * @param args - arguments array
+ * @param arguments_ - arguments array
  * @param cwd - working directory
  */
-function run(command: string, args: string[], cwd: string): void {
-  const result = spawnSync(command, args, {
+function run(command: string, arguments_: string[], cwd: string): void {
+  const result = spawnSync(command, arguments_, {
     cwd,
     env: process.env,
     stdio: "inherit",
@@ -111,35 +111,45 @@ function run(command: string, args: string[], cwd: string): void {
   }
   if (result.status !== 0) {
     throw new Error(
-      `${command} ${args.join(" ")} failed with ${result.status}`,
+      `${command} ${arguments_.join(" ")} failed with ${result.status}`,
     );
   }
 }
 
-if (process.platform === "win32" && !process.env.PNPM_HOME) {
-  throw new Error("PNPM_HOME is required for the Windows consumer smoke test");
-}
-
-const tempRoot = mkdtempSync(join(tmpdir(), "yarapa-consumer-"));
-const packDir = resolve(tempRoot, "pack");
-const consumerDir = resolve(tempRoot, "consumer");
-mkdirSync(packDir, { recursive: true });
-mkdirSync(consumerDir, { recursive: true });
+const packageRoot = fileURLToPath(new URL("../", import.meta.url));
+const temporaryRoot = mkdtempSync(path.join(tmpdir(), "yarapa-consumer-"));
+const packageDirectory = path.resolve(temporaryRoot, "pack");
+const consumerDirectory = path.resolve(temporaryRoot, "consumer");
+mkdirSync(packageDirectory, { recursive: true });
+mkdirSync(consumerDirectory, { recursive: true });
+const pnpm
+  = process.platform === "win32"
+    ? path.resolve(process.env.PNPM_HOME ?? "", "pnpm.exe")
+    : "pnpm";
+const node = process.execPath;
+const eslintVersion = process.env.ESLINT_VERSION ?? "10.9.1";
+const typescriptVersion = process.env.TYPESCRIPT_VERSION ?? "6.0.3";
+const frameworkProfile = process.env.FRAMEWORK_PROFILE;
+const frameworkVersion = process.env.FRAMEWORK_VERSION;
+const frameworkReactVersion = process.env.FRAMEWORK_REACT_VERSION;
+const expectRuleCall = "await expectRule(";
+const nestSampleFile = "sample-nest.ts";
+const nestServiceFile = "sample-nest-service.ts";
 
 try {
   run(pnpm, ["exec", "publint"], packageRoot);
-  run(pnpm, ["pack", "--pack-destination", packDir], packageRoot);
+  run(pnpm, ["pack", "--pack-destination", packageDirectory], packageRoot);
 
-  const tarballName = readdirSync(packDir).find(name => name.endsWith(".tgz"));
+  const tarballName = readdirSync(packageDirectory).find(name => name.endsWith(".tgz"));
   if (!tarballName) {
     throw new Error("pnpm pack did not produce a tarball");
   }
-  const tarball = resolve(packDir, tarballName);
+  const tarball = path.resolve(packageDirectory, tarballName);
 
   run(pnpm, ["exec", "attw", tarball, "--profile", "esm-only"], packageRoot);
 
   writeFileSync(
-    resolve(consumerDir, "package.json"),
+    path.resolve(consumerDirectory, "package.json"),
     `${JSON.stringify(
       {
         name: "yarapa-consumer-smoke",
@@ -168,13 +178,13 @@ try {
       ...frameworkPackages,
       tarball,
     ],
-    consumerDir,
+    consumerDirectory,
   );
 
   const selectedFrameworkPackages = frameworkPackageNames(frameworkProfile);
 
   writeFileSync(
-    resolve(consumerDir, "verify.mjs"),
+    path.resolve(consumerDirectory, "verify.mjs"),
     [
       "import yarapa from \"eslint-config-yarapa\";",
       "import next from \"eslint-config-yarapa/next\";",
@@ -195,7 +205,7 @@ try {
   );
 
   writeFileSync(
-    resolve(consumerDir, "verify-behavior.mjs"),
+    path.resolve(consumerDirectory, "verify-behavior.mjs"),
     [
       "import { ESLint } from \"eslint\";",
       "import yarapa from \"eslint-config-yarapa\";",
@@ -221,7 +231,7 @@ try {
       expectRuleCall,
       "  yarapa,",
       "  \"sample-invalid.js\",",
-      "  \"export function value() { var answer = 42; return answer; }\\n\",",
+      String.raw`  "export function value() { var answer = 42; return answer; }\n",`,
       "  \"no-var\",",
       ");",
       "",
@@ -233,9 +243,9 @@ try {
             "  [",
             "    \"/** @returns {object} Rendered page. */\",",
             "    \"export function Page() {\",",
-            "    \"  return <img alt=\\\"YARAPA\\\" src=\\\"/logo.png\\\" />;\",",
+            String.raw`    "  return <img alt=\"YARAPA\" src=\"/logo.png\" />;",`,
             "    \"}\",",
-            "  ].join(\"\\n\"),",
+            String.raw`  ].join("\n"),`,
             "  \"@next/next/no-img-element\",",
             ");",
           ].join("\n")
@@ -247,13 +257,13 @@ try {
             "  react,",
             "  \"sample-react-invalid.jsx\",",
             "  [",
-            "    \"import { useState } from \\\"react\\\";\",",
+            String.raw`    "import { useState } from \"react\";",`,
             "    \"/** @returns {object | null} Rendered component. */\",",
             "    \"export function Component({ enabled }) {\",",
             "    \"  if (enabled) useState(0);\",",
             "    \"  return null;\",",
             "    \"}\",",
-            "  ].join(\"\\n\"),",
+            String.raw`  ].join("\n"),`,
             "  \"react-hooks/rules-of-hooks\",",
             ");",
           ].join("\n")
@@ -271,7 +281,7 @@ try {
 
   for (const [name, specifier] of Object.entries(profileConfigs)) {
     writeFileSync(
-      resolve(consumerDir, `eslint.${name}.config.mjs`),
+      path.resolve(consumerDirectory, `eslint.${name}.config.mjs`),
       [
         `import config from "${specifier}";`,
         "",
@@ -282,7 +292,7 @@ try {
   }
 
   writeFileSync(
-    resolve(consumerDir, "tsconfig.json"),
+    path.resolve(consumerDirectory, "tsconfig.json"),
     `${JSON.stringify(
       {
         compilerOptions: {
@@ -298,9 +308,9 @@ try {
     )}\n`,
   );
 
-  writeFileSync(resolve(consumerDir, "sample.js"), "export const answer = 42;\n");
+  writeFileSync(path.resolve(consumerDirectory, "sample.js"), "export const answer = 42;\n");
   writeFileSync(
-    resolve(consumerDir, "sample-next.jsx"),
+    path.resolve(consumerDirectory, "sample-next.jsx"),
     [
       "/**",
       " * Render the Next.js smoke-test page.",
@@ -313,7 +323,7 @@ try {
     ].join("\n"),
   );
   writeFileSync(
-    resolve(consumerDir, "sample-react.jsx"),
+    path.resolve(consumerDirectory, "sample-react.jsx"),
     [
       "/**",
       " * Render the React smoke-test component.",
@@ -326,11 +336,11 @@ try {
     ].join("\n"),
   );
   writeFileSync(
-    resolve(consumerDir, nestServiceFile),
+    path.resolve(consumerDirectory, nestServiceFile),
     "export const port = 3000;\n",
   );
   writeFileSync(
-    resolve(consumerDir, nestSampleFile),
+    path.resolve(consumerDirectory, nestSampleFile),
     [
       "import \"./sample-nest-service\";",
       "",
@@ -339,28 +349,28 @@ try {
     ].join("\n"),
   );
 
-  run(node, ["verify.mjs"], consumerDir);
-  run(node, ["verify-behavior.mjs"], consumerDir);
+  run(node, ["verify.mjs"], consumerDirectory);
+  run(node, ["verify-behavior.mjs"], consumerDirectory);
   run(
     pnpm,
     ["exec", "eslint", "-c", "eslint.root.config.mjs", "sample.js"],
-    consumerDir,
+    consumerDirectory,
   );
   run(
     pnpm,
     ["exec", "eslint", "-c", "eslint.next.config.mjs", "sample-next.jsx"],
-    consumerDir,
+    consumerDirectory,
   );
   run(
     pnpm,
     ["exec", "eslint", "-c", "eslint.nest.config.mjs", nestSampleFile, nestServiceFile],
-    consumerDir,
+    consumerDirectory,
   );
   run(
     pnpm,
     ["exec", "eslint", "-c", "eslint.react.config.mjs", "sample-react.jsx"],
-    consumerDir,
+    consumerDirectory,
   );
 } finally {
-  rmSync(tempRoot, { force: true, recursive: true });
+  rmSync(temporaryRoot, { force: true, recursive: true });
 }

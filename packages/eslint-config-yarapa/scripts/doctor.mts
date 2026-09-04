@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import path from "node:path";
 import process from "node:process";
 
 type CheckResult = {
@@ -13,25 +13,25 @@ const checks: CheckResult[] = [];
 /**
  * Record an audit check outcome.
  * @param name Category name.
- * @param condition Whether check passed.
- * @param successMsg Message on pass.
- * @param failMsg Message on failure.
+ * @param isPassed Whether check passed.
+ * @param successMessage Message on pass.
+ * @param failureMessage Message on failure.
  */
 function recordCheck(
   name: string,
-  condition: boolean,
-  successMsg: string,
-  failMsg: string,
+  isPassed: boolean,
+  successMessage: string,
+  failureMessage: string,
 ): void {
   checks.push({
-    isPassed: condition,
-    message: condition ? successMsg : failMsg,
+    isPassed,
+    message: isPassed ? successMessage : failureMessage,
     name,
   });
 }
 
 const nodeVersion = process.version;
-const majorNode = parseInt(nodeVersion.slice(1).split(".")[0] || "0", 10);
+const majorNode = Number(nodeVersion.slice(1).split(".", 1)[0] || "0");
 recordCheck(
   "Node.js Runtime",
   majorNode >= 24,
@@ -41,9 +41,9 @@ recordCheck(
 
 const cwd = process.cwd();
 const hasEslintConfig
-  = existsSync(resolve(cwd, "eslint.config.mjs"))
-    || existsSync(resolve(cwd, "eslint.config.js"))
-    || existsSync(resolve(cwd, "eslint.config.ts"));
+  = existsSync(path.resolve(cwd, "eslint.config.mjs"))
+    || existsSync(path.resolve(cwd, "eslint.config.js"))
+    || existsSync(path.resolve(cwd, "eslint.config.ts"));
 
 recordCheck(
   "ESLint Flat Config",
@@ -53,8 +53,8 @@ recordCheck(
 );
 
 const candidateTsConfigs = [
-  resolve(cwd, "tsconfig.json"),
-  resolve(cwd, "packages/eslint-config-yarapa/tsconfig.json"),
+  path.resolve(cwd, "tsconfig.json"),
+  path.resolve(cwd, "packages/eslint-config-yarapa/tsconfig.json"),
 ];
 
 const foundTsConfig = candidateTsConfigs.find(p => existsSync(p));
@@ -85,7 +85,7 @@ if (foundTsConfig) {
   }
 }
 
-let allPassed = true;
+let isAllPassed = true;
 process.stdout.write("\nYARAPA Code Standard Diagnostic Doctor\n");
 process.stdout.write("======================================\n\n");
 
@@ -93,12 +93,12 @@ for (const c of checks) {
   const statusLabel = c.isPassed ? "[PASS]" : "[FAIL]";
   process.stdout.write(`${statusLabel} [${c.name}]: ${c.message}\n`);
   if (!c.isPassed) {
-    allPassed = false;
+    isAllPassed = false;
   }
 }
 
 process.stdout.write("\n");
-if (allPassed) {
+if (isAllPassed) {
   process.stdout.write(
     "All system prerequisites satisfy YARAPA enterprise standards.\n\n",
   );

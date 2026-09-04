@@ -1,10 +1,10 @@
 import type { Linter } from "eslint";
 
-import { resolve } from "node:path";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { required } from "../src/configs/internal/required.js";
 import yarapa from "../src/index.js";
+import { required } from "../src/utils/compat.js";
 import { eslintForConfigs, packageRoot } from "./helpers/eslint.js";
 
 /**
@@ -22,7 +22,7 @@ async function fixTwice(
   const eslint = eslintForConfigs(config, { fix: true });
 
   const [first] = await eslint.lintText(code, {
-    filePath: resolve(packageRoot, filename),
+    filePath: path.resolve(packageRoot, filename),
   });
   expect(first).toBeDefined();
   const firstResult = required(first, "first autofix lint result");
@@ -30,7 +30,7 @@ async function fixTwice(
 
   const output1 = firstResult.output ?? code;
   const [second] = await eslint.lintText(output1, {
-    filePath: resolve(packageRoot, filename),
+    filePath: path.resolve(packageRoot, filename),
   });
   expect(second).toBeDefined();
   const secondResult = required(second, "second autofix lint result");

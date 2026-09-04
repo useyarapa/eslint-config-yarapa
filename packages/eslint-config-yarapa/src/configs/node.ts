@@ -3,7 +3,7 @@ import type { Linter } from "eslint";
 import nPlugin from "eslint-plugin-n";
 import globals from "globals";
 
-import { required } from "./internal/required.js";
+import { required } from "../utils/compat.js";
 
 const nodeRecommended = required(
   nPlugin.configs["flat/recommended-module"],

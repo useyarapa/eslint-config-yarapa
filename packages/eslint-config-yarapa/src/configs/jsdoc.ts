@@ -2,7 +2,7 @@ import type { Linter } from "eslint";
 
 import { configs as jsdocConfigs } from "eslint-plugin-jsdoc";
 
-import { required } from "./internal/required.js";
+import { required } from "../utils/compat.js";
 
 const jsRecommended = required(
   jsdocConfigs["flat/recommended-error"],

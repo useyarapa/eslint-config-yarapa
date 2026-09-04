@@ -3,7 +3,7 @@ import type { Linter } from "eslint";
 import { defineConfig } from "eslint/config";
 import { configs as tseslintConfigs } from "typescript-eslint";
 
-import { asFlatConfigArray } from "./internal/eslintCompat.js";
+import { asFlatConfigArray } from "../utils/compat.js";
 
 export const typeChecked: Linter.Config[] = asFlatConfigArray(
   defineConfig({

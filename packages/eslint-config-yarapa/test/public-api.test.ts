@@ -1,11 +1,11 @@
 import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { packageRoot } from "./helpers/eslint.js";
 
 const packageJson = JSON.parse(
-  readFileSync(resolve(packageRoot, "package.json"), "utf8"),
+  readFileSync(path.resolve(packageRoot, "package.json"), "utf8"),
 ) as { exports: Record<string, unknown> };
 
 describe("public API", () => {

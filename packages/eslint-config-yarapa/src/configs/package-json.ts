@@ -2,7 +2,7 @@ import type { Linter } from "eslint";
 
 import { configs as packageJsonConfigs } from "eslint-plugin-package-json";
 
-import { required } from "./internal/required.js";
+import { required } from "../utils/compat.js";
 
 const recommended = required(
   packageJsonConfigs.recommended,
