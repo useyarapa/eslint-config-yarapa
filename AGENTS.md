@@ -1,48 +1,20 @@
 # Repository Guidelines
 
-This file provides architectural, tooling, and workflow guidelines when working with code in this repository.
+Architectural and workflow constraints when working in this repository.
 
 ## Agent Guidelines
 
-- Keep instructions focused on repository-wide commands, architecture, conventions, and non-obvious workflow constraints.
-- Verify changes with the narrowest applicable repository check and report the command and pass/fail result before declaring them complete.
+- Verify changes with the narrowest applicable check and report the command and result before declaring completion.
+- Never suppress or disable a check to make it pass; fix root causes.
+- Point pull-request preparation to `CONTRIBUTING.md` and package release intent to `.changeset/README.md`.
 
-## Repository shape
+## Architecture & Build Boundaries
 
-- This is a pnpm 11 workspace managed by Turborepo. The workspace currently contains `packages/eslint-config-yarapa`, the publishable package.
-- The package is an ESM-only ESLint Flat Config library. Source lives in `packages/eslint-config-yarapa/src`; `tsdown` emits the four public entrypoints (`.`, `./next`, `./nest`, and `./react`) plus declarations and source maps under `dist/`.
-- `src/configs/recommended.ts` is the shared composition root. It layers the base JavaScript policy, TypeScript syntax and type-checked rules, import resolution, SonarJS, JSDoc, JSON, package metadata, stylistic, and natural-order presets. Framework entrypoints reuse that baseline: Nest adds Node settings, while React and Next add hooks/component naming and JSX runtime settings; Next also adds its framework rules.
-- `src/configs/internal/` contains compatibility and required-value helpers used when adapting upstream plugin configs to Flat Config. Keep those adapters at the boundary rather than duplicating plugin conversion in individual presets.
-- Tests import source entrypoints directly and use `test/helpers/eslint.ts` to create ESLint instances with an explicit config array. The test suite covers config shape, profile composition, lint behavior, autofixes, static rule policy, and the package public API. Fixtures under `fixtures/` provide valid/invalid projects and are ignored by repository linting where appropriate.
-- The root `eslint.config.mjs` consumes built package output from `dist/`, then adds repository-only ignores and Node-tooling/file-I/O overrides. Root linting therefore requires a package build first; package-scoped linting uses the package's own config.
-- `scripts/verify-tarball.mts` runs `publint`, packs the package, validates exports with `attw`, installs the tarball into a temporary consumer, and runs import, behavior, and profile smoke tests. Optional framework checks are selected with `FRAMEWORK_PROFILE`, `FRAMEWORK_VERSION`, and, for Next, `FRAMEWORK_REACT_VERSION`.
+- `packages/eslint-config-yarapa` is a strict, deterministic ESLint Flat Config package. Source lives in `packages/eslint-config-yarapa/src/`; generated artifacts live in `packages/eslint-config-yarapa/dist/`.
+- Edit `src/` and tests, never generated `dist/` files.
+- The root `eslint.config.mjs` consumes built package output from `packages/eslint-config-yarapa/dist/index.mjs`. Root linting therefore requires a package build first. Use `pnpm lint` (which builds first) or build the package before invoking ESLint directly at repository root. Package-scoped linting (`pnpm --filter eslint-config-yarapa lint`) lints source files directly.
 
-## Commands
+## Verification Requirements
 
-Run these from the repository root after `pnpm install`:
-
-```sh
-pnpm --filter eslint-config-yarapa build
-pnpm --filter eslint-config-yarapa check:publint
-pnpm --filter eslint-config-yarapa check:attw
-pnpm --filter eslint-config-yarapa lint
-pnpm lint
-pnpm --filter eslint-config-yarapa check-types
-pnpm --filter eslint-config-yarapa test
-pnpm --filter eslint-config-yarapa exec vitest run test/behavior.test.ts
-pnpm --filter eslint-config-yarapa test:watch
-pnpm --filter eslint-config-yarapa test:coverage
-pnpm --filter eslint-config-yarapa test:consumer
-pnpm --filter eslint-config-yarapa verify
-```
-
-- `pnpm build`, `pnpm check-types`, and `pnpm test` run the corresponding Turborepo task across workspaces. Use the package-filtered forms when working only on this package.
-- `pnpm lint` builds the package and lints the repository through the root config. `pnpm --filter eslint-config-yarapa lint` lints package files only. `pnpm format` builds first, then applies ESLint fixes to the repository.
-- `pnpm inspect` builds first and starts `eslint-config-inspector` for reviewing the generated config. `pnpm knip` checks unused files and dependencies; fixtures are excluded by `knip.json`.
-- `pnpm changeset` creates release intent. Pull requests that change a publishable package are checked by CI with Changesets; `pnpm changeset:status` checks intent against `main`. Release automation versions packages and publishes from `main`.
-
-## Development workflow
-
-- Edit `src/` and tests, not generated `dist/` files. Rebuild after source changes before running root lint or inspection.
-- When changing a preset, test both its config shape/profile composition and at least one observable lint behavior. When changing exports or package metadata, run `test:consumer` or the full `verify` flow because it validates the packed artifact rather than the working tree.
-- The package requires Node 24 (`.nvmrc` is `24.20.0`) and TypeScript `>=5.0.0 <6.1.0` as a peer dependency. The repository package manager is pinned to pnpm `11.23.0`.
+- Preset changes: add or update tests for both config composition / profile shape and at least one observable lint behavior in `packages/eslint-config-yarapa/test/`.
+- Export or package metadata changes: run `pnpm --filter eslint-config-yarapa test:consumer` (or `verify`), which tests the packed tarball against a real consumer project.

@@ -1,24 +1,25 @@
 ---
 paths:
-  - "packages/eslint-config-yarapa/**/*.{ts,mts,cts,js,mjs,cjs,json}"
-  - "scripts/**/*.{ts,mts,js,mjs}"
-  - "*.{js,mjs,ts,mts,json}"
+  - "packages/eslint-config-yarapa/src/**/*.{ts,js}"
+  - "packages/eslint-config-yarapa/*.{ts,json}"
+  - "eslint.config.mjs"
+  - "*.json"
+  - ".changeset/*.json"
+  - ".github/workflows/*.yml"
+  - ".claude/rules/*.md"
 ---
 
 # No Speculative Configuration Rules
 
-Apply zero-tolerance for speculative configuration, phantom patterns, and unverified flags in this repository.
+Keep configuration demand-driven, observable, and aligned with real repository structure.
 
-## 1. Demand-Driven Configuration (No "Just in Case" Config)
-- Never add ESLint rules, plugins, parser options, or environment flags speculatively or for hypothetical future needs.
-- Every rule or configuration modification must satisfy an active, verified requirement.
+## Demand-Driven Configuration
+- Add or modify ESLint rules, plugins, parser options, and environment flags only for active, verified requirements.
+- Do not add configuration, options, or fallback branches for hypothetical future needs or imaginary consumers.
 
-## 2. No Phantom File Globs or Patterns
-- Do not define file match patterns, extensions, or ignore globs for file types or directory structures that do not exist within the intended operational scope of the preset or repository.
+## File Globs and Match Patterns
+- Repository-internal match patterns, extensions, and ignore globs must correspond to actual files and directory structures in this repository.
+- Consumer-facing preset globs in publishable configs may target patterns intended for consumer projects even if those files do not exist in this repository, provided the pattern is part of the documented preset contract and verified by tests.
 
-## 3. No Speculative Options or Fallback Branches
-- Do not build custom configuration options, fallback toggles, or abstraction layers for consumers that do not exist yet.
-- Maintain minimum viable, strictly typed, and observable Flat Configs.
-
-## 4. Required Observable Verification
-- Any configuration rule or override introduced must be backed by a test case or demonstrable lint behavior to prove necessity and correctness.
+## Observable Verification
+- Every configuration rule or override introduced must be backed by a test case or demonstrable lint behavior to prove necessity and correctness.
