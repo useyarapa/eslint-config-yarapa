@@ -31,6 +31,11 @@ if ((frameworkProfile === undefined) !== (frameworkVersion === undefined)) {
   );
 }
 
+/**
+ * @param profile - framework profile name
+ * @param version - framework version string
+ * @returns package install specs
+ */
 function frameworkInstallPackages(
   profile: string | undefined,
   version: string | undefined,
@@ -68,6 +73,10 @@ function frameworkInstallPackages(
   }
 }
 
+/**
+ * @param profile - framework profile name
+ * @returns package names
+ */
 function frameworkPackageNames(profile: string | undefined): string[] {
   if (profile === undefined) {
     return [];
@@ -85,6 +94,11 @@ function frameworkPackageNames(profile: string | undefined): string[] {
   }
 }
 
+/**
+ * @param command - command binary to execute
+ * @param args - arguments array
+ * @param cwd - working directory
+ */
 function run(command: string, args: string[], cwd: string): void {
   const result = spawnSync(command, args, {
     cwd,

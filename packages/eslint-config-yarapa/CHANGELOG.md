@@ -13,7 +13,7 @@
 
 * complete v1 handwriting and canonical rule ownership ([#38](https://github.com/useyarapa/eslint-config-yarapa/issues/38)) ([8798ea9](https://github.com/useyarapa/eslint-config-yarapa/commit/8798ea9db72b334c8c8301ea439b83a4577ffeb5))
 * complete v1 repository readiness issues ([#41](https://github.com/useyarapa/eslint-config-yarapa/issues/41)) ([70e9108](https://github.com/useyarapa/eslint-config-yarapa/commit/70e9108440675768038006bf7b3d22f527ff1ca5))
-* **eslint-config-yarapa:** implement all 16 presets per docs/POLICY.md ([#1](https://github.com/useyarapa/eslint-config-yarapa/issues/1)) ([#2](https://github.com/useyarapa/eslint-config-yarapa/issues/2)) ([35822ac](https://github.com/useyarapa/eslint-config-yarapa/commit/35822ac918c369a0d1d718b2158006e2f7211c05))
+* **eslint-config-yarapa:** implement all 16 presets ([#1](https://github.com/useyarapa/eslint-config-yarapa/issues/1)) ([#2](https://github.com/useyarapa/eslint-config-yarapa/issues/2)) ([35822ac](https://github.com/useyarapa/eslint-config-yarapa/commit/35822ac918c369a0d1d718b2158006e2f7211c05))
 * modernize Airbnb patterns into YARAPA handwriting ([#40](https://github.com/useyarapa/eslint-config-yarapa/issues/40)) ([ceaee05](https://github.com/useyarapa/eslint-config-yarapa/commit/ceaee0554a0b17ef82b5196a40e45aefdcafe019))
 
 

@@ -13,6 +13,7 @@ const nodeToolingFiles = [
 export default defineConfig(
   globalIgnores(
     [
+      ".turbo/**",
       "packages/eslint-config-yarapa/dist/**",
       "packages/eslint-config-yarapa/fixtures/**",
     ],

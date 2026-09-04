@@ -1,0 +1,12 @@
+node_modules
+.pnp
+.pnp.js
+
+coverage
+.turbo
+
+.next
+out
+build
+dist
+.vercel
