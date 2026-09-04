@@ -37,7 +37,7 @@ jobs:
         run: ./actionlint -color -pyflakes=
 
   lint:
-    name: lint
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -51,7 +51,7 @@ jobs:
         run: pnpm lint
 
   test:
-    name: test
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -65,7 +65,7 @@ jobs:
         run: pnpm test
 
   check-types:
-    name: check-types
+    name: Type Check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -79,7 +79,7 @@ jobs:
         run: pnpm check-types
 
   build:
-    name: build
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -97,18 +97,21 @@ jobs:
         run: pnpm --filter eslint-config-yarapa check:attw
 
   consumer:
-    name: consumer
+    name: Consumer Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Set up pnpm
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
           runtime: node@24.20.0
           cache: true
-      - run: pnpm --filter eslint-config-yarapa test:consumer
+      - name: Run consumer verification
+        run: pnpm --filter eslint-config-yarapa test:consumer
 
   compatibility:
-    name: compatibility (${{ matrix.name }})
+    name: Compatibility (${{ matrix.name }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -130,15 +133,18 @@ jobs:
       ESLINT_VERSION: ${{ matrix.eslint }}
       TYPESCRIPT_VERSION: ${{ matrix.typescript }}
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Set up pnpm
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
           runtime: node@${{ matrix.node }}
           cache: true
-      - run: pnpm --filter eslint-config-yarapa test:consumer
+      - name: Run consumer verification
+        run: pnpm --filter eslint-config-yarapa test:consumer
 
   framework-compatibility:
-    name: framework-compatibility (${{ matrix.name }})
+    name: Framework Compatibility (${{ matrix.name }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -171,26 +177,32 @@ jobs:
       FRAMEWORK_VERSION: ${{ matrix.version }}
       TYPESCRIPT_VERSION: 6.0.3
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Set up pnpm
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
           runtime: node@24.20.0
           cache: true
-      - run: pnpm --filter eslint-config-yarapa test:consumer
+      - name: Run consumer verification
+        run: pnpm --filter eslint-config-yarapa test:consumer
 
   windows-consumer:
-    name: windows-consumer
+    name: Windows Consumer Test
     runs-on: windows-latest
     env:
       ESLINT_VERSION: 10.9.1
       TYPESCRIPT_VERSION: 6.0.3
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Set up pnpm
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
           runtime: node@24.20.0
           cache: true
-      - run: pnpm --filter eslint-config-yarapa test:consumer
+      - name: Run consumer verification
+        run: pnpm --filter eslint-config-yarapa test:consumer
 
   dependency-review:
     name: Dependency Review
@@ -269,7 +281,7 @@ jobs:
           fi
 
   changesets:
-    name: changesets
+    name: Changesets
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     permissions:
@@ -281,7 +293,8 @@ jobs:
           github.event.pull_request.user.login == 'github-actions[bot]' &&
           github.event.pull_request.head.repo.full_name == github.repository
         run: echo "Changesets version PR already contains consumed release intent."
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         if: >-
           github.head_ref != format('changeset-release/{0}', github.base_ref) ||
           github.event.pull_request.user.login != 'github-actions[bot]' ||
@@ -289,7 +302,8 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+      - name: Set up pnpm
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         if: >-
           github.head_ref != format('changeset-release/{0}', github.base_ref) ||
           github.event.pull_request.user.login != 'github-actions[bot]' ||
@@ -308,7 +322,7 @@ jobs:
         run: pnpm exec changeset status --since "$BASE_SHA"
 
   ci:
-    name: ci
+    name: CI
     if: always()
     needs:
       - actionlint
