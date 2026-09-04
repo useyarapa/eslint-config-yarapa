@@ -47,3 +47,8 @@ pnpm inspect
 # In any consumer project
 pnpm dlx @eslint/config-inspector
 ```
+
+## Architectural Benchmarking
+
+To understand the engineering rationale behind our strict defaults compared to other industry configs (Antfu, Airbnb, Vercel, Shopify, Google), see [Global Landscape & Architectural Comparison](COMPARISON.md).
+

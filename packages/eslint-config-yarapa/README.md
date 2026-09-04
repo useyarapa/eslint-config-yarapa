@@ -157,12 +157,12 @@ export default [
 
 ---
 
-## Editor Integration (VS Code)
+## Editor Integration
 
-To enable automatic linting and auto-fix on save in Visual Studio Code:
+### Visual Studio Code
 
 1. Install the official [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint).
-2. Add the following to your project's `.vscode/settings.json`:
+2. Configure `.vscode/settings.json`:
 
 ```json
 {
@@ -182,6 +182,32 @@ To enable automatic linting and auto-fix on save in Visual Studio Code:
   }
 }
 ```
+
+### JetBrains IDEs (WebStorm / IntelliJ IDEA)
+
+1. Open **Settings / Preferences** (`⌘,` or `Ctrl+Alt+S`) → **Languages & Frameworks** → **JavaScript** → **Code Quality Tools** → **ESLint**.
+2. Select **Manual ESLint configuration**.
+3. Choose your Node.js interpreter and set **ESLint package** to your project's local `eslint` package.
+4. Check **Run eslint --fix on save**.
+
+### Neovim
+
+Using `nvim-lspconfig` and `null-ls` / `conform.nvim` with ESLint Language Server (`eslint-lsp`):
+
+```lua
+-- Using conform.nvim or nvim-lspconfig
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = { "*.js", "*.jsx", "*.ts", "*.tsx" },
+  command = "EslintFixAll",
+})
+```
+
+---
+
+## Architectural Comparison
+
+Wondering how YARAPA compares to industry standards like `@antfu/eslint-config`, Airbnb, Vercel, Shopify, and Google (`gts`)? Read our comprehensive [Global Landscape & Architectural Comparison](docs/COMPARISON.md) covering determinism, type-aware defaults, anti-ReDoS security, and zero-suppression engineering standards.
+
 
 ---
 
