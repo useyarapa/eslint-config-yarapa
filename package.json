@@ -5,17 +5,17 @@
   "type": "module",
   "scripts": {
     "build": "turbo run build",
+    "changeset": "changeset",
+    "changeset:status": "changeset status --since main",
     "check-types": "turbo run check-types",
     "dev": "turbo run dev",
-    "format": "pnpm --filter eslint-config-yarapa build && pnpm --filter eslint-config-yarapa exec eslint ../.. --fix",
+    "format": "pnpm --filter eslint-config-yarapa build && eslint . --fix",
     "inspect": "pnpm --filter eslint-config-yarapa build && eslint-config-inspector",
     "knip": "knip",
-    "lint": "pnpm --filter eslint-config-yarapa build && pnpm --filter eslint-config-yarapa exec eslint ../..",
+    "lint": "pnpm --filter eslint-config-yarapa build && eslint .",
     "prepare": "husky",
     "test": "turbo run test",
     "verify": "pnpm --filter eslint-config-yarapa verify",
-    "changeset": "changeset",
-    "changeset:status": "changeset status --since main",
     "version-packages": "changeset version"
   },
   "devDependencies": {

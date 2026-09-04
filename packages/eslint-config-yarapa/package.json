@@ -48,6 +48,8 @@
   ],
   "scripts": {
     "build": "tsdown",
+    "check:attw": "attw --pack . --profile esm-only",
+    "check:publint": "publint",
     "check-types": "tsc --noEmit -p tsconfig.json",
     "dev": "tsdown --watch",
     "lint": "eslint .",
@@ -55,7 +57,7 @@
     "test:consumer": "pnpm build && node scripts/verify-tarball.mts",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
-    "verify": "pnpm -w lint && pnpm check-types && pnpm build && pnpm test && pnpm test:consumer"
+    "verify": "pnpm -w lint && pnpm check-types && pnpm build && pnpm check:publint && pnpm check:attw && pnpm test && pnpm test:consumer"
   },
   "dependencies": {
     "@eslint-community/eslint-plugin-eslint-comments": "4.7.2",

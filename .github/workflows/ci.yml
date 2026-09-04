@@ -61,6 +61,8 @@ jobs:
           runtime: node@24.15.0
           cache: true
       - run: pnpm --filter eslint-config-yarapa build
+      - run: pnpm --filter eslint-config-yarapa check:publint
+      - run: pnpm --filter eslint-config-yarapa check:attw
 
   consumer:
     name: consumer

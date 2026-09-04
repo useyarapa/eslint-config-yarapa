@@ -24,6 +24,8 @@ Run these from the repository root after `pnpm install`:
 
 ```sh
 pnpm --filter eslint-config-yarapa build
+pnpm --filter eslint-config-yarapa check:publint
+pnpm --filter eslint-config-yarapa check:attw
 pnpm --filter eslint-config-yarapa lint
 pnpm lint
 pnpm --filter eslint-config-yarapa check-types
