@@ -2,6 +2,12 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Claude Code
+
+- Follow the official Claude Code best practices at `https://code.claude.com/docs/en/best-practices` for instruction scope, concise guidance, progressive disclosure, and verification.
+- Keep this file limited to project-wide commands, architecture, conventions, and non-obvious workflow constraints; use skills for task-specific procedures.
+- Verify changes with the narrowest applicable repository check and report the command and pass/fail result before declaring them complete.
+
 ## Repository shape
 
 - This is a pnpm 11 workspace managed by Turborepo. The workspace currently contains `packages/eslint-config-yarapa`, the publishable package.

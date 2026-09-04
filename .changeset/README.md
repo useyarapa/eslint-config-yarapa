@@ -1,19 +1,19 @@
 # Changesets
 
-Release-impacting pull requests should include a Changeset.
+A changeset records the package to release, the semver bump, and the changelog message.
 
-Run:
+For a package change:
 
-```sh
-pnpm changeset
-```
+1. Run `pnpm changeset`.
+2. Select `eslint-config-yarapa`.
+3. Select `patch`, `minor`, or `major`.
+4. Describe what changed, why it changed, and how consumers should update.
+5. Commit the generated `.changeset/*.md` file.
 
-Select the affected publishable package, choose `patch`, `minor`, or `major`, and write a concise user-facing release note.
-
-For changes with intentionally no package release impact, use the standard empty Changeset flow:
+For a change with no package release impact, run:
 
 ```sh
 pnpm changeset --empty
 ```
 
-`eslint-config-yarapa` is the only package in this monorepo and is publishable.
+See the [official Changesets guide](https://changesets.dev/faq#how-do-i-add-a-changeset).
