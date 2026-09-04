@@ -14,10 +14,6 @@ reviews:
     - "!pnpm-lock.yaml"
     - "!packages/**/dist/**"
     - "!.changeset/**"
-    - "!.agents/**"
-    - "!.claude/**"
-    - "!AGENTS.md"
-    - "!CLAUDE.md"
   instructions: |
     - This repository is a strict, deterministic ESLint Flat Config package for regulated banking environments.
     - Always edit source files in `packages/eslint-config-yarapa/src/` and tests, NEVER files in `dist/`.
