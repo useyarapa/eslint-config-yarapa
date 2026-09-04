@@ -45,7 +45,7 @@ Available profiles:
 - `eslint-config-yarapa/react` — baseline plus React and JSX rules
 - `eslint-config-yarapa/nest` — baseline plus Node.js rules
 
-See [docs/RULES.md](docs/RULES.md) for architecture, plugins matrix, and rules philosophy.
+See [packages/eslint-config-yarapa/docs/RULES.md](packages/eslint-config-yarapa/docs/RULES.md) for architecture, plugins matrix, and rules philosophy.
 
 Framework profiles are static Flat Config arrays. They do not change based on which packages happen to be installed.
 
