@@ -92,6 +92,31 @@ const modernJavaScriptRules: Linter.RulesRecord = {
   eqeqeq: ["error", "always"],
   "no-array-constructor": "error",
   "no-object-constructor": "error",
+  "no-restricted-imports": [
+    "error",
+    {
+      paths: [
+        { message: "Use es-toolkit or native methods instead.", name: "lodash" },
+        { message: "Use es-toolkit or native methods instead.", name: "lodash-es" },
+        { message: "Use es-toolkit or native methods instead.", name: "underscore" },
+        { message: "Use es-toolkit or native methods instead.", name: "ramda" },
+      ],
+      patterns: [
+        {
+          group: ["lodash/*", "lodash-es/*"],
+          message: "Use es-toolkit or native methods instead.",
+        },
+        {
+          group: ["underscore/*"],
+          message: "Use es-toolkit or native methods instead.",
+        },
+        {
+          group: ["ramda/*"],
+          message: "Use es-toolkit or native methods instead.",
+        },
+      ],
+    },
+  ],
   "no-var": "error",
   "object-shorthand": ["error", "always"],
   "prefer-const": "error",

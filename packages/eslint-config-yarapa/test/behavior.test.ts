@@ -199,4 +199,18 @@ describe("shared YARAPA behavior", () => {
       "unicorn/prefer-node-protocol",
     );
   });
+
+  it("restricts alternative utility libraries in favor of es-toolkit", async () => {
+    const [result] = await eslint.lintText(
+      "import _ from \"lodash\";\nexport { _ };\n",
+      { filePath: javascriptFixture },
+    );
+    const lintResult = required(result, "restricted imports behavior result");
+    const restrictedMessage = lintResult.messages.find(
+      message => message.ruleId === "no-restricted-imports",
+    );
+
+    expect(restrictedMessage).toBeDefined();
+    expect(restrictedMessage?.message).toContain("es-toolkit");
+  });
 });

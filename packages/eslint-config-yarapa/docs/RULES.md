@@ -35,8 +35,15 @@ Overview of profiles, plugins, and key design principles enforced by `eslint-con
 | **Manifests**     | `eslint-plugin-package-json`          | Strict `package.json` property order and validity                          |
 | **Stylistic**     | `@stylistic/eslint-plugin`            | Deterministic stylistic rules                                              |
 | **Sorting**       | `eslint-plugin-perfectionist`         | Natural, deterministic ordering of imports, exports, and object properties |
+| **Unicorn**       | `eslint-plugin-unicorn`               | Modern language capabilities, file conventions, and idiomatic utilities    |
 
-## Visualizing All Rules
+## Canonical Utility Layer
+
+To eliminate fragmentation and decision surface across AI-generated and human-written code, `eslint-config-yarapa` enforces a single canonical utility standard:
+
+1. **Native Array & Object Methods**: Always use native ECMAScript methods (`map`, `filter`, `find`, `some`, `every`, `reduce`, `Object.hasOwn`, etc.).
+2. **Approved Shared Utilities**: For operations beyond native capabilities (e.g. `debounce`, `throttle`, `groupBy`, `keyBy`, `uniqBy`, `cloneDeep`), standardize on `es-toolkit`.
+3. **Restricted Alternative Libraries**: Alternative general-purpose utility libraries (`lodash`, `lodash-es`, `underscore`, `ramda`) are restricted at the lint layer via `no-restricted-imports`.
 
 Because `eslint-config-yarapa` integrates hundreds of upstream rules across multiple plugins, the authoritative and up-to-date way to explore exact rule configurations is via `@eslint/config-inspector`:
 

@@ -12,6 +12,10 @@ overrides:
 
 importers:
   .:
+    dependencies:
+      es-toolkit:
+        specifier: ^1.52.0
+        version: 1.52.0
     devDependencies:
       "@changesets/cli":
         specifier: 3.0.1
@@ -67,6 +71,9 @@ importers:
       "@stylistic/eslint-plugin":
         specifier: 5.10.0
         version: 5.10.0(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))
+      es-toolkit:
+        specifier: ^1.52.0
+        version: 1.52.0
       eslint-import-resolver-typescript:
         specifier: 4.4.5
         version: 4.4.5(eslint-plugin-import-x@4.17.1(@typescript-eslint/utils@8.68.0(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0))(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)
@@ -672,6 +679,7 @@ packages:
         integrity: sha512-ud44BKgqP3DW/H64LOhrtRftS5BWe3W40NWaXW1hIv1xZLh2p2dMCOIABMQmAJNJI7hMTH5AX9KzLz4ecyYShg==,
       }
     engines: { node: ^20.19.0 || ^22.13.0 || >=24 }
+    hasBin: true
     peerDependencies:
       eslint: ^8.50.0 || ^9.0.0 || ^10.0.0
 
@@ -2693,6 +2701,7 @@ packages:
       {
         integrity: sha512-cSnz+17Xyws0M8ej07nvAHszskrcTM5TImIxGl4kIPphUNikRi0BKZwAod3JG1AD9JyXbR339VfDiWvJnl/wpw==,
       }
+    hasBin: true
     peerDependencies:
       "@modelcontextprotocol/client": ^2.0.0
       "@modelcontextprotocol/server": ^2.0.0
@@ -3057,6 +3066,7 @@ packages:
         integrity: sha512-9VaAkDURekixUQJy0oJYl2DcN6oKMfxay7XzaGYAWQwsb6qfKf+x76R2k1L8kb1boc+FyCAaTA9GmiKaaiaF+A==,
       }
     engines: { node: ^20.19.0 || ^22.13.0 || >=24 }
+    hasBin: true
     peerDependencies:
       jiti: "*"
     peerDependenciesMeta:
@@ -3359,6 +3369,7 @@ packages:
         integrity: sha512-woEUYLvpUa9SzbBGOYn3GfsK/EU7JhoUeNc49B2an6mcO1aqg7P8VvWVUfa5Vkb8FxBh9ZAkU+/rJ5m5pTULUA==,
       }
     engines: { node: ">=20.11.1" }
+    hasBin: true
     peerDependencies:
       crossws: ^0.4.12
       ocache: ">=0.3.0"
@@ -4692,6 +4703,7 @@ packages:
         integrity: sha512-ule7Y+fsAN2iZbLDoo7C4KYljFJNJJ+fLshyn+9gozeTspVersWHxwdGB+Dm2hzA38s6muFnUTl0jK3vJm9ifQ==,
       }
     engines: { node: ^22.18.0 || >=24.11.0 }
+    hasBin: true
     peerDependencies:
       "@arethetypeswrong/core": ^0.18.1
       "@tsdown/css": 0.22.14
@@ -4822,6 +4834,7 @@ packages:
       {
         integrity: sha512-UQ+MSxlhRm1bzjhU+DcuXfjFO1FzNtqhK5+9Yvlp90ItDLk5vT932A0rFu619nf7RVS+Y/VeaUW1jaRDqZ8VJw==,
       }
+    hasBin: true
     peerDependencies:
       browserslist: ">= 4.21.0"
 
@@ -4910,6 +4923,7 @@ packages:
         integrity: sha512-fhACrNXUidIbGSBr5FlbuBkO7VWC1ZyLl0DO4CU2DrQoAPxX84Ysxs+HeGQpii5lZWV1Q4gBZTTu49mF+A6Edw==,
       }
     engines: { node: ^20.0.0 || ^22.0.0 || >=24.0.0 }
+    hasBin: true
     peerDependencies:
       "@edge-runtime/vm": "*"
       "@opentelemetry/api": ^1.9.0
