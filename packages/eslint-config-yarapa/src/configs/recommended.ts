@@ -4,7 +4,7 @@ import { base } from "./base.js";
 import { ignores } from "./ignores.js";
 import { importResolution } from "./internal/importResolution.js";
 import { perfectionistNatural } from "./internal/perfectionist.js";
-import { sonarjsAllRules } from "./internal/sonarjs.js";
+import { sonarjsRecommended } from "./internal/sonarjs.js";
 import { jsdoc } from "./jsdoc.js";
 import { json } from "./json.js";
 import { packageJson } from "./packageJson.js";
@@ -28,7 +28,7 @@ export const recommended: Linter.Config[] = [
   ...typescript,
   ...typeChecked,
   ...importResolution,
-  ...sonarjsAllRules,
+  ...sonarjsRecommended,
   modernJavaScriptOwnership,
   ...jsdoc,
   ...json,

@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 
 import { required } from "../src/configs/internal/required.js";
 import yarapa from "../src/index.js";
+import react from "../src/react.js";
 import { eslintForConfigs, packageRoot } from "./helpers/eslint.js";
 
 /**
@@ -139,5 +140,51 @@ describe("shared YARAPA behavior", () => {
     expect(ruleIds).toContain("curly");
     expect(ruleIds).toContain("prefer-object-has-own");
     expect(ruleIds).toContain("radix");
+  });
+
+  it("reports hard-coded passwords through the official SonarJS preset", async () => {
+    const [result] = await eslint.lintText(
+      "const password = \"secret-value\";\n",
+      { filePath: javascriptFixture },
+    );
+    const lintResult = required(result, "SonarJS behavior result");
+
+    expect(lintResult.messages.map(message => message.ruleId)).toContain(
+      "sonarjs/no-hardcoded-passwords",
+    );
+  });
+
+  it("reports conditional hooks through the official React Hooks preset", async () => {
+    const reactEslint = eslintForConfigs(react);
+    const source = [
+      "const useEffect = callback => callback();",
+      "export const Component = active => {",
+      "  if (active) {",
+      "    useEffect(() => {});",
+      "  }",
+      "  return null;",
+      "};",
+      "",
+    ].join("\n");
+    const [result] = await reactEslint.lintText(source, {
+      filePath: resolve(packageRoot, "fixtures/react-hooks.jsx"),
+    });
+    const lintResult = required(result, "React Hooks behavior result");
+
+    expect(lintResult.messages.map(message => message.ruleId)).toContain(
+      "react-hooks/rules-of-hooks",
+    );
+  });
+
+  it("reports unresolved imports through the official import-x preset", async () => {
+    const [result] = await eslint.lintText(
+      "import missing from \"./does-not-exist.js\";\nexport { missing };\n",
+      { filePath: resolve(packageRoot, "fixtures/import-resolution.js") },
+    );
+    const lintResult = required(result, "import-x behavior result");
+
+    expect(lintResult.messages.map(message => message.ruleId)).toContain(
+      "import-x/no-unresolved",
+    );
   });
 });

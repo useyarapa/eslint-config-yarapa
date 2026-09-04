@@ -5,12 +5,12 @@ import globals from "globals";
 
 import { asFlatPlugin } from "./configs/internal/eslintCompat.js";
 import { reactComponentNaming } from "./configs/internal/reactComponentNaming.js";
-import { reactHooks } from "./configs/internal/reactHooks.js";
+import { reactHooksRecommended } from "./configs/internal/reactHooks.js";
 import { recommended } from "./configs/recommended.js";
 
 const next: Linter.Config[] = [
   ...recommended,
-  ...reactHooks,
+  ...reactHooksRecommended,
   ...reactComponentNaming,
   {
     files: [

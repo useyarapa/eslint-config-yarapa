@@ -2,12 +2,12 @@ import type { Linter } from "eslint";
 
 import { browser } from "./configs/browser.js";
 import { reactComponentNaming } from "./configs/internal/reactComponentNaming.js";
-import { reactHooks } from "./configs/internal/reactHooks.js";
+import { reactHooksRecommended } from "./configs/internal/reactHooks.js";
 import { recommended } from "./configs/recommended.js";
 
 const react: Linter.Config[] = [
   ...recommended,
-  ...reactHooks,
+  ...reactHooksRecommended,
   ...reactComponentNaming,
   ...browser,
   {

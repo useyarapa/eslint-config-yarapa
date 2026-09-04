@@ -1,8 +1,14 @@
 import type { Linter } from "eslint";
 
+import { configs as importXConfigs } from "eslint-plugin-import-x";
+import reactHooksPlugin from "eslint-plugin-react-hooks";
+import { configs as sonarjsConfigs } from "eslint-plugin-sonarjs";
 import { describe, expect, it } from "vitest";
 
-const PROFILE_NAMES = ["next", "nest", "react"] as const;
+import yarapa from "../src/index.js";
+import nest from "../src/nest.js";
+import next from "../src/next.js";
+import react from "../src/react.js";
 
 /**
  * Resolve the final configured value for one rule in a profile.
@@ -29,38 +35,85 @@ function findRule(
   return resolved;
 }
 
-/**
- * Load one semantic profile from its source entrypoint.
- * @param profileName Semantic profile name.
- * @returns The profile's Flat Config array.
- */
-async function loadProfile(
-  profileName: (typeof PROFILE_NAMES)[number],
-): Promise<Linter.Config[]> {
-  const moduleUrl = new URL(`../src/${profileName}.js`, import.meta.url);
-  const profileModule = await import(moduleUrl.href) as {
-    default: Linter.Config[];
-  };
+const officialConfigs = {
+  importRecommended: importXConfigs["flat/recommended"],
+  importTypeScript: importXConfigs["flat/typescript"],
+  reactHooks: reactHooksPlugin.configs.flat["recommended-latest"],
+  sonarjs: sonarjsConfigs.recommended,
+} as const;
 
-  return profileModule.default;
-}
+const profileEntries: ReadonlyArray<{
+  expectedConfigs: ReadonlyArray<Linter.Config>;
+  name: string;
+  profile: Linter.Config[];
+}> = [
+  {
+    expectedConfigs: [
+      officialConfigs.sonarjs,
+      officialConfigs.importRecommended,
+      officialConfigs.importTypeScript,
+    ],
+    name: "default",
+    profile: yarapa,
+  },
+  {
+    expectedConfigs: [
+      officialConfigs.sonarjs,
+      officialConfigs.importRecommended,
+      officialConfigs.importTypeScript,
+    ],
+    name: "nest",
+    profile: nest,
+  },
+  {
+    expectedConfigs: [
+      officialConfigs.sonarjs,
+      officialConfigs.reactHooks,
+      officialConfigs.importRecommended,
+      officialConfigs.importTypeScript,
+    ],
+    name: "next",
+    profile: next,
+  },
+  {
+    expectedConfigs: [
+      officialConfigs.sonarjs,
+      officialConfigs.reactHooks,
+      officialConfigs.importRecommended,
+      officialConfigs.importTypeScript,
+    ],
+    name: "react",
+    profile: react,
+  },
+];
+
+const profiles = profileEntries.map(({ profile }) => profile);
 
 describe("semantic profiles", () => {
-  it.each(PROFILE_NAMES)(
-    "/%s exports a non-empty Flat Config array",
-    async profileName => {
-      const profile = await loadProfile(profileName);
-
+  it.each(profileEntries)(
+    "$name exports a non-empty Flat Config array",
+    ({ profile }) => {
       expect(Array.isArray(profile)).toBe(true);
       expect(profile.length).toBeGreaterThan(0);
     },
   );
 
-  it("shares canonical handwriting across all profiles", async () => {
-    const profiles = await Promise.all(
-      PROFILE_NAMES.map(profileName => loadProfile(profileName)),
-    );
+  it.each(profileEntries)(
+    "$name preserves official upstream config ownership",
+    ({ expectedConfigs, profile }) => {
+      for (const expectedConfig of expectedConfigs) {
+        expect(profile).toContain(expectedConfig);
+      }
+    },
+  );
 
+  it("preserves the official import-x warning severity", () => {
+    expect(
+      officialConfigs.importRecommended.rules?.["import-x/no-duplicates"],
+    ).toBe("warn");
+  });
+
+  it("shares canonical handwriting across all profiles", () => {
     for (const ruleName of [
       "@stylistic/semi",
       "@typescript-eslint/consistent-type-imports",
@@ -93,11 +146,7 @@ describe("semantic profiles", () => {
     }
   });
 
-  it("keeps modern JavaScript concerns on canonical owners", async () => {
-    const profiles = await Promise.all(
-      PROFILE_NAMES.map(profileName => loadProfile(profileName)),
-    );
-
+  it("keeps modern JavaScript concerns on canonical owners", () => {
     for (const profile of profiles) {
       expect(findRule(profile, "sonarjs/arguments-usage")).toBe("off");
       expect(findRule(profile, "sonarjs/array-constructor")).toBe("off");
@@ -108,11 +157,7 @@ describe("semantic profiles", () => {
     }
   });
 
-  it("uses @stylistic instead of deprecated core formatting rules", async () => {
-    const profiles = await Promise.all(
-      PROFILE_NAMES.map(profileName => loadProfile(profileName)),
-    );
-
+  it("uses @stylistic instead of deprecated core formatting rules", () => {
     for (const profile of profiles) {
       for (const ruleName of [
         "arrow-parens",
