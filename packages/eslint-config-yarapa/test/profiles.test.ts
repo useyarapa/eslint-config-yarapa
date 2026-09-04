@@ -126,6 +126,7 @@ describe("semantic profiles", () => {
       "eqeqeq",
       "import-x/no-duplicates",
       "no-object-constructor",
+      "no-restricted-imports",
       "no-var",
       "object-shorthand",
       "prefer-const",

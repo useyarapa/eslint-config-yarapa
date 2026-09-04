@@ -1,5 +1,7 @@
 import type { Linter } from "eslint";
 
+import { isNil } from "es-toolkit";
+
 type FlatPlugin = NonNullable<Linter.Config["plugins"]>[string];
 
 /**
@@ -24,7 +26,7 @@ export function asFlatPlugin(plugin: unknown): FlatPlugin {
  * @returns the value, guaranteed non-null
  */
 export function required<T>(value: null | T | undefined, label: string): T {
-  if (value === null || value === undefined) {
+  if (isNil(value)) {
     throw new Error(`Missing required upstream config: ${label}`);
   }
 
