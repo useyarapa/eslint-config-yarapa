@@ -1,18 +1,38 @@
 # eslint-config-yarapa
 
+[![npm version](https://img.shields.io/npm/v/eslint-config-yarapa.svg?color=cb3837)](https://www.npmjs.com/package/eslint-config-yarapa)
+[![npm downloads](https://img.shields.io/npm/dm/eslint-config-yarapa.svg)](https://www.npmjs.com/package/eslint-config-yarapa)
+[![node version](https://img.shields.io/badge/node-%3E%3D24.15.0-brightgreen.svg)](https://nodejs.org)
+[![license](https://img.shields.io/github/license/useyarapa/eslint-config-yarapa.svg)](https://github.com/useyarapa/eslint-config-yarapa/blob/main/LICENSE)
+
 Opinionated, deterministic ESLint Flat Config standards for modern JavaScript and TypeScript projects.
 
 `eslint-config-yarapa` provides a shared, zero-compromise linting baseline across JavaScript, TypeScript, Node.js, React, Next.js, and NestJS. Framework profiles extend this unified baseline rather than introducing separate, fragmented rulesets.
 
+---
+
+## Features
+
+- **Strict Flat Config First**: Pre-configured, deterministic arrays compatible with ESLint 9+ and 10+.
+- **Type-Aware First**: Native integration with TypeScript's `projectService` for accurate, AST-driven type analysis without manual `tsconfig.json` overhead.
+- **Unified Style**: Integrated `@stylistic/eslint-plugin` rules with zero format suppression allowed.
+- **Natural Ordering**: Automated, deterministic sorting of imports, exports, and object keys via `eslint-plugin-perfectionist`.
+- **Security & Bug Prevention**: Built-in cognitive complexity analysis and anti-ReDoS rules with `eslint-plugin-sonarjs` and `eslint-plugin-regexp`.
+- **Modular Framework Profiles**: First-class profiles for Next.js, React, and NestJS/Node.js.
+
+---
+
 ## Requirements
 
-- Node.js `>=24.15.0 <25`
-- ESLint `^10.0.0`
-- TypeScript `>=5.0.0 <6.1.0` (for TypeScript projects)
+- **Node.js**: `>=24.15.0 <25`
+- **ESLint**: `^10.0.0`
+- **TypeScript**: `>=5.0.0 <6.1.0` (for TypeScript projects)
+
+---
 
 ## Installation
 
-Install the package alongside ESLint and TypeScript:
+Install `eslint-config-yarapa` along with required peer dependencies:
 
 ```sh
 pnpm add -D eslint eslint-config-yarapa typescript
@@ -26,9 +46,11 @@ npm install --save-dev eslint eslint-config-yarapa typescript
 yarn add -D eslint eslint-config-yarapa typescript
 ```
 
-## Basic Configuration
+---
 
-Create an `eslint.config.mjs` file in your project root:
+## Quick Start
+
+Create an `eslint.config.mjs` in the root of your project:
 
 ```js
 import yarapa from "eslint-config-yarapa";
@@ -36,15 +58,17 @@ import yarapa from "eslint-config-yarapa";
 export default yarapa;
 ```
 
-The default profile applies the baseline rules for JavaScript and TypeScript, including type-aware linting powered by TypeScript's `projectService`.
+The default profile applies universal baseline rules for JavaScript and TypeScript, including type-aware rules through `projectService`.
+
+---
 
 ## Framework Profiles
 
 Select the profile that matches your project runtime:
 
-### Next.js (`eslint-config-yarapa/next`)
+### Next.js Applications (`eslint-config-yarapa/next`)
 
-Baseline plus Next.js (`@next/next`), React Hooks, and JSX rules.
+Baseline plus Next.js Core Web Vitals, React Hooks, and JSX rules.
 
 ```js
 import next from "eslint-config-yarapa/next";
@@ -52,9 +76,9 @@ import next from "eslint-config-yarapa/next";
 export default next;
 ```
 
-### React (`eslint-config-yarapa/react`)
+### React Applications & Libraries (`eslint-config-yarapa/react`)
 
-Baseline plus React Hooks, JSX syntax, and browser globals for Single-Page Applications or React libraries.
+Baseline plus React Hooks, JSX syntax, and browser globals for Single-Page Applications (Vite, CRA) or UI libraries.
 
 ```js
 import react from "eslint-config-yarapa/react";
@@ -72,37 +96,135 @@ import nest from "eslint-config-yarapa/nest";
 export default nest;
 ```
 
-## Available Profiles Summary
+---
 
-| Profile Entrypoint | Target Environment | Key Features |
-| ------------------ | ------------------ | ------------ |
-| `eslint-config-yarapa` | Universal JS / TS | Baseline JS, strict TypeScript with `projectService`, Imports, SonarJS, JSDoc, Perfectionist sorting, JSON |
-| `eslint-config-yarapa/next` | Next.js Applications | Baseline + Next.js Core Web Vitals & rules, React Hooks |
-| `eslint-config-yarapa/react` | React (SPA / UI) | Baseline + React Hooks, JSX rules, browser globals |
-| `eslint-config-yarapa/nest` | NestJS / Node.js | Baseline + Node.js runtime rules (`eslint-plugin-n`) |
+## Profiles Matrix
 
-All profiles are static Flat Config arrays. Rules remain deterministic and do not fluctuate based on local ambient dependencies.
+| Profile Entrypoint | Target Environment | Key Rule Layers Included |
+| ------------------ | ------------------ | ------------------------ |
+| `eslint-config-yarapa` | Universal JS / TS | Base JS, TS syntax, TS type-checked, Imports, SonarJS, JSDoc, Perfectionist sorting, JSON |
+| `eslint-config-yarapa/next` | Next.js Apps | Baseline + `@next/next` rules, React Hooks, JSX rules |
+| `eslint-config-yarapa/react` | React (SPA/Library) | Baseline + React Hooks, JSX syntax, Browser globals |
+| `eslint-config-yarapa/nest` | Node.js / NestJS | Baseline + Node.js runtime rules (`eslint-plugin-n`) |
 
-For architectural decisions, rule layers, and plugin design philosophies, see [Architecture & Rules Matrix](docs/RULES.md).
+All profiles are static Flat Config arrays. Rules do not mutate based on ambient runtime conditions.
 
-## Running ESLint
+For full architecture details and rule philosophies, refer to the [Architecture & Rules Overview](docs/RULES.md).
 
-Run ESLint from your project root:
+---
 
+## Customization & Overriding Rules
+
+Because all profiles export standard Flat Config arrays, you can compose, add project-specific rules, or ignore files using standard JavaScript array operations:
+
+```js
+import yarapa from "eslint-config-yarapa";
+
+export default [
+  ...yarapa,
+  {
+    // Global ignore patterns
+    ignores: [
+      "**/dist/**",
+      "**/build/**",
+      "**/.next/**",
+      "**/coverage/**",
+    ],
+  },
+  {
+    // Custom project-level overrides
+    files: ["src/**/*.ts"],
+    rules: {
+      // Add or adjust specific rules
+      "no-console": ["warn", { allow: ["warn", "error"] }],
+    },
+  },
+];
+```
+
+---
+
+## Formatting & Prettier Integration
+
+`eslint-config-yarapa` includes deterministic code styling via `@stylistic/eslint-plugin` (semi, quotes, 2-space indentation, max line length).
+
+- **Recommended**: Run ESLint directly with `--fix` to format and lint your entire repository deterministically.
+- **If using Prettier**: If your workflow requires Prettier for non-JS files (e.g. Markdown, CSS, HTML), ensure that Prettier is configured with matching options:
+  - `"semi": true`
+  - `"singleQuote": false`
+  - `"tabWidth": 2`
+  - `"trailingComma": "all"`
+
+---
+
+## Editor Integration (VS Code)
+
+To enable automatic linting and auto-fix on save in Visual Studio Code:
+
+1. Install the official [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint).
+2. Add the following to your project's `.vscode/settings.json`:
+
+```json
+{
+  "eslint.experimental.useFlatConfig": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  "[javascript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  }
+}
+```
+
+---
+
+## Monorepo & Troubleshooting FAQ
+
+### 1. `projectService` fails to find `tsconfig.json`
+When running type-aware rules, ESLint must resolve project configuration relative to your project's `tsconfig.json`.
+
+**Solution**: Run ESLint from the root directory containing your `tsconfig.json`:
 ```sh
 pnpm exec eslint .
 ```
+In monorepo setups, run ESLint within each workspace package or configure `tsconfigRootDir`:
+```js
+import yarapa from "eslint-config-yarapa";
 
-*Note: When using type-aware rules, ensure you run ESLint from the directory containing your `tsconfig.json`.*
+export default [
+  ...yarapa,
+  {
+    languageOptions: {
+      parserOptions: {
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
+];
+```
 
-## Inspecting Rules
+### 2. Can I use `eslint-disable` comments?
+By repository philosophy, inline rule suppressions (`// eslint-disable`) are prohibited. All diagnostics should be resolved at the root cause. If a project-wide exemption is genuinely required (e.g., generated files), configure it explicitly in `eslint.config.mjs` under `ignores` or `rules`.
 
-To visually inspect active rules, plugins, and overrides in your project using ESLint's interactive inspector:
+---
+
+## Inspecting Active Rules
+
+To visually explore every rule, plugin, and active override in your configuration:
 
 ```sh
 pnpm dlx @eslint/config-inspector
 ```
 
+---
+
 ## License
 
-[MIT](https://github.com/useyarapa/eslint-config-yarapa/blob/main/LICENSE)
+[MIT](https://github.com/useyarapa/eslint-config-yarapa/blob/main/LICENSE) © YARAPA

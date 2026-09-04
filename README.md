@@ -1,27 +1,43 @@
 # YARAPA Code Standard
 
-Deterministic, opinionated ESLint Flat Config monorepo for modern JavaScript and TypeScript projects.
+[![CI Status](https://github.com/useyarapa/eslint-config-yarapa/actions/workflows/ci.yml/badge.svg)](https://github.com/useyarapa/eslint-config-yarapa/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/eslint-config-yarapa.svg?color=cb3837)](https://www.npmjs.com/package/eslint-config-yarapa)
+[![node version](https://img.shields.io/badge/node-%3E%3D24.15.0-brightgreen.svg)](https://nodejs.org)
+[![license](https://img.shields.io/github/license/useyarapa/eslint-config-yarapa.svg)](LICENSE)
 
-This repository hosts the shared code standards, lint configurations, and baseline rules enforced across YARAPA applications and libraries, designed with strict safety baselines for regulated and high-integrity environments.
+Deterministic, opinionated ESLint Flat Config monorepo engineered for modern JavaScript and TypeScript applications.
+
+This repository serves as the engineering baseline for YARAPA projects, enforcing strict code quality, consistent layout, and security standards suitable for high-integrity, regulated environments (such as financial technology and banking services).
+
+---
 
 ## Workspace Packages
 
 | Package | Version | Description |
 | ------- | ------- | ----------- |
-| [`eslint-config-yarapa`](packages/eslint-config-yarapa) | `0.3.0` | Production-ready ESLint Flat Config profiles (Universal, React, Next.js, NestJS). |
+| [`eslint-config-yarapa`](packages/eslint-config-yarapa) | [![npm](https://img.shields.io/npm/v/eslint-config-yarapa.svg)](https://www.npmjs.com/package/eslint-config-yarapa) | Strict ESLint Flat Config profiles (Universal, Next.js, React, NestJS). |
 
-## Key Architectural Principles
+---
 
-1. **Static Flat Configs**: Profiles are immutable, deterministic arrays of ESLint Flat Config objects. They do not guess or conditionally toggle rules based on installed environment packages.
-2. **Type-Aware First**: Leverages TypeScript's native `projectService` for accurate, AST-driven type analysis without manual `tsconfig` gymnastics.
-3. **Zero Inline Suppression**: Directives such as `// eslint-disable`, `// @ts-ignore`, and `/* prettier-ignore */` are strictly prohibited across repository source files. All issues must be solved at the root cause.
-4. **Natural Symmetry**: Consistent layout, rule layering, and formatting across every supported framework.
+## Core Architectural Pillars
 
-Detailed rules breakdown and plugin matrices are documented in [Architecture & Rules Matrix](packages/eslint-config-yarapa/docs/RULES.md).
+1. **Static & Deterministic Flat Configs**
+   - Profiles are static, immutable Flat Config arrays.
+   - Zero runtime sniffing or dynamic rule mutations based on installed ambient dependencies.
+2. **Type-Aware First**
+   - Direct integration with TypeScript's native `projectService`, eliminating custom AST divergence and manual `tsconfig` lookup overhead.
+3. **Zero Inline Suppression**
+   - Suppression directives (`// eslint-disable`, `// @ts-ignore`, `/* prettier-ignore */`) are strictly prohibited in repository source code. All issues must be solved at the root cause.
+4. **Symmetric Layering**
+   - Framework profiles (`next`, `react`, `nest`) extend the universal baseline without fracturing the core stylistic or structural expectations.
 
-## Quick Start (Consumers)
+For in-depth architecture, rule classifications, and plugin matrices, see [Architecture & Rules Overview](packages/eslint-config-yarapa/docs/RULES.md).
 
-To use the config in your application, install `eslint-config-yarapa`:
+---
+
+## Quick Start (For Consumers)
+
+Install the package alongside ESLint and TypeScript:
 
 ```sh
 pnpm add -D eslint eslint-config-yarapa typescript
@@ -35,38 +51,44 @@ import yarapa from "eslint-config-yarapa";
 export default yarapa;
 ```
 
-For complete installation instructions, framework profile options (`next`, `react`, `nest`), and usage examples, refer to the [Package Documentation](packages/eslint-config-yarapa/README.md).
+For complete framework profiles (`next`, `react`, `nest`), custom overrides, editor configuration, and troubleshooting, read the [Package Documentation](packages/eslint-config-yarapa/README.md).
 
-## Monorepo Development
+---
+
+## Repository Development & Contribution
 
 ### Prerequisites
 
 - Node.js matching `.nvmrc` (`>=24.15.0`)
-- pnpm `11.23.0`
+- pnpm `11.23.0` (managed via Corepack or package manager)
 
-### Setup & Verification
+### Development Workflow
 
 ```sh
-# Install dependencies
+# 1. Install dependencies
 pnpm install
 
-# Build the configuration package
+# 2. Build the package distribution
 pnpm build
 
-# Run comprehensive workspace checks
-pnpm lint           # Builds package and runs repository linting
+# 3. Verify quality and test suites
+pnpm lint           # Repository linting (builds package first)
 pnpm check-types    # Workspace-wide TypeScript checks
 pnpm test           # Unit and diagnostic tests
 pnpm knip           # Dead code and unused dependency audit
-pnpm verify         # Full verification pipeline (build, test, consumer tarball smoke test)
+pnpm verify         # Complete CI-parity pipeline including consumer tarball test
 ```
 
-## Contributing & Governance
+---
 
-- [Contributing Guidelines](CONTRIBUTING.md) — Workflow, testing standards, and changesets
-- [Code of Conduct](CODE_OF_CONDUCT.md) — Community pledges and enforcement standards
-- [Security Policy](SECURITY.md) — Vulnerability reporting guidelines and response timeline
+## Repository Governance
+
+- [Contributing Guidelines](CONTRIBUTING.md) — Workflow, PR standards, and Changesets protocol
+- [Code of Conduct](CODE_OF_CONDUCT.md) — Contributor Covenant v2.1 community standards
+- [Security Policy](SECURITY.md) — Vulnerability reporting channel and response SLA
+
+---
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) © YARAPA
