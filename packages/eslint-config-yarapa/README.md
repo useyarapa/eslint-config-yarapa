@@ -55,6 +55,14 @@ pnpm exec eslint .
 
 When using type-aware rules, run ESLint from the project root containing the relevant `tsconfig.json` files.
 
+## Inspecting Rules
+
+To visually inspect all active rules, plugins, and overrides in your configuration:
+
+```sh
+pnpm dlx @eslint/config-inspector
+```
+
 ## License
 
 MIT
