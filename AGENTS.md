@@ -1,11 +1,10 @@
-# CLAUDE.md
+# Repository Guidelines
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides architectural, tooling, and workflow guidelines when working with code in this repository.
 
-## Claude Code
+## Agent Guidelines
 
-- Follow the official Claude Code best practices at `https://code.claude.com/docs/en/best-practices` for instruction scope, concise guidance, progressive disclosure, and verification.
-- Keep this file limited to project-wide commands, architecture, conventions, and non-obvious workflow constraints; use skills for task-specific procedures.
+- Keep instructions focused on repository-wide commands, architecture, conventions, and non-obvious workflow constraints.
 - Verify changes with the narrowest applicable repository check and report the command and pass/fail result before declaring them complete.
 
 ## Repository shape
