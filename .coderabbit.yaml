@@ -1,0 +1,6 @@
+reviews:
+  path_filters:
+    - "!.agents/**"
+    - "!.claude/**"
+    - "!AGENTS.md"
+    - "!CLAUDE.md"
