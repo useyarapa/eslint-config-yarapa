@@ -1,5 +1,5 @@
 ---
-name: create-pr
+name: create-github-pr
 description: >
   Generate and open pull requests strictly adhering to the repository PR
   template (.github/pull_request_template.md). Use this skill whenever the user
@@ -10,7 +10,7 @@ argument-hint: "[issue-number|optional-title]"
 license: MIT
 ---
 
-# Create Pull Request
+# Create GitHub Pull Request
 
 Guide agents and contributors through creating pull requests that strictly conform to `.github/pull_request_template.md` and repository engineering standards.
 
