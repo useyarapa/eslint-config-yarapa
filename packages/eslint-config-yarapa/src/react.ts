@@ -1,7 +1,6 @@
 import type { Linter } from "eslint";
 
-import globals from "globals";
-
+import { browser } from "./configs/browser.js";
 import { reactComponentNaming } from "./configs/internal/reactComponentNaming.js";
 import { reactHooks } from "./configs/internal/reactHooks.js";
 import { recommended } from "./configs/recommended.js";
@@ -10,9 +9,9 @@ const react: Linter.Config[] = [
   ...recommended,
   ...reactHooks,
   ...reactComponentNaming,
+  ...browser,
   {
     languageOptions: {
-      globals: { ...globals.browser },
       parserOptions: {
         ecmaFeatures: { jsx: true },
       },

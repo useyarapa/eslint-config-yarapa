@@ -13,10 +13,8 @@ Maintain single sources of truth and reuse existing shared logic.
 
 ## Single Source of Truth
 
-- Do not hardcode recurring values, preset names, test file globs, or config options across files.
-- Reuse central definitions:
-  - Preset names in `packages/eslint-config-yarapa/src/configs/presetNames.ts`
-  - Canonical test globs in `packages/eslint-config-yarapa/src/configs/internal/canonicalTestFileGlobs.ts`
+- Do not hardcode recurring values, test file globs, or config options across files.
+- Reuse central definitions and shared configuration profiles.
 
 ## Reuse Existing Utilities
 

@@ -119,14 +119,14 @@ jobs:
           install: false
       - name: Install release tooling without lifecycle scripts
         run: pnpm install --frozen-lockfile --ignore-scripts
-      - name: Generate CycloneDX SBOM
+      - name: Generate CycloneDX SBOM for published package
         run: |
-          npx --yes @cyclonedx/cyclonedx-npm --output-file bom.json --output-format JSON
+          npx --yes @cyclonedx/cyclonedx-npm packages/eslint-config-yarapa --output-file packages/eslint-config-yarapa/bom.json --output-format JSON
       - name: Upload SBOM artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: cyclonedx-sbom
-          path: bom.json
+          path: packages/eslint-config-yarapa/bom.json
           retention-days: 90
       - name: Publish with npm Trusted Publishing
         uses: changesets/action/publish@8488615a623b1b9c987934bb89eae8af6a946ac1 # v2.1.1

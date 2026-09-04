@@ -1,6 +1,7 @@
 import type { Linter } from "eslint";
 
 import { base } from "./base.js";
+import { ignores } from "./ignores.js";
 import { importResolution } from "./internal/importResolution.js";
 import { perfectionistNatural } from "./internal/perfectionist.js";
 import { sonarjsAllRules } from "./internal/sonarjs.js";
@@ -22,6 +23,7 @@ const modernJavaScriptOwnership: Linter.Config = {
 };
 
 export const recommended: Linter.Config[] = [
+  ...ignores,
   ...base,
   ...typescript,
   ...typeChecked,
