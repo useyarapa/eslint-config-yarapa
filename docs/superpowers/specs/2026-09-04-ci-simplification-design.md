@@ -13,7 +13,7 @@ A focused audit of `.github/` revealed that while the core building blocks exist
 1. Inconsistent job/step display naming conventions.
 2. Divergence between local developer commands (which use Turborepo / canonical root scripts) and CI jobs (which bypassed the root task graph and directly executed package-filtered commands).
 3. Missing linting for GitHub Actions workflows themselves via `actionlint`.
-4. Obsolete migration shims (`diagnostic-snapshot`).
+4. Obsolete migration shims (`diagnostic-snapshot` and `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24`).
 5. Overly complex custom REST API probe and fallback logic in the Dependency Review job for public repositories.
 
 This design standardizes workflow linting, removes unnecessary bespoke shims, aligns CI commands with canonical repository tasks, and establishes consistent, professional human-facing naming across all GitHub Actions workflows.
@@ -56,8 +56,10 @@ The legacy `diagnostic-snapshot` job is removed entirely. The `ci` job lists all
 - **Target**: Validate all `.github/workflows/*.yml` for syntax, expressions, and action contract violations.
 - **Implementation**:
   - Maintain upstream `rhysd/actionlint` CLI (`v1.7.12`).
-  - Download official Linux x64 binary archive and verify against SHA256 checksum (`194b3c95964f40f2f3d6db875150fb319df6b2a0c647b9bf22718e27cce97c11`).
-  - Execute `actionlint -color -shellcheck= -pyflakes=` directly without intermediate wrapper actions or external SaaS.
+  - Download official Linux x64 binary archive (`actionlint_1.7.12_linux_amd64.tar.gz`) and verify against official SHA256 checksum:
+    `8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8`.
+  - Execute `actionlint -color -pyflakes=` directly without intermediate wrapper actions or external SaaS.
+  - ShellCheck integration remains enabled by default (available on standard Ubuntu GitHub-hosted runners) to lint embedded shell blocks in workflows; Pyflakes is disabled (`-pyflakes=`) because workflows contain no Python scripts.
   - Lightweight runner execution (~1-2 seconds) with no Node.js or Go toolchain setup overhead.
 
 ### 3.2. Canonical Command & Turborepo Alignment
@@ -86,28 +88,37 @@ Eliminate dual-orchestration models by using repository-defined canonical comman
 - Standardize step names.
 
 ### 3.5. Removal of `diagnostic-snapshot` & Updating Aggregate `ci`
-- Remove the `diagnostic-snapshot` job. GitHub ruleset check confirmed no required status check depends on `diagnostic-snapshot`.
-- Update the `ci` aggregate job:
-  - `needs` array updated:
-    ```yaml
-    needs:
-      - actionlint
-      - lint
-      - test
-      - check-types
-      - build
-      - consumer
-      - compatibility
-      - framework-compatibility
-      - windows-consumer
-      - dependency-review
-      - gitleaks
-      - changesets
-    ```
-  - Verification script checks `ACTIONLINT_RESULT: ${{ needs.actionlint.result }}`.
-  - Ensures any failure in any upstream job immediately causes `ci` to fail.
+- **Mandatory Pre-Deletion Verification**:
+  - Before deleting `diagnostic-snapshot`, the implementing agent MUST verify classic branch protection and repository rulesets using an authenticated owner/admin GitHub CLI/API session.
+  - Removal is allowed only when neither mechanism requires the `diagnostic-snapshot` check. If a repository setting still references it, report the blocker without modifying repository settings.
+- **Updating Aggregate `ci`**:
+  - Once verified, remove the `diagnostic-snapshot` job.
+  - Update the `ci` aggregate job:
+    - `needs` array updated:
+      ```yaml
+      needs:
+        - actionlint
+        - lint
+        - test
+        - check-types
+        - build
+        - consumer
+        - compatibility
+        - framework-compatibility
+        - windows-consumer
+        - dependency-review
+        - gitleaks
+        - changesets
+      ```
+    - Verification script checks `ACTIONLINT_RESULT: ${{ needs.actionlint.result }}`.
+    - Ensures any required upstream failure causes the aggregate `ci` check to fail once its dependencies have completed/resolved.
 
-### 3.6. Naming Conventions Across Workflows
+### 3.6. Removal of Obsolete Runtime Force Flags
+- Remove `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"` from `ci.yml` and `release.yml`.
+- Node 24 is already the standard GitHub Actions default runtime.
+- Do not replace it with another runtime-force environment variable.
+
+### 3.7. Naming Conventions Across Workflows
 Standardize naming across `ci.yml`, `release.yml`, and `scorecard.yml`:
 1. **Workflow Names**: Keep human-readable (`CI`, `Release`, `OpenSSF Scorecard`).
 2. **Job IDs**: Keep stable kebab-case identifiers (`actionlint`, `lint`, `test`, `check-types`, `build`, `consumer`, `compatibility`, `framework-compatibility`, `windows-consumer`, `dependency-review`, `gitleaks`, `changesets`, `ci`, `select-mode`, `version`, `pack`, `publish`, `analysis`).
@@ -117,7 +128,7 @@ Standardize naming across `ci.yml`, `release.yml`, and `scorecard.yml`:
    - `scorecard.yml`: `Scorecard Analysis`.
 4. **Step Names**: Concise, consistent imperative/action phrases (e.g., `Checkout repository`, `Set up pnpm`, `Lint GitHub Actions workflows`, `Run repository lint`, `Run tests`, `Check types`, `Build package`).
 
-### 3.7. Action Pinning & Security
+### 3.8. Action Pinning & Security
 - Every external action must strictly adhere to full-length commit SHA references with human-readable release comments (e.g. `actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7`).
 - Zero mutable tags (`@v*`, `@main`) permitted.
 
