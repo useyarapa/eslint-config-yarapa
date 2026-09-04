@@ -67,9 +67,6 @@ importers:
       "@stylistic/eslint-plugin":
         specifier: 5.10.0
         version: 5.10.0(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))
-      eslint-config-prettier:
-        specifier: ^10.1.8
-        version: 10.1.8(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))
       eslint-import-resolver-typescript:
         specifier: 4.4.5
         version: 4.4.5(eslint-plugin-import-x@4.17.1(@typescript-eslint/utils@8.68.0(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0))(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)
@@ -2790,15 +2787,6 @@ packages:
     engines: { node: ">=12" }
     peerDependencies:
       eslint: ">=6.0.0"
-
-  eslint-config-prettier@10.1.8:
-    resolution:
-      {
-        integrity: sha512-82GZUjRS0p/jganf6q1rEO25VSoHH0hKPCTrgillPjdI/3bgBhAE1QzHrHTizjpRvy6pGAvKjDJtk2pF9NDq8w==,
-      }
-    hasBin: true
-    peerDependencies:
-      eslint: ">=7.0.0"
 
   eslint-fix-utils@0.4.3:
     resolution:
@@ -6373,10 +6361,6 @@ snapshots:
     dependencies:
       eslint: 10.9.1(jiti@2.7.0)(supports-color@7.2.0)
       semver: 7.8.5
-
-  eslint-config-prettier@10.1.8(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0)):
-    dependencies:
-      eslint: 10.9.1(jiti@2.7.0)(supports-color@7.2.0)
 
   eslint-fix-utils@0.4.3(@types/estree@1.0.8)(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0)):
     dependencies:
