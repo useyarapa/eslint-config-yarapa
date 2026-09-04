@@ -17,7 +17,7 @@ We take the security of `eslint-config-yarapa` seriously. If you discover a secu
 
 ### Reporting Process
 
-1. Report security issues through [GitHub Private Vulnerability Reporting](https://github.com/useyarapa/eslint-config-yarapa-resover/security/advisories/new).
+1. Report security issues through [GitHub Private Vulnerability Reporting](https://github.com/useyarapa/eslint-config-yarapa/security/advisories/new).
 2. Alternatively, email the maintainers directly at `security@yarapa.com`.
 3. Include detailed steps to reproduce the vulnerability, along with relevant configuration snippets and environment details.
 

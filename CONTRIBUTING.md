@@ -19,6 +19,12 @@ Run setup from the repository root:
 pnpm install
 ```
 
+## Quality Standards & Root Cause Fixes
+
+- **No inline suppressions**: Never introduce or commit comment directives to bypass checks (`// eslint-disable`, `// @ts-ignore`, `// @ts-expect-error`, or `/* prettier-ignore */`).
+- **Fix root causes**: When a lint, type, or test check fails, resolve the underlying configuration, types, or code structure instead of disabling the rule.
+- **No dead code**: Do not introduce unused exports, unused dependencies, or commented-out code. Run `pnpm knip` to ensure the codebase remains clean.
+
 ## Development Workflow
 
 1. **Edit source and tests**:

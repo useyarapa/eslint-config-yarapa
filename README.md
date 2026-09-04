@@ -1,24 +1,33 @@
-# eslint-config-yarapa
+# YARAPA Code Standard
 
-Opinionated, deterministic ESLint Flat Config for modern JavaScript and TypeScript projects.
+Deterministic, opinionated ESLint Flat Config monorepo for modern JavaScript and TypeScript projects.
 
-YARAPA provides one shared coding style across JavaScript, TypeScript, Node.js, React, Next.js, and NestJS projects. Framework profiles extend the same baseline rather than introducing separate coding philosophies.
+This repository hosts the shared code standards, lint configurations, and baseline rules enforced across YARAPA applications and libraries, designed with strict safety baselines for regulated and high-integrity environments.
 
-## Requirements
+## Workspace Packages
 
-- Node.js `>=24.15.0 <25`
-- ESLint `^10.0.0`
-- TypeScript `>=5.0.0 <6.1.0` for TypeScript projects
+| Package | Version | Description |
+| ------- | ------- | ----------- |
+| [`eslint-config-yarapa`](packages/eslint-config-yarapa) | `0.3.0` | Production-ready ESLint Flat Config profiles (Universal, React, Next.js, NestJS). |
 
-## Install
+## Key Architectural Principles
+
+1. **Static Flat Configs**: Profiles are immutable, deterministic arrays of ESLint Flat Config objects. They do not guess or conditionally toggle rules based on installed environment packages.
+2. **Type-Aware First**: Leverages TypeScript's native `projectService` for accurate, AST-driven type analysis without manual `tsconfig` gymnastics.
+3. **Zero Inline Suppression**: Directives such as `// eslint-disable`, `// @ts-ignore`, and `/* prettier-ignore */` are strictly prohibited across repository source files. All issues must be solved at the root cause.
+4. **Natural Symmetry**: Consistent layout, rule layering, and formatting across every supported framework.
+
+Detailed rules breakdown and plugin matrices are documented in [Architecture & Rules Matrix](packages/eslint-config-yarapa/docs/RULES.md).
+
+## Quick Start (Consumers)
+
+To use the config in your application, install `eslint-config-yarapa`:
 
 ```sh
 pnpm add -D eslint eslint-config-yarapa typescript
 ```
 
-## Configure
-
-Create `eslint.config.mjs`:
+Configure `eslint.config.mjs`:
 
 ```js
 import yarapa from "eslint-config-yarapa";
@@ -26,50 +35,38 @@ import yarapa from "eslint-config-yarapa";
 export default yarapa;
 ```
 
-The default profile applies the shared JavaScript and TypeScript rules, including type-aware TypeScript rules through `projectService`.
+For complete installation instructions, framework profile options (`next`, `react`, `nest`), and usage examples, refer to the [Package Documentation](packages/eslint-config-yarapa/README.md).
 
-## Framework profiles
+## Monorepo Development
 
-Choose the profile that matches the runtime:
+### Prerequisites
 
-```js
-import next from "eslint-config-yarapa/next";
+- Node.js matching `.nvmrc` (`>=24.15.0`)
+- pnpm `11.23.0`
 
-export default next;
-```
-
-Available profiles:
-
-- `eslint-config-yarapa` — shared JavaScript and TypeScript baseline
-- `eslint-config-yarapa/next` — baseline plus Next.js and React rules
-- `eslint-config-yarapa/react` — baseline plus React and JSX rules
-- `eslint-config-yarapa/nest` — baseline plus Node.js rules
-
-See [packages/eslint-config-yarapa/docs/RULES.md](packages/eslint-config-yarapa/docs/RULES.md) for architecture, plugins matrix, and rules philosophy.
-
-Framework profiles are static Flat Config arrays. They do not change based on which packages happen to be installed.
-
-## Run ESLint
+### Setup & Verification
 
 ```sh
-pnpm exec eslint .
-```
-
-When using type-aware rules, run ESLint from the project root containing the relevant `tsconfig.json` files.
-
-## Development
-
-```sh
+# Install dependencies
 pnpm install
-pnpm --filter eslint-config-yarapa build
-pnpm --filter eslint-config-yarapa check-types
-pnpm --filter eslint-config-yarapa test
-pnpm --filter eslint-config-yarapa test:consumer
-pnpm --filter eslint-config-yarapa verify
+
+# Build the configuration package
+pnpm build
+
+# Run comprehensive workspace checks
+pnpm lint           # Builds package and runs repository linting
+pnpm check-types    # Workspace-wide TypeScript checks
+pnpm test           # Unit and diagnostic tests
+pnpm knip           # Dead code and unused dependency audit
+pnpm verify         # Full verification pipeline (build, test, consumer tarball smoke test)
 ```
 
-The package publishes only its generated `dist` directory. The consumer test packs the package, validates its exports, installs the tarball in a temporary project, and exercises each public profile.
+## Contributing & Governance
+
+- [Contributing Guidelines](CONTRIBUTING.md) — Workflow, testing standards, and changesets
+- [Code of Conduct](CODE_OF_CONDUCT.md) — Community pledges and enforcement standards
+- [Security Policy](SECURITY.md) — Vulnerability reporting guidelines and response timeline
 
 ## License
 
-MIT
+[MIT](LICENSE)

@@ -1,7 +1,7 @@
 {
   "name": "eslint-config-yarapa",
   "version": "0.3.0",
-  "description": "One deterministic ESLint Flat Config handwriting for modern JavaScript and TypeScript projects.",
+  "description": "Opinionated, deterministic ESLint Flat Config standards for modern JavaScript and TypeScript projects.",
   "keywords": [
     "eslint",
     "eslintconfig",

@@ -17,6 +17,8 @@
 - [ ] `pnpm --filter eslint-config-yarapa lint`
 - [ ] `pnpm --filter eslint-config-yarapa check-types`
 - [ ] `pnpm --filter eslint-config-yarapa test`
+- [ ] `pnpm knip`
+- [ ] `pnpm --filter eslint-config-yarapa verify`
 
 ## Release
 
