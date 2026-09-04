@@ -1,27 +1,28 @@
 ---
 paths:
-  - "packages/eslint-config-yarapa/src/**/*.{ts,js}"
-  - "packages/eslint-config-yarapa/test/**/*.{ts,js}"
-  - "packages/eslint-config-yarapa/scripts/**/*.{ts,mts}"
-  - "packages/eslint-config-yarapa/*.{ts,json}"
-  - "*.{mjs,json}"
+  - "**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs}"
+  - "**/package.json"
+  - "**/tsconfig*.json"
 ---
 
 # No Dead Code Rules
 
-Eliminate unused code, dead exports, and unnecessary dependencies.
+Keep the codebase free of unreachable, unused, and obsolete implementation.
 
-## Unused Code and Exports
+## Live Code Only
 
-- Do not introduce files, functions, types, or variables that are not used in the codebase or part of the public API contract.
-- Eliminate unused imports, unused local variables, unused parameters, and unreachable execution paths.
-- Remove dead wrappers, deprecated shims, and empty stubs. Do not leave commented-out code in the repository.
+- Introduce files, functions, types, variables, and exports only when they have a current consumer or are part of a documented public API.
+- Remove unused imports, locals, parameters, exports, unreachable branches, empty stubs, and commented-out code.
+- Remove obsolete wrappers, deprecated shims, and compatibility layers after their consumers are gone.
+- Keep one authoritative implementation for each behavior.
 
 ## Dependencies
 
-- Do not introduce dependencies or devDependencies that are not imported and used in the workspace.
-- When removing code that was the sole consumer of a dependency, remove that dependency from `package.json` immediately.
+- Add a dependency only when active code, tests, build tooling, or a documented public contract uses it.
+- Remove a dependency when its last consumer is removed.
+- Keep runtime dependencies, development dependencies, optional dependencies, and peer dependencies in the section that matches their actual role.
 
 ## Verification
 
-- When modifying files, exports, or dependencies, run `pnpm knip` to verify zero unused items are introduced.
+- Run the repository's configured unused-code and dependency analyzer after changing files, exports, or dependencies.
+- Treat unused-file, unused-export, and unused-dependency findings as defects to resolve rather than suppress.

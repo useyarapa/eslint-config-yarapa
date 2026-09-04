@@ -1,28 +1,27 @@
 ---
 paths:
-  - "packages/eslint-config-yarapa/src/**/*.{ts,js}"
-  - "packages/eslint-config-yarapa/*.{ts,json}"
-  - "eslint.config.mjs"
-  - "*.json"
-  - ".changeset/*.json"
-  - ".github/workflows/*.yml"
-  - ".claude/rules/*.md"
+  - "**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs,json,jsonc,yaml,yml}"
 ---
 
 # No Speculative Configuration Rules
 
-Keep configuration demand-driven, observable, and aligned with real repository structure.
+Keep configuration demand-driven, observable, and aligned with verified repository and consumer requirements.
 
 ## Demand-Driven Configuration
 
-- Add or modify ESLint rules, plugins, parser options, and environment flags only for active, verified requirements.
-- Do not add configuration, options, or fallback branches for hypothetical future needs or imaginary consumers.
+- Add or modify rules, plugins, parser options, environment flags, scripts, and workflow settings only for an active requirement.
+- Prefer the smallest configuration that satisfies the current contract.
+- Remove configuration that has no current consumer, test, or documented public purpose.
+- Do not add options, fallback branches, compatibility modes, or feature flags for hypothetical future needs.
 
-## File Globs and Match Patterns
+## Match Patterns and Boundaries
 
-- Repository-internal match patterns, extensions, and ignore globs must correspond to actual files and directory structures in this repository.
-- Consumer-facing preset globs in publishable configs may target patterns intended for consumer projects even if those files do not exist in this repository, provided the pattern is part of the documented preset contract and verified by tests.
+- Make repository-internal paths, extensions, and ignore patterns match actual files and supported boundaries.
+- Use consumer-facing patterns only when they are part of a documented contract and covered by tests.
+- Keep generated artifacts and external tool boundaries explicit rather than hiding them in broad patterns.
 
 ## Observable Verification
 
-- Every configuration rule or override introduced must be backed by a test case or demonstrable lint behavior to prove necessity and correctness.
+- Back every new configuration rule or override with a test case or demonstrable behavior.
+- Verify the configuration against the real tool version used by the repository.
+- Prefer a failing test or diagnostic over an assumption that a configuration is necessary.

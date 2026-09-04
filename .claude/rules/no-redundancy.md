@@ -1,34 +1,31 @@
 ---
 paths:
-  - "packages/eslint-config-yarapa/src/**/*.{ts,js}"
-  - "packages/eslint-config-yarapa/test/**/*.{ts,js}"
-  - "packages/eslint-config-yarapa/scripts/**/*.{ts,mts}"
-  - "packages/eslint-config-yarapa/*.{ts,json}"
-  - "eslint.config.mjs"
+  - "**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs,json,jsonc,yaml,yml}"
 ---
 
 # No Redundancy Rules
 
-Maintain single sources of truth and reuse existing shared logic.
+Maintain one source of truth and reuse existing logic, configuration, and test infrastructure.
 
 ## Single Source of Truth
 
-- Do not hardcode recurring values, test file globs, or config options across files.
-- Reuse central definitions and shared configuration profiles.
+- Define recurring values, names, patterns, and options once in the narrowest shared location.
+- Reference shared definitions instead of copying literals across modules, tests, documentation, or configuration.
+- Keep equivalent configuration in one layer; do not maintain parallel versions for convenience.
 
-## Reuse Existing Utilities
+## Reuse Before Adding
 
-- Inspect existing utilities before introducing new adapters or helpers:
-  - Flat Config compatibility helpers in `packages/eslint-config-yarapa/src/configs/internal/`
-  - Test harness helpers in `packages/eslint-config-yarapa/test/helpers/eslint.ts`
-- Extend existing utilities instead of creating parallel implementations.
+- Search for an existing helper, type, utility, dependency, native API, or framework capability before creating another implementation.
+- Extend an existing abstraction when the concept is the same and the change belongs to its contract.
+- Create a new abstraction only when it owns a distinct responsibility and has more than superficial reuse.
 
-## Test Harness Consistency
+## Consistent Test Infrastructure
 
-- Configure test ESLint instances through `packages/eslint-config-yarapa/test/helpers/eslint.ts` rather than constructing ad-hoc ESLint instances.
-- Parameterize duplicate test assertion patterns with table-driven tests.
+- Use the repository's shared test helpers and setup for equivalent tests.
+- Parameterize cases that differ only by data, input, or supported variant.
+- Keep assertions focused on stable public behavior rather than duplicating implementation details.
 
-## Shared Abstractions
+## Verification
 
-- Extract shared helpers when two or more sites share a single underlying concept that must change together.
-- Do not introduce premature abstractions or passthrough wrappers solely for superficial code similarity.
+- Search for duplicated definitions when changing a shared concept.
+- Run the configured unused-code and dependency checks after modifying shared logic or package metadata.

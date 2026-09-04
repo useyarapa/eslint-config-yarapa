@@ -1,24 +1,25 @@
 ---
 paths:
-  - "packages/eslint-config-yarapa/**/*.{ts,mts,cts,js,mjs,cjs,json,md}"
-  - "scripts/**/*.{ts,mts,js,mjs}"
-  - "*.{js,mjs,cjs,ts,mts,json,md,yaml,yml}"
+  - "**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs,json,jsonc,md,mdx,yaml,yml}"
 ---
 
 # No Prettier Ignore Rules
 
-Enforce uniform formatting and prohibit formatter directives.
+Keep formatting deterministic and solve layout problems through structure or configuration.
 
-## Zero Format Suppression
+## Consistent Formatting
 
-- Never introduce `prettier-ignore`, `prettier-ignore-start`, or `prettier-ignore-end` comments.
-- Do not bypass automated formatting or escape prettier layout rules via inline comment directives.
+- Format supported files with the repository's configured formatter.
+- Refactor long or awkward expressions when formatting exposes a structural problem.
+- Use workspace-level ignore configuration only for generated artifacts, caches, or verified external boundaries.
 
-## Idiomatic Structuring
+## No Formatter Directives
 
-- When formatting breaks aesthetic or readability expectations, refactor the structure, extract intermediate variables, or break complex expressions into smaller, cohesive statements.
-- Format code cleanly according to the repository's `.prettierrc.json` configuration without manual overrides.
+- Do not add `prettier-ignore`, `prettier-ignore-start`, or `prettier-ignore-end` directives.
+- Do not use inline comments, flags, or alternate commands to bypass formatting.
+- Do not add file-specific exceptions to preserve an aesthetic preference.
 
-## Repository-Level File Boundaries
+## Verification
 
-- Formatting exclusions must be managed strictly at the workspace level in `.prettierignore` for generated artifacts and cache directories, never within tracked source files.
+- Run the configured formatter in check mode before review.
+- Inspect the final diff for formatter directives and untracked formatting exceptions.

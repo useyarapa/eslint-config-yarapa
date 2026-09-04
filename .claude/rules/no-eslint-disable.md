@@ -1,25 +1,25 @@
 ---
 paths:
-  - "packages/eslint-config-yarapa/**/*.{ts,mts,cts,js,mjs,cjs}"
-  - "scripts/**/*.{ts,mts,js,mjs}"
-  - "*.{js,mjs,cjs,ts,mts}"
+  - "**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs}"
 ---
 
 # No ESLint Disable Rules
 
-Enforce root-cause fixes and maintain zero inline rule suppression.
+Resolve lint diagnostics at their source and keep inline suppression out of production code.
 
-## Zero Inline Suppression
+## Root-Cause Fixes
 
-- Never introduce `eslint-disable`, `eslint-disable-line`, or `eslint-disable-next-line` comments.
-- Never add inline directive comments to bypass, silence, or work around lint diagnostics.
+- Resolve each lint diagnostic in the code, types, configuration, imports, or architecture that caused it.
+- Prefer a clearer structure, narrower scope, correct type, or verified configuration over a suppression directive.
+- Keep repository-wide policy changes in the appropriate configuration layer rather than in source comments.
 
-## Root-Cause Resolution
+## Suppression Policy
 
-- When a lint diagnostic or type check fails, resolve the underlying defect in source code or configuration.
-- Re-architect code, adjust imports, or refine type definitions rather than masking the violation.
+- Do not add `eslint-disable`, `eslint-disable-line`, or `eslint-disable-next-line` directives to source, tests, scripts, or configuration.
+- Do not add equivalent comments or flags whose purpose is to hide a lint diagnostic.
+- Do not leave existing suppression directives in newly modified code.
 
-## Exceptions and Overrides
+## Verification
 
-- In-source suppression is strictly prohibited.
-- Necessary environment-level rule adjustments (such as repository tooling or fixture boundary exemptions) must be declared explicitly in `eslint.config.mjs` with clear architectural justification, never inline.
+- Run the configured linter with its warning threshold after resolving diagnostics.
+- Inspect the final diff for inline suppression before review.

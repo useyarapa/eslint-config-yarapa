@@ -1,25 +1,25 @@
 ---
 paths:
-  - "packages/eslint-config-yarapa/**/*.{ts,mts,cts}"
-  - "scripts/**/*.{ts,mts}"
-  - "*.{ts,mts}"
+  - "**/*.{ts,tsx,mts,cts}"
 ---
 
 # No TypeScript Ignore Rules
 
-Enforce sound type safety and prohibit compiler directive suppressions.
+Preserve sound type contracts and resolve type errors without compiler suppression directives.
 
-## Zero Type Suppression
+## Sound Typing
 
-- Never introduce `@ts-ignore`, `@ts-nocheck`, or `@ts-expect-error` comments.
-- Do not bypass the TypeScript compiler or suppress type errors with comment directives.
+- Resolve type errors in the types, interfaces, control flow, narrowing, generics, or implementation that caused them.
+- Prefer explicit types, type guards, discriminated unions, and correct API contracts over type escapes.
+- Keep strict compiler settings meaningful by fixing invalid assumptions rather than hiding them.
 
-## Sound Typing over Circumvention
+## No Compiler Suppression
 
-- When a type error occurs, resolve the root cause in the type definitions, interfaces, type narrowing, or implementation logic.
-- Use explicit type annotations, type guards, generics, or Discriminated Unions to satisfy type constraints cleanly.
+- Do not add `@ts-ignore`, `@ts-nocheck`, or `@ts-expect-error` directives.
+- Do not use unjustified `any`, unsafe casts, or equivalent escapes to silence the compiler.
+- If an external declaration is incorrect, isolate the issue at the integration boundary and use the narrowest typed solution supported by the toolchain.
 
-## Strict Type Contracts
+## Verification
 
-- Do not resort to loose type escapes (such as unjustified `any` casts) to work around type checker requirements.
-- Verify type soundness by running `pnpm check-types` across the workspace.
+- Run the repository's configured TypeScript check after changing types or implementation logic.
+- Confirm that the final diff contains no new compiler suppression directives.

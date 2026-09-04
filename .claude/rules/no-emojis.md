@@ -3,19 +3,17 @@ paths:
   - "**/*"
 ---
 
-# No Emojis Rules
+# No Emoji Rules
 
-Prohibit all emojis, emoticons, and Unicode pictographic symbols across all repository files.
+Use plain, professional text that remains readable in terminals, logs, source files, documentation, and review tools.
 
-## Zero Emojis Policy
+## Text Output
 
-- Never use emojis in source code, scripts, tests, configuration, documentation, commit messages, or terminal outputs.
-- Prohibited symbols include all Unicode emoji blocks (emoticons, pictographs, transport symbols, checkmark emojis, warning symbols, status badges, etc.).
-- Use clean, professional ASCII text indicators instead:
-  - Use `PASS` or `[OK]` instead of checkmark emojis.
-  - Use `FAIL` or `[ERROR]` instead of cross/warning emojis.
-  - Use plain markdown formatting, bullet points, or badges without emoji graphics.
+- Write status, severity, and guidance as words or ASCII markers such as `PASS`, `FAIL`, `[OK]`, and `[ERROR]`.
+- Keep source, scripts, tests, configuration, documentation, commit messages, and generated reports free of emoji and pictographic symbols.
+- Prefer portable ASCII punctuation when the text will be consumed by terminals, parsers, or CI systems.
 
-## Professional Output
+## Verification
 
-- CLI scripts and test reporters must output plain, professional text suitable for enterprise logs and CI pipelines.
+- Inspect changed files for emoji, emoticons, and pictographic symbols before review.
+- Keep user-facing output legible without relying on color or graphical symbols.
