@@ -20,6 +20,12 @@
     "lint:check": {
       "dependsOn": ["^lint:check"]
     },
+    "sort-package-json": {
+      "cache": false
+    },
+    "sort-package-json:check": {
+      "cache": false
+    },
     "test": {},
     "test:coverage": {
       "outputs": ["coverage/**"]

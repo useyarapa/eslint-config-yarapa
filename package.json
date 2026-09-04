@@ -18,6 +18,8 @@
     "lint": "pnpm build && eslint . --fix --cache --max-warnings=0",
     "lint:check": "pnpm build && eslint . --cache --max-warnings=0",
     "prepare": "husky",
+    "sort-package-json": "sort-package-json package.json && turbo run sort-package-json",
+    "sort-package-json:check": "sort-package-json --check package.json && turbo run sort-package-json:check",
     "test": "turbo run test",
     "test:consumer": "pnpm --filter eslint-config-yarapa test:consumer",
     "test:coverage": "turbo run test:coverage",
@@ -36,6 +38,7 @@
     "knip": "^6.33.0",
     "lint-staged": "17.4.1",
     "prettier": "^3.9.6",
+    "sort-package-json": "^4.0.0",
     "turbo": "^2.10.12",
     "typescript": "7.0.2"
   },

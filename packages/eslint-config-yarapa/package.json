@@ -60,6 +60,8 @@
     "format:check": "prettier --check --cache .",
     "lint": "eslint . --fix --cache --max-warnings=0",
     "lint:check": "eslint . --cache --max-warnings=0",
+    "sort-package-json": "sort-package-json package.json",
+    "sort-package-json:check": "sort-package-json --check package.json",
     "test": "vitest run",
     "test:consumer": "pnpm build && node scripts/verify-tarball.mts",
     "test:coverage": "vitest run --coverage",
