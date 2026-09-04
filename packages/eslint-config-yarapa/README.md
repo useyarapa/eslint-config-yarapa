@@ -100,12 +100,12 @@ export default nest;
 
 ## Profiles Matrix
 
-| Profile Entrypoint | Target Environment | Key Rule Layers Included |
-| ------------------ | ------------------ | ------------------------ |
-| `eslint-config-yarapa` | Universal JS / TS | Base JS, TS syntax, TS type-checked, Imports, SonarJS, JSDoc, Perfectionist sorting, JSON |
-| `eslint-config-yarapa/next` | Next.js Apps | Baseline + `@next/next` rules, React Hooks, JSX rules |
-| `eslint-config-yarapa/react` | React (SPA/Library) | Baseline + React Hooks, JSX syntax, Browser globals |
-| `eslint-config-yarapa/nest` | Node.js / NestJS | Baseline + Node.js runtime rules (`eslint-plugin-n`) |
+| Profile Entrypoint           | Target Environment  | Key Rule Layers Included                                                                  |
+| ---------------------------- | ------------------- | ----------------------------------------------------------------------------------------- |
+| `eslint-config-yarapa`       | Universal JS / TS   | Base JS, TS syntax, TS type-checked, Imports, SonarJS, JSDoc, Perfectionist sorting, JSON |
+| `eslint-config-yarapa/next`  | Next.js Apps        | Baseline + `@next/next` rules, React Hooks, JSX rules                                     |
+| `eslint-config-yarapa/react` | React (SPA/Library) | Baseline + React Hooks, JSX syntax, Browser globals                                       |
+| `eslint-config-yarapa/nest`  | Node.js / NestJS    | Baseline + Node.js runtime rules (`eslint-plugin-n`)                                      |
 
 All profiles are static Flat Config arrays. Rules do not mutate based on ambient runtime conditions.
 
@@ -124,12 +124,7 @@ export default [
   ...yarapa,
   {
     // Global ignore patterns
-    ignores: [
-      "**/dist/**",
-      "**/build/**",
-      "**/.next/**",
-      "**/coverage/**",
-    ],
+    ignores: ["**/dist/**", "**/build/**", "**/.next/**", "**/coverage/**"],
   },
   {
     // Custom project-level overrides
@@ -208,19 +203,22 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 
 Wondering how YARAPA compares to industry standards like `@antfu/eslint-config`, Airbnb, Vercel, Shopify, and Google (`gts`)? Read our comprehensive [Global Landscape & Architectural Comparison](docs/COMPARISON.md) covering determinism, type-aware defaults, anti-ReDoS security, and zero-suppression engineering standards.
 
-
 ---
 
 ## Monorepo & Troubleshooting FAQ
 
 ### 1. `projectService` fails to find `tsconfig.json`
+
 When running type-aware rules, ESLint must resolve project configuration relative to your project's `tsconfig.json`.
 
 **Solution**: Run ESLint from the root directory containing your `tsconfig.json`:
+
 ```sh
 pnpm exec eslint .
 ```
+
 In monorepo setups, run ESLint within each workspace package or configure `tsconfigRootDir`:
+
 ```js
 import yarapa from "eslint-config-yarapa";
 
@@ -237,6 +235,7 @@ export default [
 ```
 
 ### 2. Can I use `eslint-disable` comments?
+
 By repository philosophy, inline rule suppressions (`// eslint-disable`) are prohibited. All diagnostics should be resolved at the root cause. If a project-wide exemption is genuinely required (e.g., generated files), configure it explicitly in `eslint.config.mjs` under `ignores` or `rules`.
 
 ---

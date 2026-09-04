@@ -14,10 +14,7 @@ export const reactComponentNaming: Linter.Config[] = [
     ],
     name: "yarapa/internal/react-component-naming",
     rules: {
-      "sonarjs/function-name": [
-        "error",
-        { format: "^[_a-zA-Z][a-zA-Z0-9]*$" },
-      ],
+      "sonarjs/function-name": ["error", { format: "^[_a-zA-Z][a-zA-Z0-9]*$" }],
     },
   },
 ];

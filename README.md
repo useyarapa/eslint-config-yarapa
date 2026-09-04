@@ -13,8 +13,8 @@ This repository serves as the engineering baseline for YARAPA projects, enforcin
 
 ## Workspace Packages
 
-| Package | Version | Description |
-| ------- | ------- | ----------- |
+| Package                                                 | Version                                                                                                             | Description                                                             |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
 | [`eslint-config-yarapa`](packages/eslint-config-yarapa) | [![npm](https://img.shields.io/npm/v/eslint-config-yarapa.svg)](https://www.npmjs.com/package/eslint-config-yarapa) | Strict ESLint Flat Config profiles (Universal, Next.js, React, NestJS). |
 
 ---

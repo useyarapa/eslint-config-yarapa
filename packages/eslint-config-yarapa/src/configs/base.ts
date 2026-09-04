@@ -128,7 +128,9 @@ export const base: Linter.Config[] = [
   {
     name: "yarapa/base/eslint-comments-recommended",
     plugins: {
-      "@eslint-community/eslint-comments": asFlatPlugin({ rules: commentsRules }),
+      "@eslint-community/eslint-comments": asFlatPlugin({
+        rules: commentsRules,
+      }),
     },
     rules: {
       ...commentsConfigs.recommended.rules,
