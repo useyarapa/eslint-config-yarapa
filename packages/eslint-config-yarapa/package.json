@@ -48,6 +48,7 @@
     "docs"
   ],
   "scripts": {
+    "audit": "pnpm audit",
     "build": "tsdown",
     "check:attw": "attw --pack . --profile esm-only",
     "check:publint": "publint",

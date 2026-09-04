@@ -4,7 +4,7 @@
   "description": "YARAPA monorepo for the eslint-config-yarapa public ESLint Flat Config package.",
   "type": "module",
   "scripts": {
-    "audit": "pnpm audit",
+    "audit": "turbo run audit",
     "build": "turbo run build",
     "changeset": "changeset",
     "changeset:status": "changeset status --since main",
