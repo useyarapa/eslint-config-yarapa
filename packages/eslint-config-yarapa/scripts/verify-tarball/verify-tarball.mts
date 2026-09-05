@@ -142,7 +142,7 @@ export function verifyTarball(): void {
         "  yarapa,",
         "  \"sample-react-invalid.jsx\",",
         "  [",
-        String.raw`    "const useEffect = callback => callback();",`,
+        "    \"const useEffect = callback => callback();\",",
         "    \"export function Component({ enabled }) {\",",
         "    \"  if (enabled) useEffect(() => {});\",",
         "    \"  return null;\",",
