@@ -31,10 +31,6 @@
       "types": "./dist/nest.d.mts",
       "default": "./dist/nest.mjs"
     },
-    "./next": {
-      "types": "./dist/next.d.mts",
-      "default": "./dist/next.mjs"
-    },
     "./package.json": "./package.json",
     "./react": {
       "types": "./dist/react.d.mts",
@@ -52,8 +48,8 @@
     "build": "tsdown",
     "check:attw": "attw --pack . --profile esm-only",
     "check:doctor": "node scripts/doctor/doctor.mts",
-    "check:verify-tarball": "node scripts/verify-tarball/verify-tarball.mts",
     "check:publint": "publint",
+    "check:verify-tarball": "node scripts/verify-tarball/verify-tarball.mts",
     "check-types": "pnpm typecheck",
     "clean": "rm -rf dist coverage *.tsbuildinfo",
     "clean:dist": "rm -rf dist",
@@ -76,7 +72,6 @@
     "@eslint-community/eslint-plugin-eslint-comments": "4.7.2",
     "@eslint/js": "10.0.1",
     "@eslint/json": "2.0.1",
-    "@next/eslint-plugin-next": "16.3.4",
     "@stylistic/eslint-plugin": "5.10.0",
     "eslint-import-resolver-typescript": "4.4.5",
     "eslint-plugin-import-x": "4.17.1",

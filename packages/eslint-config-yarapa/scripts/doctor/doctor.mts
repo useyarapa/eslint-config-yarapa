@@ -1,8 +1,13 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import semver from "semver";
-import ts from "typescript";
+import { fileURLToPath } from "node:url";
+import { satisfies } from "semver";
+import {
+  DiagnosticCategory,
+  readConfigFile,
+  sys,
+} from "typescript";
 
 type CheckResult = {
   isPassed: boolean;
@@ -12,9 +17,13 @@ type CheckResult = {
 
 const checks: CheckResult[] = [];
 
+/**
+ * Run environment and configuration prerequisite checks.
+ * @returns Whether every prerequisite check passed.
+ */
 export function runDoctor(): boolean {
   const nodeVersion = process.version;
-  const isNodeSatisfied = semver.satisfies(nodeVersion, ">=24.15.0 <25");
+  const isNodeSatisfied = satisfies(nodeVersion, ">=24.15.0 <25");
   recordCheck(
     "Node.js Runtime",
     isNodeSatisfied,
@@ -23,10 +32,10 @@ export function runDoctor(): boolean {
   );
 
   const cwd = process.cwd();
-  const hasEslintConfig =
-    existsSync(path.resolve(cwd, "eslint.config.mjs")) ||
-    existsSync(path.resolve(cwd, "eslint.config.js")) ||
-    existsSync(path.resolve(cwd, "eslint.config.ts"));
+  const hasEslintConfig
+    = existsSync(path.resolve(cwd, "eslint.config.mjs"))
+      || existsSync(path.resolve(cwd, "eslint.config.js"))
+      || existsSync(path.resolve(cwd, "eslint.config.ts"));
 
   recordCheck(
     "ESLint Flat Config",
@@ -52,13 +61,16 @@ export function runDoctor(): boolean {
   );
 
   if (foundTsConfig) {
-    const configResult = ts.readConfigFile(foundTsConfig, ts.sys.readFile);
-    const hasDiagnosticError = Boolean(
-      configResult.error &&
-      configResult.error.category === ts.DiagnosticCategory.Error,
+    const configResult = readConfigFile(
+      foundTsConfig,
+      file => sys.readFile(file),
     );
-    const isConfigFileValid =
-      !hasDiagnosticError && configResult.config !== undefined;
+    const hasDiagnosticError = Boolean(
+      configResult.error
+      && configResult.error.category === DiagnosticCategory.Error,
+    );
+    const isConfigFileValid
+      = !hasDiagnosticError && configResult.config !== undefined;
 
     recordCheck(
       "tsconfig.json Integrity",
@@ -95,6 +107,13 @@ export function runDoctor(): boolean {
   return isAllPassed;
 }
 
+/**
+ * Add one prerequisite result to the diagnostic report.
+ * @param name Check name shown in the report.
+ * @param isPassed Whether the prerequisite passed.
+ * @param successMessage Message shown when the check passes.
+ * @param failureMessage Message shown when the check fails.
+ */
 function recordCheck(
   name: string,
   isPassed: boolean,
@@ -106,4 +125,13 @@ function recordCheck(
     message: isPassed ? successMessage : failureMessage,
     name,
   });
+}
+
+const scriptPath = process.argv[1];
+const isDirectExecution
+  = scriptPath !== undefined
+    && path.resolve(scriptPath) === fileURLToPath(import.meta.url);
+
+if (isDirectExecution) {
+  runDoctor();
 }

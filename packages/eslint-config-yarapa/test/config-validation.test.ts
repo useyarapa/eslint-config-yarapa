@@ -3,11 +3,10 @@ import { describe, expect, it } from "vitest";
 
 import yarapa from "../src/index.js";
 import nest from "../src/nest.js";
-import next from "../src/next.js";
 import react from "../src/react.js";
 import { eslintForConfigs, packageRoot } from "./helpers/eslint.js";
 
-const profiles = { nest, next, react, yarapa } as const;
+const profiles = { nest, react, yarapa } as const;
 
 describe("Flat Config validation", () => {
   it.each(Object.entries(profiles))(

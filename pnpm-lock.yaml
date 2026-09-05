@@ -61,9 +61,6 @@ importers:
       "@eslint/json":
         specifier: 2.0.1
         version: 2.0.1
-      "@next/eslint-plugin-next":
-        specifier: 16.3.4
-        version: 16.3.4(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))
       "@stylistic/eslint-plugin":
         specifier: 5.10.0
         version: 5.10.0(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))
@@ -831,12 +828,6 @@ packages:
     peerDependencies:
       "@emnapi/core": ^1.7.1 || ^2.0.0-alpha.4
       "@emnapi/runtime": ^1.7.1 || ^2.0.0-alpha.4
-
-  "@next/eslint-plugin-next@16.3.4":
-    resolution:
-      {
-        integrity: sha512-szW9y2Aumu4z88YXfTzcFsgUAg2k64uzbtcO5L9f1AKS4w/GUKJcbFllRflROVyNPgJtGOnvNxiyp3v6b+prIA==,
-      }
 
   "@nodelib/fs.scandir@2.1.5":
     resolution:
@@ -5551,13 +5542,6 @@ snapshots:
       "@emnapi/runtime": 1.11.2
       "@tybys/wasm-util": 0.10.3
     optional: true
-
-  "@next/eslint-plugin-next@16.3.4(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))":
-    dependencies:
-      "@eslint-community/eslint-utils": 4.9.1(eslint@10.9.1(jiti@2.7.0)(supports-color@7.2.0))
-      fast-glob: 3.3.1
-    transitivePeerDependencies:
-      - eslint
 
   "@nodelib/fs.scandir@2.1.5":
     dependencies:

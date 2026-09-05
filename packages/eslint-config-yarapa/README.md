@@ -66,16 +66,6 @@ The default profile applies universal baseline rules for JavaScript and TypeScri
 
 Select the profile that matches your project runtime:
 
-### Next.js Applications (`eslint-config-yarapa/next`)
-
-Baseline plus Next.js Core Web Vitals, React Hooks, and JSX rules.
-
-```js
-import next from "eslint-config-yarapa/next";
-
-export default next;
-```
-
 ### React Applications & Libraries (`eslint-config-yarapa/react`)
 
 Baseline plus React Hooks, JSX syntax, and browser globals for Single-Page Applications (Vite, CRA) or UI libraries.
@@ -103,7 +93,6 @@ export default nest;
 | Profile Entrypoint           | Target Environment  | Key Rule Layers Included                                                                  |
 | ---------------------------- | ------------------- | ----------------------------------------------------------------------------------------- |
 | `eslint-config-yarapa`       | Universal JS / TS   | Base JS, TS syntax, TS type-checked, Imports, SonarJS, JSDoc, Perfectionist sorting, JSON |
-| `eslint-config-yarapa/next`  | Next.js Apps        | Baseline + `@next/next` rules, React Hooks, JSX rules                                     |
 | `eslint-config-yarapa/react` | React (SPA/Library) | Baseline + React Hooks, JSX syntax, Browser globals                                       |
 | `eslint-config-yarapa/nest`  | Node.js / NestJS    | Baseline + Node.js runtime rules (`eslint-plugin-n`)                                      |
 

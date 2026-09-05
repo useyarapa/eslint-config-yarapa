@@ -178,14 +178,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: next-16.0.0-react-19.0.0
-            profile: next
-            react: 19.0.0
-            version: 16.0.0
-          - name: next-16.3.4-react-19.2.7
-            profile: next
-            react: 19.2.7
-            version: 16.3.4
           - name: react-19.0.0
             profile: react
             version: 19.0.0
@@ -201,7 +193,6 @@ jobs:
     env:
       ESLINT_VERSION: 10.9.1
       FRAMEWORK_PROFILE: ${{ matrix.profile }}
-      FRAMEWORK_REACT_VERSION: ${{ matrix.react }}
       FRAMEWORK_VERSION: ${{ matrix.version }}
       TYPESCRIPT_VERSION: 6.0.3
     steps:

@@ -16,8 +16,6 @@ if (process.platform === "win32" && !process.env.PNPM_HOME) {
 
 const frameworkProfile = process.env.FRAMEWORK_PROFILE;
 const frameworkVersion = process.env.FRAMEWORK_VERSION;
-const frameworkReactVersion = process.env.FRAMEWORK_REACT_VERSION;
-
 if ((frameworkProfile === undefined) !== (frameworkVersion === undefined)) {
   throw new Error(
     "FRAMEWORK_PROFILE and FRAMEWORK_VERSION must be provided together",
@@ -25,7 +23,7 @@ if ((frameworkProfile === undefined) !== (frameworkVersion === undefined)) {
 }
 
 type FrameworkDefinition = {
-  installPackages: (version: string, reactVersion?: string) => string[];
+  installPackages: (version: string) => string[];
   packageNames: string[];
 };
 
@@ -44,27 +42,17 @@ const FRAMEWORK_DEFINITIONS: Record<string, FrameworkDefinition> = {
       "rxjs",
     ],
   },
-  next: {
-    installPackages: (version, reactVersion) => {
-      if (!reactVersion) {
-        throw new Error(
-          "FRAMEWORK_REACT_VERSION is required for Next.js verification",
-        );
-      }
-      return [
-        `next@${version}`,
-        `react@${reactVersion}`,
-        `react-dom@${reactVersion}`,
-      ];
-    },
-    packageNames: ["next", "react", "react-dom"],
-  },
   react: {
     installPackages: version => [`react@${version}`, `react-dom@${version}`],
     packageNames: ["react", "react-dom"],
   },
 };
 
+/**
+ * Resolve the package installation definition for a framework profile.
+ * @param profile Requested framework profile.
+ * @returns The framework definition, or undefined when no profile is selected.
+ */
 function getFrameworkDefinition(
   profile: string | undefined,
 ): FrameworkDefinition | undefined {
@@ -78,10 +66,15 @@ function getFrameworkDefinition(
   return definition;
 }
 
+/**
+ * Build the framework package list for a consumer smoke test.
+ * @param profile Requested framework profile.
+ * @param version Framework version to install.
+ * @returns Package specifiers required by the selected framework.
+ */
 function getFrameworkPackages(
   profile: string | undefined,
   version: string | undefined,
-  reactVersion: string | undefined,
 ): string[] {
   const definition = getFrameworkDefinition(profile);
   if (definition === undefined) {
@@ -90,9 +83,15 @@ function getFrameworkPackages(
   if (version === undefined) {
     throw new Error("FRAMEWORK_VERSION is required for framework verification");
   }
-  return definition.installPackages(version, reactVersion);
+  return definition.installPackages(version);
 }
 
+/**
+ * Run a command and throw when it exits unsuccessfully.
+ * @param command Executable to run.
+ * @param arguments_ Arguments passed to the executable.
+ * @param cwd Working directory for the command.
+ */
 function run(command: string, arguments_: string[], cwd: string): void {
   const result = spawnSync(command, arguments_, {
     cwd,
@@ -112,14 +111,17 @@ function run(command: string, arguments_: string[], cwd: string): void {
 
 const packageRoot = fileURLToPath(new URL("../../", import.meta.url));
 
+/**
+ * Pack the package and verify it in an isolated consumer project.
+ */
 export function verifyTarball(): void {
   const temporaryRoot = mkdtempSync(path.join(tmpdir(), "yarapa-consumer-"));
   const packageDirectory = path.resolve(temporaryRoot, "pack");
   const consumerDirectory = path.resolve(temporaryRoot, "consumer");
   mkdirSync(packageDirectory, { recursive: true });
   mkdirSync(consumerDirectory, { recursive: true });
-  const pnpm =
-    process.platform === "win32"
+  const pnpm
+    = process.platform === "win32"
       ? path.resolve(process.env.PNPM_HOME ?? "", "pnpm.exe")
       : "pnpm";
   const node = process.execPath;
@@ -127,7 +129,6 @@ export function verifyTarball(): void {
   const typescriptVersion = process.env.TYPESCRIPT_VERSION ?? "6.0.3";
   const frameworkProfile = process.env.FRAMEWORK_PROFILE;
   const frameworkVersion = process.env.FRAMEWORK_VERSION;
-  const frameworkReactVersion = process.env.FRAMEWORK_REACT_VERSION;
   const expectRuleCall = "await expectRule(";
   const nestSampleFile = "sample-nest.ts";
   const nestServiceFile = "sample-nest-service.ts";
@@ -162,7 +163,6 @@ export function verifyTarball(): void {
     const frameworkPackages = getFrameworkPackages(
       frameworkProfile,
       frameworkVersion,
-      frameworkReactVersion,
     );
 
     run(
@@ -186,14 +186,13 @@ export function verifyTarball(): void {
     writeFileSync(
       path.resolve(consumerDirectory, "verify.mjs"),
       [
-        'import yarapa from "eslint-config-yarapa";',
-        'import next from "eslint-config-yarapa/next";',
-        'import nest from "eslint-config-yarapa/nest";',
-        'import react from "eslint-config-yarapa/react";',
+        "import yarapa from \"eslint-config-yarapa\";",
+        "import nest from \"eslint-config-yarapa/nest\";",
+        "import react from \"eslint-config-yarapa/react\";",
         "",
-        "for (const profile of [yarapa, next, nest, react]) {",
+        "for (const profile of [yarapa, nest, react]) {",
         "  if (!Array.isArray(profile) || profile.length === 0) {",
-        '    throw new Error("Expected non-empty Flat Config array");',
+        "    throw new Error(\"Expected non-empty Flat Config array\");",
         "  }",
         "}",
         "",
@@ -207,10 +206,9 @@ export function verifyTarball(): void {
     writeFileSync(
       path.resolve(consumerDirectory, "verify-behavior.mjs"),
       [
-        'import { ESLint } from "eslint";',
-        'import yarapa from "eslint-config-yarapa";',
-        'import next from "eslint-config-yarapa/next";',
-        'import react from "eslint-config-yarapa/react";',
+        "import { ESLint } from \"eslint\";",
+        "import yarapa from \"eslint-config-yarapa\";",
+        "import react from \"eslint-config-yarapa/react\";",
         "",
         "async function expectRule(config, filePath, source, expectedRule) {",
         "  const eslint = new ESLint({",
@@ -223,48 +221,32 @@ export function verifyTarball(): void {
         "  const ruleIds = result.messages.map(message => message.ruleId);",
         "  if (!ruleIds.includes(expectedRule)) {",
         "    throw new Error(",
-        '      `Expected ${expectedRule} for ${filePath}; got ${ruleIds.join(", ")}`',
+        "      `Expected ${expectedRule} for ${filePath}; got ${ruleIds.join(\", \")}`",
         "    );",
         "  }",
         "}",
         "",
         expectRuleCall,
         "  yarapa,",
-        '  "sample-invalid.js",',
+        "  \"sample-invalid.js\",",
         String.raw`  "export function value() { var answer = 42; return answer; }\n",`,
-        '  "no-var",',
+        "  \"no-var\",",
         ");",
-        "",
-        frameworkProfile === "next"
-          ? [
-              expectRuleCall,
-              "  next,",
-              '  "sample-next-invalid.jsx",',
-              "  [",
-              '    "/** @returns {object} Rendered page. */",',
-              '    "export function Page() {",',
-              String.raw`    "  return <img alt=\"YARAPA\" src=\"/logo.png\" />;",`,
-              '    "}",',
-              String.raw`  ].join("\n"),`,
-              '  "@next/next/no-img-element",',
-              ");",
-            ].join("\n")
-          : "",
         "",
         frameworkProfile === "react"
           ? [
               expectRuleCall,
               "  react,",
-              '  "sample-react-invalid.jsx",',
+              "  \"sample-react-invalid.jsx\",",
               "  [",
               String.raw`    "import { useState } from \"react\";",`,
-              '    "/** @returns {object | null} Rendered component. */",',
-              '    "export function Component({ enabled }) {",',
-              '    "  if (enabled) useState(0);",',
-              '    "  return null;",',
-              '    "}",',
+              "    \"/** @returns {object | null} Rendered component. */\",",
+              "    \"export function Component({ enabled }) {\",",
+              "    \"  if (enabled) useState(0);\",",
+              "    \"  return null;\",",
+              "    \"}\",",
               String.raw`  ].join("\n"),`,
-              '  "react-hooks/rules-of-hooks",',
+              "  \"react-hooks/rules-of-hooks\",",
               ");",
             ].join("\n")
           : "",
@@ -274,7 +256,6 @@ export function verifyTarball(): void {
 
     const profileConfigs = {
       nest: "eslint-config-yarapa/nest",
-      next: "eslint-config-yarapa/next",
       react: "eslint-config-yarapa/react",
       root: "eslint-config-yarapa",
     } as const;
@@ -313,19 +294,6 @@ export function verifyTarball(): void {
       "export const answer = 42;\n",
     );
     writeFileSync(
-      path.resolve(consumerDirectory, "sample-next.jsx"),
-      [
-        "/**",
-        " * Render the Next.js smoke-test page.",
-        " * @returns {object} Rendered page.",
-        " */",
-        "export function Page() {",
-        "  return <main>YARAPA</main>;",
-        "}",
-        "",
-      ].join("\n"),
-    );
-    writeFileSync(
       path.resolve(consumerDirectory, "sample-react.jsx"),
       [
         "/**",
@@ -345,7 +313,7 @@ export function verifyTarball(): void {
     writeFileSync(
       path.resolve(consumerDirectory, nestSampleFile),
       [
-        'import "./sample-nest-service";',
+        "import \"./sample-nest-service\";",
         "",
         "export const configuredPort = 3000;",
         "",
@@ -357,11 +325,6 @@ export function verifyTarball(): void {
     run(
       pnpm,
       ["exec", "eslint", "-c", "eslint.root.config.mjs", "sample.js"],
-      consumerDirectory,
-    );
-    run(
-      pnpm,
-      ["exec", "eslint", "-c", "eslint.next.config.mjs", "sample-next.jsx"],
       consumerDirectory,
     );
     run(
@@ -384,4 +347,13 @@ export function verifyTarball(): void {
   } finally {
     rmSync(temporaryRoot, { force: true, recursive: true });
   }
+}
+
+const scriptPath = process.argv[1];
+const isDirectExecution
+  = scriptPath !== undefined
+    && path.resolve(scriptPath) === fileURLToPath(import.meta.url);
+
+if (isDirectExecution) {
+  verifyTarball();
 }

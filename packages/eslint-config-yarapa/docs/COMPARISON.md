@@ -25,7 +25,7 @@ A comprehensive technical comparison evaluating `eslint-config-yarapa` against l
 ### A. vs. `@antfu/eslint-config` (The Modern Community Giant)
 
 - **The Philosophy Gap**: Anthony Fu's config is designed for rapid open-source experimentation across a vast ecosystem (Vue, Svelte, Astro, UnoCSS, TOML, YAML). It relies on **ambient auto-detection**, silently reading `package.json` at runtime to decide which rule layers to inject.
-- **The YARAPA Distinction**: In regulated enterprise systems (banking, payments, fintech), ambient dependency sniffing represents an unacceptable **determinism risk**. A transitive or local dependency change could mutate the active ruleset silently, causing CI divergence. YARAPA enforces explicit, immutable Flat Config arrays (`eslint-config-yarapa/next`, `/react`, `/nest`) ensuring 100% auditability and air-gapped reproducibility.
+- **The YARAPA Distinction**: In regulated enterprise systems (banking, payments, fintech), ambient dependency sniffing represents an unacceptable **determinism risk**. A transitive or local dependency change could mutate the active ruleset silently, causing CI divergence. YARAPA enforces explicit, immutable Flat Config arrays (`eslint-config-yarapa`, `/react`, `/nest`) ensuring 100% auditability and air-gapped reproducibility.
 
 ### B. vs. Airbnb (`eslint-config-airbnb` & `airbnb-typescript`)
 
@@ -37,7 +37,7 @@ A comprehensive technical comparison evaluating `eslint-config-yarapa` against l
 
 - **Framework Breadth vs Depth**: Vercel provides excellent baseline rules tailored for Next.js and React. However, its coverage stops at basic syntax and standard best practices.
 - **Quality & Security Deficits**: Vercel does not audit for algorithmic Regular Expression Denial of Service (ReDoS) or monitor Cognitive Complexity. Furthermore, Vercel configs permit widespread inline rule suppression (`// eslint-disable`), allowing technical debt to accumulate unchecked in team environments.
-- **The YARAPA Advantage**: YARAPA includes Next.js framework rules (`@next/next`) while wrapping them in enterprise security layers (`eslint-plugin-sonarjs`, `eslint-plugin-regexp`) and zero-suppression discipline.
+- **The YARAPA Advantage**: YARAPA wraps framework-agnostic linting in enterprise security layers (`eslint-plugin-sonarjs`, `eslint-plugin-regexp`) and zero-suppression discipline.
 
 ### D. vs. Shopify (`@shopify/eslint-plugin`) & Google (`gts`)
 

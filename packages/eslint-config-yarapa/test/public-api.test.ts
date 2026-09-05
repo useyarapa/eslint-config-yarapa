@@ -16,7 +16,7 @@ describe("public API", () => {
     expect(Reflect.has(module, "configs")).toBe(false);
   });
 
-  it.each(["./next", "./nest", "./react"])(
+  it.each(["./nest", "./react"])(
     "publishes %s as a semantic subpath",
     subpath => {
       expect(Reflect.has(packageJson.exports, subpath)).toBe(true);

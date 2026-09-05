@@ -15,7 +15,6 @@ Overview of profiles, plugins, and key design principles enforced by `eslint-con
 | Profile     | Entrypoint                   | Target Runtime      | Key Layers Included                                                                                        |
 | ----------- | ---------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------- |
 | **Default** | `eslint-config-yarapa`       | Universal JS/TS     | Base JS, TS syntax, TS type-checked, Imports, SonarJS, JSDoc, JSON, Package.json, Stylistic, Perfectionist |
-| **Next.js** | `eslint-config-yarapa/next`  | Next.js Apps        | Baseline + React Hooks, Component Naming, Next.js framework rules (`@next/next`)                           |
 | **React**   | `eslint-config-yarapa/react` | React (SPA/Library) | Baseline + React Hooks, Component Naming, Browser Globals, JSX syntax                                      |
 | **NestJS**  | `eslint-config-yarapa/nest`  | Node.js / NestJS    | Baseline + Node.js runtime rules (`eslint-plugin-n`)                                                       |
 

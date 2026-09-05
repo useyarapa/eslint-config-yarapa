@@ -1,7 +1,6 @@
 import type { Linter } from "eslint";
 
 import js from "@eslint/js";
-import { configs as nextConfigs } from "@next/eslint-plugin-next";
 import { configs as importXConfigs } from "eslint-plugin-import-x";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
 import { configs as sonarjsConfigs } from "eslint-plugin-sonarjs";
@@ -9,7 +8,6 @@ import { describe, expect, it } from "vitest";
 
 import yarapa from "../src/index.js";
 import nest from "../src/nest.js";
-import next from "../src/next.js";
 import react from "../src/react.js";
 
 /**
@@ -40,7 +38,6 @@ const officialConfigs = {
   eslint: js.configs.recommended,
   importRecommended: importXConfigs["flat/recommended"],
   importTypeScript: importXConfigs["flat/typescript"],
-  next: nextConfigs.recommended as Linter.Config,
   reactHooks: reactHooksPlugin.configs.flat["recommended-latest"],
   sonarjs: sonarjsConfigs.recommended,
 } as const;
@@ -69,18 +66,6 @@ const profileEntries: ReadonlyArray<{
     ],
     name: "nest",
     profile: nest,
-  },
-  {
-    expectedConfigs: [
-      officialConfigs.eslint,
-      officialConfigs.sonarjs,
-      officialConfigs.reactHooks,
-      officialConfigs.importRecommended,
-      officialConfigs.importTypeScript,
-      officialConfigs.next,
-    ],
-    name: "next",
-    profile: next,
   },
   {
     expectedConfigs: [
