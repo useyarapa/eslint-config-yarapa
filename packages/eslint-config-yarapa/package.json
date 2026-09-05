@@ -52,6 +52,7 @@
     "dev": "tsdown --watch",
     "format": "prettier --write --cache .",
     "format:check": "prettier --check --cache .",
+    "inspect": "pnpm build && eslint-config-inspector",
     "lint": "eslint . --fix --cache --max-warnings=0",
     "lint:check": "eslint . --cache --max-warnings=0",
     "sort-package-json": "sort-package-json package.json",
