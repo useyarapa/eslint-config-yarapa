@@ -6,8 +6,7 @@ import { eslintForConfigs, packageRoot } from "./helpers/eslint.js";
 
 const sampleFiles = [
   "fixtures/projects/typed/src/valid.ts",
-  "fixtures/projects/typed/src/component.tsx",
-  "fixtures/rules/vanilla/valid.js",
+  "fixtures/projects/untyped/index.js",
 ] as const;
 
 describe("Flat Config validation", () => {

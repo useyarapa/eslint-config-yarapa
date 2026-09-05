@@ -24,7 +24,7 @@ describe("shared YARAPA behavior", () => {
   const eslint = eslintForConfigs(yarapa);
   const javascriptFixture = path.resolve(
     packageRoot,
-    "fixtures/valid/base/case.js",
+    "fixtures/projects/untyped/index.js",
   );
   const projectRoot = path.resolve(packageRoot, "fixtures/projects/typed");
 
