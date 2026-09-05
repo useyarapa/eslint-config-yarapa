@@ -1,32 +1,11 @@
-import type { Linter } from "eslint";
-
-import { isNil } from "es-toolkit";
-
-type FlatPlugin = NonNullable<Linter.Config["plugins"]>[string];
-
 /**
- * @param config - unknown plugin config to cast
- * @returns flat config array
- */
-export function asFlatConfigArray(config: unknown): Linter.Config[] {
-  return config as Linter.Config[];
-}
-
-/**
- * @param plugin - unknown plugin to cast
- * @returns flat plugin
- */
-export function asFlatPlugin(plugin: unknown): FlatPlugin {
-  return plugin as FlatPlugin;
-}
-
-/**
- * @param value - value to assert is non-null
- * @param label - name of the required config for error messages
- * @returns the value, guaranteed non-null
+ * Return a required upstream config value.
+ * @param value Upstream config value to validate.
+ * @param label Name used in the missing-value error.
+ * @returns The non-null upstream config value.
  */
 export function required<T>(value: null | T | undefined, label: string): T {
-  if (isNil(value)) {
+  if (value === null || value === undefined) {
     throw new Error(`Missing required upstream config: ${label}`);
   }
 

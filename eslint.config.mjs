@@ -27,7 +27,7 @@ export default defineConfig(
   },
   {
     files: [
-      "packages/eslint-config-yarapa/scripts/verify-tarball.mts",
+      "packages/eslint-config-yarapa/scripts/verify-tarball/**/*.{ts,mts}",
       "packages/eslint-config-yarapa/test/behavior.test.ts",
       "packages/eslint-config-yarapa/test/public-api.test.ts",
     ],

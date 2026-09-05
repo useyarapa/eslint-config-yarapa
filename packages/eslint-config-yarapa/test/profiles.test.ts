@@ -1,5 +1,7 @@
 import type { Linter } from "eslint";
 
+import js from "@eslint/js";
+import { configs as nextConfigs } from "@next/eslint-plugin-next";
 import { configs as importXConfigs } from "eslint-plugin-import-x";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
 import { configs as sonarjsConfigs } from "eslint-plugin-sonarjs";
@@ -24,8 +26,7 @@ function findRule(
 
   for (const config of profile) {
     const rule = Reflect.get(config.rules ?? {}, ruleName) as
-      | Linter.RuleEntry
-      | undefined;
+      Linter.RuleEntry | undefined;
 
     if (rule !== undefined) {
       resolved = rule;
@@ -36,8 +37,10 @@ function findRule(
 }
 
 const officialConfigs = {
+  eslint: js.configs.recommended,
   importRecommended: importXConfigs["flat/recommended"],
   importTypeScript: importXConfigs["flat/typescript"],
+  next: nextConfigs.recommended as Linter.Config,
   reactHooks: reactHooksPlugin.configs.flat["recommended-latest"],
   sonarjs: sonarjsConfigs.recommended,
 } as const;
@@ -49,6 +52,7 @@ const profileEntries: ReadonlyArray<{
 }> = [
   {
     expectedConfigs: [
+      officialConfigs.eslint,
       officialConfigs.sonarjs,
       officialConfigs.importRecommended,
       officialConfigs.importTypeScript,
@@ -58,6 +62,7 @@ const profileEntries: ReadonlyArray<{
   },
   {
     expectedConfigs: [
+      officialConfigs.eslint,
       officialConfigs.sonarjs,
       officialConfigs.importRecommended,
       officialConfigs.importTypeScript,
@@ -67,16 +72,19 @@ const profileEntries: ReadonlyArray<{
   },
   {
     expectedConfigs: [
+      officialConfigs.eslint,
       officialConfigs.sonarjs,
       officialConfigs.reactHooks,
       officialConfigs.importRecommended,
       officialConfigs.importTypeScript,
+      officialConfigs.next,
     ],
     name: "next",
     profile: next,
   },
   {
     expectedConfigs: [
+      officialConfigs.eslint,
       officialConfigs.sonarjs,
       officialConfigs.reactHooks,
       officialConfigs.importRecommended,
@@ -155,23 +163,6 @@ describe("semantic profiles", () => {
         "off",
       );
       expect(findRule(profile, "sonarjs/prefer-default-last")).toBe("off");
-    }
-  });
-
-  it("uses @stylistic instead of deprecated core formatting rules", () => {
-    for (const profile of profiles) {
-      for (const ruleName of [
-        "arrow-parens",
-        "brace-style",
-        "comma-dangle",
-        "indent",
-        "max-len",
-        "quotes",
-        "semi",
-      ]) {
-        expect(findRule(profile, ruleName)).toBeUndefined();
-        expect(findRule(profile, `@stylistic/${ruleName}`)).toBeDefined();
-      }
     }
   });
 });

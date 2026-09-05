@@ -9,8 +9,9 @@
     "changeset": "changeset",
     "changeset:status": "changeset status --since main",
     "check:attw": "turbo run check:attw",
-    "check:doctor": "node packages/eslint-config-yarapa/scripts/doctor.mts",
+    "check:doctor": "node packages/eslint-config-yarapa/scripts/doctor/doctor.mts",
     "check:publint": "turbo run check:publint",
+    "check:verify-tarball": "node packages/eslint-config-yarapa/scripts/verify-tarball/verify-tarball.mts",
     "check-types": "pnpm typecheck",
     "clean": "turbo run clean && rm -rf .turbo node_modules/.cache",
     "clean:dist": "turbo run clean:dist",
@@ -32,9 +33,6 @@
     "typecheck": "turbo run typecheck",
     "verify": "pnpm --filter eslint-config-yarapa verify",
     "version-packages": "changeset version"
-  },
-  "dependencies": {
-    "es-toolkit": "^1.52.0"
   },
   "devDependencies": {
     "@changesets/cli": "3.0.1",
