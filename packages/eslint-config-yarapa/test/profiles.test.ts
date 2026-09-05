@@ -1,11 +1,12 @@
 import type { Linter } from "eslint";
 
-import js from "@eslint/js";
-import { configs as importXConfigs } from "eslint-plugin-import-x";
-import { configs as sonarjsConfigs } from "eslint-plugin-sonarjs";
+import packageJsonPlugin from "eslint-plugin-package-json";
+import * as jsoncParser from "jsonc-eslint-parser";
 import { describe, expect, it } from "vitest";
 
+import { packageJson } from "../src/configs/package-json.js";
 import yarapa from "../src/index.js";
+import { required } from "../src/utils/compat.js";
 
 /**
  * Resolve the final configured value for one rule in a profile.
@@ -31,23 +32,70 @@ function findRule(
   return resolved;
 }
 
-const officialConfigs = {
-  eslint: js.configs.recommended,
-  importRecommended: importXConfigs["flat/recommended"],
-  importTypeScript: importXConfigs["flat/typescript"],
-  sonarjs: sonarjsConfigs.recommended,
-} as const;
-
 describe("unified public configuration", () => {
   it("exports a non-empty Flat Config array", () => {
     expect(Array.isArray(yarapa)).toBe(true);
     expect(yarapa.length).toBeGreaterThan(0);
   });
 
-  it("preserves official upstream config ownership", () => {
-    for (const expectedConfig of Object.values(officialConfigs)) {
-      expect(yarapa).toContain(expectedConfig);
-    }
+  it("owns base, comments, promise, regexp, and unused-imports policies", () => {
+    const configNames = yarapa.map(config => config.name).filter(Boolean);
+
+    expect(configNames).toContain("yarapa/base/core");
+    expect(configNames).toContain("yarapa/base/modern-js");
+    expect(configNames).toContain("yarapa/eslint-comments");
+    expect(configNames).toContain("yarapa/promise");
+    expect(configNames).toContain("yarapa/regexp");
+    expect(configNames).toContain("yarapa/unused-imports");
+    expect(configNames).toContain("yarapa/typescript");
+    expect(configNames).toContain("yarapa/type-checked/recommended");
+    expect(configNames).toContain("yarapa/stylistic/recommended");
+    expect(configNames).toContain("yarapa/unicorn");
+    expect(configNames).toContain("yarapa/import-x");
+    expect(configNames).toContain("yarapa/sonarjs");
+    expect(configNames).toContain("yarapa/perfectionist");
+  });
+
+  it("registers @typescript-eslint plugin only in the typescript owner entry", () => {
+    const configsWithTsPlugin = yarapa.filter(config =>
+      Boolean(
+        config.plugins && Reflect.has(config.plugins, "@typescript-eslint"),
+      ),
+    );
+
+    expect(configsWithTsPlugin).toHaveLength(1);
+    expect(configsWithTsPlugin[0]?.name).toBe("yarapa/typescript");
+  });
+
+  it("places typescript before type-checked in recommended composition", () => {
+    const names = yarapa.map(config => config.name).filter(Boolean);
+    const tsIndex = names.indexOf("yarapa/typescript");
+    const typeCheckedIndex = names.indexOf("yarapa/type-checked/recommended");
+
+    expect(tsIndex).toBeGreaterThanOrEqual(0);
+    expect(typeCheckedIndex).toBeGreaterThan(tsIndex);
+  });
+
+  it("owns the package manifest rule policy", () => {
+    const config = required(packageJson[0], "package manifest config");
+
+    expect(packageJson).toHaveLength(1);
+    expect(config.files).toEqual(["**/package.json"]);
+    expect(config.languageOptions?.parser).toBe(jsoncParser);
+    expect(config.plugins?.["package-json"]).toBe(packageJsonPlugin);
+    expect(Object.keys(config.rules ?? {})).toHaveLength(62);
+    expect(new Set(Object.values(config.rules ?? {}))).toEqual(
+      new Set(["error"]),
+    );
+  });
+
+  it("owns import-x rule and settings policy", () => {
+    const config = yarapa.find(c => c.name === "yarapa/import-x");
+    expect(config).toBeDefined();
+    expect(config?.rules?.["import-x/no-duplicates"]).toBe("warn");
+    expect(config?.settings?.["import-x/resolver"]).toEqual({
+      typescript: true,
+    });
   });
 
   it("includes Node runtime and browser globals in unified config", () => {
@@ -63,12 +111,6 @@ describe("unified public configuration", () => {
       ),
     );
     expect(hasBrowserGlobals).toBe(true);
-  });
-
-  it("preserves the official import-x warning severity", () => {
-    expect(
-      officialConfigs.importRecommended.rules?.["import-x/no-duplicates"],
-    ).toBe("warn");
   });
 
   it("shares canonical handwriting across configuration", () => {

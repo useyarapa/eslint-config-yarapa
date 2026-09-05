@@ -3,11 +3,7 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { satisfies } from "semver";
-import {
-  DiagnosticCategory,
-  readConfigFile,
-  sys,
-} from "typescript";
+import { DiagnosticCategory, readConfigFile, sys } from "typescript";
 
 type CheckResult = {
   isPassed: boolean;
@@ -61,9 +57,8 @@ export function runDoctor(): boolean {
   );
 
   if (foundTsConfig) {
-    const configResult = readConfigFile(
-      foundTsConfig,
-      file => sys.readFile(file),
+    const configResult = readConfigFile(foundTsConfig, file =>
+      sys.readFile(file),
     );
     const hasDiagnosticError = Boolean(
       configResult.error

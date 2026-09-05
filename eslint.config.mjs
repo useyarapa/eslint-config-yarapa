@@ -5,6 +5,7 @@ import yarapa from "./packages/eslint-config-yarapa/dist/index.mjs";
 export default defineConfig(
   globalIgnores(
     [
+      ".claude/**",
       ".turbo/**",
       "packages/eslint-config-yarapa/dist/**",
       "packages/eslint-config-yarapa/fixtures/**",

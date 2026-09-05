@@ -80,9 +80,7 @@ describe("autofix safety and idempotence", () => {
       "fixtures/autofix/import-order.js",
     );
 
-    expect(output.indexOf("from \"a\"")).toBeLessThan(
-      output.indexOf("from \"z\""),
-    );
+    expect(output.indexOf("from \"a\"")).toBeLessThan(output.indexOf("from \"z\""));
   });
 
   it("normalizes template strings and object shorthand once", async () => {
@@ -105,5 +103,41 @@ describe("autofix safety and idempotence", () => {
     );
 
     expect(output).toBe("export const double = value => value * 2;\n");
+  });
+
+  it("formats structured JSON data idempotently", async () => {
+    const source = "{\n\"name\":   \"example\",\n\"version\":\"1.0.0\"\n}\n";
+    const output = await fixTwice(yarapa, source, "fixtures/autofix/data.json");
+
+    expect(output).toBe("{\n  \"name\": \"example\",\n  \"version\": \"1.0.0\"\n}\n");
+  });
+
+  it("orders package manifest properties idempotently", async () => {
+    const source = `${JSON.stringify(
+      Object.fromEntries([
+        ["version", "1.0.0"],
+        ["type", "commonjs"],
+        ["name", "example"],
+      ]),
+      null,
+      2,
+    )}\n`;
+    const output = await fixTwice(
+      yarapa,
+      source,
+      "fixtures/autofix/package.json",
+    );
+
+    expect(output).toBe(
+      `${JSON.stringify(
+        Object.fromEntries([
+          ["name", "example"],
+          ["version", "1.0.0"],
+          ["type", "commonjs"],
+        ]),
+        null,
+        2,
+      )}\n`,
+    );
   });
 });

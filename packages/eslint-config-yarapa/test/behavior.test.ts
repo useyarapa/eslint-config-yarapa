@@ -48,6 +48,26 @@ describe("shared YARAPA behavior", () => {
     );
   });
 
+  it("permits empty interfaces in declaration files but reports in source", async () => {
+    const declarationSource = "export interface Marker {}\n";
+    const [dtsResult] = await eslint.lintText(declarationSource, {
+      filePath: path.resolve(projectRoot, "src/types.d.ts"),
+    });
+    const dtsLintResult = required(dtsResult, "declaration lint result");
+    expect(dtsLintResult.messages.map(message => message.ruleId)).not.toContain(
+      "@typescript-eslint/no-empty-object-type",
+    );
+
+    const source = "export interface Marker {}\n";
+    const [tsResult] = await eslint.lintText(source, {
+      filePath: path.resolve(projectRoot, "src/valid.ts"),
+    });
+    const tsLintResult = required(tsResult, "source lint result");
+    expect(tsLintResult.messages.map(message => message.ruleId)).toContain(
+      "@typescript-eslint/no-empty-object-type",
+    );
+  });
+
   it("rejects unused JavaScript variables", async () => {
     const [result] = await eslint.lintText("const unused = 1;\n", {
       filePath: javascriptFixture,
@@ -141,7 +161,7 @@ describe("shared YARAPA behavior", () => {
     expect(ruleIds).toContain("radix");
   });
 
-  it("reports hard-coded passwords through the official SonarJS preset", async () => {
+  it("reports hard-coded passwords through yarapa sonarjs policy", async () => {
     const [result] = await eslint.lintText(
       "const password = \"secret-value\";\n",
       { filePath: javascriptFixture },
@@ -153,7 +173,7 @@ describe("shared YARAPA behavior", () => {
     );
   });
 
-  it("reports unresolved imports through the official import-x preset", async () => {
+  it("reports unresolved imports through yarapa import-x policy", async () => {
     const [result] = await eslint.lintText(
       "import missing from \"./does-not-exist.js\";\nexport { missing };\n",
       { filePath: path.resolve(packageRoot, "fixtures/import-resolution.js") },
@@ -165,7 +185,7 @@ describe("shared YARAPA behavior", () => {
     );
   });
 
-  it("reports node protocol violations through the official unicorn preset", async () => {
+  it("reports node protocol violations through yarapa unicorn policy", async () => {
     const [result] = await eslint.lintText(
       "import fs from \"fs\";\nexport { fs };\n",
       { filePath: path.resolve(packageRoot, "fixtures/unicorn-sample.js") },
@@ -174,6 +194,23 @@ describe("shared YARAPA behavior", () => {
 
     expect(lintResult.messages.map(message => message.ruleId)).toContain(
       "unicorn/prefer-node-protocol",
+    );
+  });
+
+  it("reports package manifest property order", async () => {
+    const source = `${JSON.stringify(
+      Object.fromEntries([
+        ["version", "1.0.0"],
+        ["name", "example"],
+      ]),
+    )}\n`;
+    const [result] = await eslint.lintText(source, {
+      filePath: path.resolve(packageRoot, "fixtures/package.json"),
+    });
+    const lintResult = required(result, "package manifest behavior result");
+
+    expect(lintResult.messages.map(message => message.ruleId)).toContain(
+      "package-json/order-properties",
     );
   });
 
@@ -189,5 +226,75 @@ describe("shared YARAPA behavior", () => {
 
     expect(restrictedMessage).toBeDefined();
     expect(restrictedMessage?.message).toContain("es-toolkit");
+  });
+
+  it("requires description for eslint-disable comments", async () => {
+    const [result] = await eslint.lintText(
+      "/* eslint-disable no-var */\nvar x = 1;\n",
+      { filePath: javascriptFixture },
+    );
+    const lintResult = required(result, "eslint-comments behavior result");
+
+    expect(lintResult.messages.map(message => message.ruleId)).toContain(
+      "@eslint-community/eslint-comments/require-description",
+    );
+  });
+
+  it.each([
+    {
+      expectedRule: "promise/catch-or-return",
+      name: "unhandled promises",
+      source: "export function wait() { Promise.resolve().then(() => 1); }\n",
+    },
+    {
+      expectedRule: "regexp/no-dupe-characters-character-class",
+      name: "duplicate characters in regular expression character classes",
+      source: "export const pattern = /[aa]/;\n",
+    },
+    {
+      expectedRule: "n/no-deprecated-api",
+      name: "deprecated Node.js APIs",
+      source:
+        "import buffer from \"node:buffer\";\nexport const b = new buffer.Buffer(10);\n",
+    },
+    {
+      expectedRule: "jsdoc/check-alignment",
+      name: "misaligned JSDoc comment blocks",
+      source: "/**\n* missing space\n */\nexport const documented = 1;\n",
+    },
+    {
+      expectedRule: "perfectionist/sort-imports",
+      name: "unsorted imports through perfectionist policy",
+      source: "import z from \"z\";\nimport a from \"a\";\nexport { a, z };\n",
+    },
+    {
+      expectedRule: "@stylistic/semi",
+      name: "missing semicolons in shared stylistic handwriting",
+      source: "export const value = 1\n",
+    },
+  ])(
+    "reports $name in shared JavaScript handwriting",
+    async ({ expectedRule, source }) => {
+      const [result] = await eslint.lintText(source, {
+        filePath: javascriptFixture,
+      });
+      const lintResult = required(result, "lint result");
+
+      expect(lintResult.messages.map(message => message.ruleId)).toContain(
+        expectedRule,
+      );
+    },
+  );
+
+  it("reports duplicate keys in JSON files", async () => {
+    const source = "{\n  \"name\": \"one\",\n  \"name\": \"two\"\n}\n";
+    const [result] = await eslint.lintText(source, {
+      filePath: path.resolve(packageRoot, "fixtures/sample.json"),
+    });
+    const lintResult = required(result, "JSON behavior result");
+
+    expect(lintResult.messages.map(message => message.ruleId)).toContain(
+      "jsonc/no-dupe-keys",
+    );
   });
 });
