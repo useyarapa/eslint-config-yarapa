@@ -1,8 +1,3 @@
----
-paths:
-  - "**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs,json,jsonc,yaml,yml}"
----
-
 # No Speculative Configuration Rules
 
 Keep configuration demand-driven, observable, and aligned with verified repository and consumer requirements.

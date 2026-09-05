@@ -1,8 +1,3 @@
----
-paths:
-  - "**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs,json,jsonc,yaml,yml}"
----
-
 # Prefer Existing Capabilities Rules
 
 Use existing, maintained capabilities before writing bespoke implementations. Custom code is the last option, not the default.

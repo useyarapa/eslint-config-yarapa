@@ -11,7 +11,6 @@ Keep implementation self-explanatory through names, structure, and tested contra
 
 - Express intent through precise names, focused units, explicit boundaries, and idiomatic control flow.
 - Remove comments that merely restate what the code already says.
-- Remove commented-out code instead of preserving it in source files.
 
 ## Permitted Documentation
 

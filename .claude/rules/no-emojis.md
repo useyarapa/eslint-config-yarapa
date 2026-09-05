@@ -1,8 +1,3 @@
----
-paths:
-  - "**/*"
----
-
 # No Emoji Rules
 
 Use plain, professional text that remains readable in terminals, logs, source files, documentation, and review tools.

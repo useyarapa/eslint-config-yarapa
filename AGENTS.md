@@ -18,3 +18,10 @@ Architectural and workflow constraints when working in this repository.
 
 - Preset changes: add or update tests for both config composition / profile shape and at least one observable lint behavior in `packages/eslint-config-yarapa/test/`.
 - Export or package metadata changes: run `pnpm --filter eslint-config-yarapa test:consumer` (or `verify`), which tests the packed tarball against a real consumer project.
+
+## Testing Architecture & Fixture Policy
+
+- Fixtures in `packages/eslint-config-yarapa/fixtures/` are static declarative test inputs for ESLint Flat Config integration testing.
+- Type-aware testing requires concrete disk fixtures with `tsconfig.json` to configure TypeScript compiler services deterministically.
+- Do not replace static declarative fixtures with bespoke dynamic setup, temporary filesystem generation, or bespoke mock harnesses.
+- Follow official ESLint test patterns and maintained capabilities.

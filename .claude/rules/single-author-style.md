@@ -1,8 +1,3 @@
----
-paths:
-  - "**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs,json,jsonc,yaml,yml}"
----
-
 # Single Author Style Rules
 
 Write code as if one careful engineer owns the entire repository. Similar code should share the same structure, naming, ordering, and level of abstraction.
@@ -24,8 +19,7 @@ Write code as if one careful engineer owns the entire repository. Similar code s
 
 ## Consistent Abstraction
 
-- Reuse an existing helper, type, configuration layer, test utility, native API, or trusted dependency before creating another implementation.
-- Keep equivalent operations equivalent: use the same API, error behavior, return shape, and validation boundary.
+- Keep equivalent operations equivalent across modules: use the same API, error behavior, return shape, and validation boundary.
 - Do not introduce a wrapper, factory, adapter, or alternate calling convention for superficial stylistic preference.
 - Keep custom policy separate from upstream, platform, and framework-owned behavior so ownership remains visible.
 
