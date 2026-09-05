@@ -14,7 +14,6 @@ import { jsdoc } from "./jsdoc.js";
 import { json } from "./json.js";
 import { node } from "./node.js";
 import { packageJson } from "./package-json.js";
-import { react } from "./react.js";
 import { stylistic } from "./stylistic.js";
 import { typeChecked } from "./type-checked.js";
 import { typescript } from "./typescript.js";
@@ -55,7 +54,6 @@ export const recommended: Linter.Config[] = [
   ...base,
   ...node,
   ...browser,
-  ...react,
   ...typescript,
   ...typeChecked,
   ...importResolution,

@@ -13,9 +13,9 @@ This repository serves as the engineering baseline for YARAPA projects, enforcin
 
 ## Workspace Packages
 
-| Package                                                 | Version                                                                                                             | Description                                                                           |
-| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| [`eslint-config-yarapa`](packages/eslint-config-yarapa) | [![npm](https://img.shields.io/npm/v/eslint-config-yarapa.svg)](https://www.npmjs.com/package/eslint-config-yarapa) | Strict, full-stack ESLint Flat Config for JavaScript, TypeScript, Node.js, and React. |
+| Package                                                 | Version                                                                                                             | Description                                                                    |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| [`eslint-config-yarapa`](packages/eslint-config-yarapa) | [![npm](https://img.shields.io/npm/v/eslint-config-yarapa.svg)](https://www.npmjs.com/package/eslint-config-yarapa) | Strict, full-stack ESLint Flat Config for JavaScript, TypeScript, and Node.js. |
 
 ---
 
@@ -29,7 +29,7 @@ This repository serves as the engineering baseline for YARAPA projects, enforcin
 3. **Zero Inline Suppression**
    - Suppression directives (`// eslint-disable`, `// @ts-ignore`, `/* prettier-ignore */`) are strictly prohibited in repository source code. All issues must be solved at the root cause.
 4. **Unified Capability Baseline**
-   - Combines JavaScript, TypeScript, Node.js runtime, and React/JSX file scoping in a single deterministic config without fragmented profiles.
+   - Combines JavaScript, TypeScript, and Node.js runtime in a single deterministic config without fragmented profiles.
 
 For in-depth architecture, rule classifications, and plugin matrices, see [Architecture & Rules Overview](packages/eslint-config-yarapa/docs/RULES.md).
 

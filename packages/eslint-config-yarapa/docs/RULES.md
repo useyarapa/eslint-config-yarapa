@@ -14,11 +14,9 @@ Overview of profiles, plugins, and key design principles enforced by `eslint-con
 
 `eslint-config-yarapa` exports a single, static Flat Config array containing all capability layers:
 
-| Layer                | Entrypoint             | Target Scope           | Key Inclusions                                                                                                                                       |
-| -------------------- | ---------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Unified Baseline** | `eslint-config-yarapa` | Full-stack JS/TS/React | Base JS, Node.js runtime, Browser globals, React Hooks, TS syntax, TS type-checked, Imports, SonarJS, JSDoc, JSON, Stylistic, Perfectionist, Unicorn |
-
-Specific frameworks (such as React Hooks and JSX options) are file-scoped to `**/*.{jsx,tsx}` within the single array, eliminating fragmented profile subpaths.
+| Layer                | Entrypoint             | Target Scope     | Key Inclusions                                                                                                                          |
+| -------------------- | ---------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **Unified Baseline** | `eslint-config-yarapa` | Full-stack JS/TS | Base JS, Node.js runtime, Browser globals, TS syntax, TS type-checked, Imports, SonarJS, JSDoc, JSON, Stylistic, Perfectionist, Unicorn |
 
 ## Layered Plugins
 
@@ -26,7 +24,6 @@ Specific frameworks (such as React Hooks and JSX options) are file-scoped to `**
 | ----------------- | ------------------------------------- | -------------------------------------------------------------------------- |
 | **Core JS**       | `@eslint/js`                          | Recommended baseline syntax and runtime errors                             |
 | **Node.js**       | `eslint-plugin-n`                     | Node.js runtime checks and globals                                         |
-| **React**         | `eslint-plugin-react-hooks`           | Rules of Hooks and React component conventions                             |
 | **TypeScript**    | `typescript-eslint`                   | Type checking, syntax rules, strict type-aware rules via `projectService`  |
 | **Promises**      | `eslint-plugin-promise`               | Asynchronous correctness, avoids unhandled rejections and nesting          |
 | **RegExp**        | `eslint-plugin-regexp`                | Regular expression correctness, optimization, and anti-ReDoS patterns      |

@@ -7,15 +7,14 @@
 
 Opinionated, deterministic ESLint Flat Config standards for modern JavaScript and TypeScript projects.
 
-`eslint-config-yarapa` provides a shared, zero-compromise linting baseline across modern JavaScript, TypeScript, Node.js, and React. All capabilities are bundled into a single unified Flat Config and automatically scoped to matching file extensions.
+`eslint-config-yarapa` provides a shared, zero-compromise linting baseline across modern JavaScript, TypeScript, and Node.js. All capabilities are bundled into a single unified Flat Config.
 
 ---
 
 ## Features
 
 - **Strict Flat Config First**: Pre-configured, deterministic arrays compatible with ESLint 9+ and 10+.
-- **Unified Full-Stack Baseline**: Integrates JavaScript, TypeScript, Node.js runtime (`eslint-plugin-n`), Node/Browser globals, and React Hooks in one setup.
-- **File Scoped**: Framework-specific capabilities such as React Hooks and JSX parsing are automatically scoped to `**/*.{jsx,tsx}` without requiring separate profile selection.
+- **Unified Baseline**: Integrates JavaScript, TypeScript, Node.js runtime (`eslint-plugin-n`), and Node/Browser globals in one setup.
 - **Type-Aware First**: Native integration with TypeScript's `projectService` for accurate, AST-driven type analysis without manual `tsconfig.json` overhead.
 - **Unified Style**: Integrated `@stylistic/eslint-plugin` rules with zero format suppression allowed.
 - **Natural Ordering**: Automated, deterministic sorting of imports, exports, and object keys via `eslint-plugin-perfectionist`.
@@ -70,7 +69,6 @@ export default yarapa;
 | Universal JavaScript | All matching files             | Core JS, modern builtins, imports (`import-x`), SonarJS |
 | Node.js Runtime      | All matching files             | Node globals, `eslint-plugin-n` runtime checks          |
 | Browser Environment  | All matching files             | Browser globals                                         |
-| React & JSX          | `**/*.{jsx,tsx}`               | JSX parsing, React Hooks rules, React component naming  |
 | TypeScript Syntax    | `**/*.{ts,tsx,mts,cts}`        | `@typescript-eslint` recommended syntax & hygiene       |
 | Type-Checked Rules   | `**/*.{ts,tsx,mts,cts}`        | `projectService` type-aware analysis                    |
 | Style & Formatting   | All matching files             | Stylistic rules, Perfectionist natural sorting, Unicorn |

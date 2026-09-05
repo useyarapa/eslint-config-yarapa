@@ -65,26 +65,6 @@ describe("unified public configuration", () => {
     expect(hasBrowserGlobals).toBe(true);
   });
 
-  it("includes scoped React capabilities in unified config", () => {
-    const reactRuntimeConfig = yarapa.find(
-      config => config.name === "yarapa/react/runtime",
-    );
-    expect(reactRuntimeConfig).toBeDefined();
-    expect(reactRuntimeConfig?.files).toEqual(["**/*.jsx", "**/*.tsx"]);
-    expect(
-      Reflect.get(
-        reactRuntimeConfig?.rules ?? {},
-        "react-hooks/rules-of-hooks",
-      ),
-    ).toBe("error");
-
-    const reactNamingConfig = yarapa.find(
-      config => config.name === "yarapa/react/component-naming",
-    );
-    expect(reactNamingConfig).toBeDefined();
-    expect(reactNamingConfig?.files).toEqual(["**/*.jsx", "**/*.tsx"]);
-  });
-
   it("preserves the official import-x warning severity", () => {
     expect(
       officialConfigs.importRecommended.rules?.["import-x/no-duplicates"],

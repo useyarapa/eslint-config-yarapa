@@ -138,19 +138,6 @@ export function verifyTarball(): void {
         "  \"no-var\",",
         ");",
         "",
-        "await expectRule(",
-        "  yarapa,",
-        "  \"sample-react-invalid.jsx\",",
-        "  [",
-        "    \"const useEffect = callback => callback();\",",
-        "    \"export function Component({ enabled }) {\",",
-        "    \"  if (enabled) useEffect(() => {});\",",
-        "    \"  return null;\",",
-        "    \"}\",",
-        String.raw`  ].join("\n"),`,
-        "  \"react-hooks/rules-of-hooks\",",
-        ");",
-        "",
       ].join("\n"),
     );
 
@@ -189,25 +176,11 @@ export function verifyTarball(): void {
       path.resolve(consumerDirectory, "sample.ts"),
       "export const answer: number = 42;\n",
     );
-    writeFileSync(
-      path.resolve(consumerDirectory, "sample-react.jsx"),
-      [
-        "/**",
-        " * Render the React smoke-test component.",
-        " * @returns {object} Rendered component.",
-        " */",
-        "export function Component() {",
-        "  return <div>YARAPA</div>;",
-        "}",
-        "",
-      ].join("\n"),
-    );
-
     run(node, ["verify.mjs"], consumerDirectory);
     run(node, ["verify-behavior.mjs"], consumerDirectory);
     run(
       pnpm,
-      ["exec", "eslint", "sample.js", "sample.ts", "sample-react.jsx"],
+      ["exec", "eslint", "sample.js", "sample.ts"],
       consumerDirectory,
     );
   } finally {

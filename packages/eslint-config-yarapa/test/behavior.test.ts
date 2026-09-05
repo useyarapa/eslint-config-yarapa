@@ -153,27 +153,6 @@ describe("shared YARAPA behavior", () => {
     );
   });
 
-  it("reports conditional hooks through the scoped React Hooks configuration", async () => {
-    const source = [
-      "const useEffect = callback => callback();",
-      "export const Component = active => {",
-      "  if (active) {",
-      "    useEffect(() => {});",
-      "  }",
-      "  return null;",
-      "};",
-      "",
-    ].join("\n");
-    const [result] = await eslint.lintText(source, {
-      filePath: path.resolve(packageRoot, "fixtures/react-hooks.jsx"),
-    });
-    const lintResult = required(result, "React Hooks behavior result");
-
-    expect(lintResult.messages.map(message => message.ruleId)).toContain(
-      "react-hooks/rules-of-hooks",
-    );
-  });
-
   it("reports unresolved imports through the official import-x preset", async () => {
     const [result] = await eslint.lintText(
       "import missing from \"./does-not-exist.js\";\nexport { missing };\n",

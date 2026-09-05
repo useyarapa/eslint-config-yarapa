@@ -4,9 +4,9 @@
 
 **Goal:** Complete the single public config consolidation (Issue #59) by resolving the tarball verification script lint defect and verifying the full test and package delivery pipeline.
 
-**Architecture:** `eslint-config-yarapa` exports a single Flat Config array with no subpath framework profiles. File-scoped framework rules (`react-hooks`) apply internally to `**/*.{jsx,tsx}`. The consumer verification script verifies that the packed tarball lints JS, TS, and React files via the single root import.
+**Architecture:** `eslint-config-yarapa` exports a single Flat Config array with no subpath framework profiles. The consumer verification script verifies that the packed tarball lints JS and TS files via the single root import.
 
-**Tech Stack:** TypeScript, ESLint 9/10 Flat Config, `eslint-plugin-n`, `eslint-plugin-react-hooks`, Vitest, pnpm, tsdown, publint, arethetypeswrong.
+**Tech Stack:** TypeScript, ESLint 9/10 Flat Config, `eslint-plugin-n`, Vitest, pnpm, tsdown, publint, arethetypeswrong.
 
 ## Global Constraints
 
