@@ -1,7 +1,7 @@
 # YARAPA Code Standard
 
 [![CI Status](https://github.com/useyarapa/eslint-config-yarapa/actions/workflows/ci.yml/badge.svg)](https://github.com/useyarapa/eslint-config-yarapa/actions/workflows/ci.yml)
-[![npm version](https://img.shields.io/npm/v/eslint-config-yarapa.svg?color=cb3837)](https://www.npmjs.com/package/eslint-config-yarapa)
+[![npm version](https://img.shields.io/npm/v/%40yarapa%2Feslint-config.svg?color=cb3837)](https://www.npmjs.com/package/@yarapa/eslint-config)
 [![node version](https://img.shields.io/badge/node-%3E%3D24.15.0-brightgreen.svg)](https://nodejs.org)
 [![license](https://img.shields.io/github/license/useyarapa/eslint-config-yarapa.svg)](LICENSE)
 
@@ -13,9 +13,9 @@ This repository serves as the engineering baseline for YARAPA projects, enforcin
 
 ## Workspace Packages
 
-| Package                                                 | Version                                                                                                             | Description                                                                    |
-| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| [`eslint-config-yarapa`](packages/eslint-config-yarapa) | [![npm](https://img.shields.io/npm/v/eslint-config-yarapa.svg)](https://www.npmjs.com/package/eslint-config-yarapa) | Strict, full-stack ESLint Flat Config for JavaScript, TypeScript, and Node.js. |
+| Package                                                  | Version                                                                                                                   | Description                                                                    |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| [`@yarapa/eslint-config`](packages/eslint-config-yarapa) | [![npm](https://img.shields.io/npm/v/%40yarapa%2Feslint-config.svg)](https://www.npmjs.com/package/@yarapa/eslint-config) | Strict, full-stack ESLint Flat Config for JavaScript, TypeScript, and Node.js. |
 
 ---
 
@@ -40,13 +40,13 @@ For in-depth architecture, rule classifications, and plugin matrices, see [Archi
 Install the package alongside ESLint and TypeScript:
 
 ```sh
-pnpm add -D eslint eslint-config-yarapa typescript
+pnpm add -D eslint @yarapa/eslint-config typescript
 ```
 
 Configure `eslint.config.mjs`:
 
 ```js
-import yarapa from "eslint-config-yarapa";
+import yarapa from "@yarapa/eslint-config";
 
 export default yarapa;
 ```

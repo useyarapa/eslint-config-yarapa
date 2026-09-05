@@ -1,144 +1,139 @@
 ---
 name: create-github-pr
 description: >
-  Generate and open pull requests strictly adhering to the repository PR
-  template (.github/pull_request_template.md). Use this skill whenever the user
-  asks to create a pull request, open a PR, prepare a PR, submit changes, or
-  run `gh pr create`. Enforces verification checklist execution, changeset
-  requirements, conventional PR naming, and zero-emoji compliance.
+  Prepare or create a GitHub pull request using the current repository's pull
+  request template, contribution guidance, branch metadata, and verification
+  commands. Use this skill when the user asks to prepare, open, or create a pull
+  request in any repository.
 argument-hint: "[issue-number|optional-title]"
 license: MIT
 ---
 
 # Create GitHub Pull Request
 
-Guide agents and contributors through creating pull requests that strictly conform to `.github/pull_request_template.md` and repository engineering standards.
+Prepare accurate, reviewable pull requests without assuming a repository name,
+default branch, package manager, release tool, title convention, or verification
+command. Treat the target repository as the source of truth.
 
-## Core Rules
+## Repository Discovery
 
-1. **Strict Template Adherence**: The pull request body must strictly contain all sections from `.github/pull_request_template.md` without omission.
-2. **Zero Emojis**: Never include emojis in PR title or PR body. Use clean ASCII text indicators (`[x]`, `[ ]`, `PASS`, `FAIL`).
-3. **Evidence-Based Verification**: Do not check verification checkboxes blindly. Run each required command, confirm the result, and mark passed items with `[x]`.
-4. **Changeset Compliance**: Identify whether changes affect `packages/eslint-config-yarapa`. If yes, require a Changeset; if no package impact, require an empty Changeset (`pnpm changeset --empty`).
+Before preparing the pull request:
 
----
+1. Identify the repository from the current Git remote or the user's explicit
+   target. Do not guess the owner or repository.
+2. Determine the default branch with repository metadata rather than assuming
+   `main` or `master`.
+3. Read the repository instructions relevant to contributions, testing,
+   commits, releases, and pull requests.
+4. Locate the applicable pull-request template in the repository's supported
+   template locations. If multiple templates exist, select the one matching the
+   change or ask the user when the choice is ambiguous.
+5. Derive title format, required checks, release-note requirements, issue
+   linking syntax, and reviewer policy only from the target repository.
 
-## Step-by-Step Workflow
+Do not impose Changesets, Conventional Commits, DCO, package-specific scripts,
+or any other convention unless the repository requires them.
 
-### Step 1: Pre-flight Git State Inspection
+## Pre-flight Inspection
 
-Inspect branch status and diff:
-
-```sh
-git status
-git diff main...HEAD
-git log main...HEAD --oneline
-```
-
-Verify that all commits follow Conventional Commits and satisfy DCO (`Signed-off-by`).
-
-### Step 2: Execute Verification Checklist
-
-Run each verification check specified in the repository PR template:
+Inspect all work that the pull request would contain:
 
 ```sh
-# 1. Package lint
-pnpm --filter eslint-config-yarapa lint
-
-# 2. Package type check
-pnpm --filter eslint-config-yarapa check-types
-
-# 3. Package tests
-pnpm --filter eslint-config-yarapa test
-
-# 4. Dead code & dependency audit
-pnpm knip
-
-# 5. Full consumer verification pipeline
-pnpm --filter eslint-config-yarapa verify
+git status --short
+git branch --show-current
+git status --branch --short
+git log "<base>"...HEAD --oneline
+git diff "<base>"...HEAD
+git diff
+git diff --cached
 ```
 
-If any check fails, resolve the root cause before proceeding. Never open a PR with failing checks.
+Use the verified default or user-selected branch for `<base>`. Review every
+commit and the complete branch diff, not only the latest commit. Distinguish
+committed changes that will enter the pull request from uncommitted changes
+that will not.
 
-### Step 3: Check Changeset Status
-
-Verify whether a changeset file exists under `.changeset/*.md`:
-
-```sh
-pnpm changeset:status
-```
-
-- If changes affect `packages/eslint-config-yarapa/`, ensure a valid changeset is committed.
-- If changes have no package release impact (e.g. repo tooling, docs, CI), run:
-  ```sh
-  pnpm changeset --empty
-  ```
-
-### Step 4: Construct PR Body
-
-Format the pull request body using HEREDOC matching `.github/pull_request_template.md` exactly:
-
-```markdown
-## Description
-
-<Concise, clear explanation of proposed changes and motivation.>
-
-## Related issue
-
-<!-- Reference related issue (e.g. Fixes #123) or 'None' -->
-
-Fixes #<issue-number>
-
-## Reviewers
-
-@<reviewer-username>
+Do not discard, stage, commit, rewrite, or include unrelated work without the
+user's authorization. Never force-push as part of this workflow.
 
 ## Verification
 
-- [x] `pnpm --filter eslint-config-yarapa lint`
-- [x] `pnpm --filter eslint-config-yarapa check-types`
-- [x] `pnpm --filter eslint-config-yarapa test`
-- [x] `pnpm knip`
-- [x] `pnpm --filter eslint-config-yarapa verify`
+1. Discover required commands from the pull-request template, contribution
+   guide, package scripts, task runner, and CI configuration.
+2. Select checks applicable to the changed files and public behavior.
+3. Run each required check using the repository's own command and package
+   manager.
+4. Fix the root cause of failures. Never suppress a check, weaken a gate, or
+   report an unexecuted command as passing.
+5. Record each command and result for the pull-request body when the template
+   requests verification evidence.
 
-## Release
+Do not invent a fixed universal command list. If a required remote-only check
+cannot be run locally, leave it unchecked and state that limitation accurately.
 
-<!-- Mark exactly one of the two options below -->
+## Release and Repository Policy
 
-- [x] This package change includes a Changeset.
-- [ ] This change has no package release impact and uses an empty Changeset.
-```
+- Add a changeset, release note, changelog entry, version update, or migration
+  note only when repository policy and the actual change require it.
+- Follow repository rules for issue linkage, generated files, signed commits,
+  reviewers, labels, and branch naming.
+- Treat repository templates and contribution instructions as authoritative;
+  do not copy requirements from another repository.
 
-### Step 5: Create Pull Request via GitHub CLI
+## Pull Request Body
 
-Execute `gh pr create` with properly formatted title and body:
+1. Start from the selected repository template rather than recreating it.
+2. Preserve its section order, headings, comments, and checklists unless the
+   template explicitly directs authors to remove them.
+3. Summarize the complete branch diff and explain why the change is needed.
+4. Link issues only when the relationship and issue number are verified. Do not
+   fabricate `Fixes` references.
+5. Mark a checklist item complete only when it is true and supported by the
+   inspected state or executed command.
+6. If no template exists, use a concise body containing a summary and test
+   results, adding other sections only when the change needs them.
+
+Derive the title from declared repository conventions. If none exist, use a
+concise imperative description of the complete change without imposing a
+prefix or scope.
+
+## Push and Creation
+
+If the user asked only to prepare a pull request, return the proposed title,
+body, verification results, and any blockers without pushing or creating
+anything.
+
+When the user has asked to create the pull request:
+
+1. Confirm the current branch is suitable and contains the intended commits.
+2. Push it with upstream tracking only when necessary. Never force-push.
+3. Create the pull request with the verified base branch and repository:
 
 ```sh
-gh pr create --title "<type>(<scope>): <short description>" --body "$(cat <<'EOF'
-## Description
-
-<description text>
-
-## Related issue
-
-Fixes #123
-
-## Reviewers
-
-@maintainer
-
-## Verification
-
-- [x] `pnpm --filter eslint-config-yarapa lint`
-- [x] `pnpm --filter eslint-config-yarapa check-types`
-- [x] `pnpm --filter eslint-config-yarapa test`
-- [x] `pnpm knip`
-- [x] `pnpm --filter eslint-config-yarapa verify`
-
-## Release
-
-- [x] This package change includes a Changeset.
-- [ ] This change has no package release impact and uses an empty Changeset.
+gh pr create \
+  --repo "<owner/repository>" \
+  --base "<base>" \
+  --title "<title>" \
+  --body "$(cat <<'EOF'
+<body matching the selected repository template>
 EOF
 )"
 ```
+
+Add draft state, reviewers, labels, milestone, or project only when requested or
+required and after verifying the exact target values.
+
+## Verification
+
+Before creation:
+
+- Confirm the repository, head branch, base branch, and complete commit range.
+- Confirm the title and body match current repository instructions and the
+  selected template.
+- Confirm every checked verification item is supported by an actual result.
+- Confirm required release metadata is present and unrelated working-tree
+  changes are excluded.
+
+After creation, return the pull-request URL from `gh pr create`. If pushing or
+creation fails, report the failure and do not claim that the pull request
+exists.

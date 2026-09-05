@@ -1,120 +1,109 @@
 ---
 name: create-github-issue
 description: >
-  Create GitHub issues adhering strictly to repository issue templates in
-  .github/ISSUE_TEMPLATE/ (bug.yml, feature.yml, config.yml). Use this skill
-  whenever the user asks to open an issue, report a bug, request a feature,
-  file a defect, or run `gh issue create`. Enforces template field structures,
-  safety verification, and zero-emoji compliance.
-argument-hint: "[bug|feature]"
+  Prepare or create a GitHub issue using the current repository's issue
+  templates, contribution guidance, security policy, and metadata. Use this
+  skill when the user asks to report a bug, request a feature, open an issue,
+  or run `gh issue create` in any repository.
+argument-hint: "[issue-type|title]"
 license: MIT
 ---
 
 # Create GitHub Issue
 
-Guide agents and contributors through filing issues that strictly adhere to repository issue templates (`.github/ISSUE_TEMPLATE/`) and project governance rules.
+Prepare accurate, self-contained GitHub issues without assuming a project name,
+package manager, template layout, title convention, label, or discussion URL.
+Treat the target repository as the source of truth.
 
-## Core Rules
+## Repository Discovery
 
-1. **Strict Template Adherence**:
-   - For bug reports: strictly follow `.github/ISSUE_TEMPLATE/bug.yml`.
-   - For feature requests: strictly follow `.github/ISSUE_TEMPLATE/feature.yml`.
-   - For usage questions or exploratory discussions: route to GitHub Discussions as specified in `config.yml`.
-2. **Zero Emojis**: Never use emojis in issue titles or issue descriptions. Use clean ASCII text indicators.
-3. **Safety Guarantee**: Never include credentials, API keys, tokens, customer data, or proprietary code in issues.
-4. **Conventional Issue Titles**:
-   - Bugs: `bug: <concise summary>`
-   - Features: `feat: <concise summary>`
+Before drafting an issue:
 
----
+1. Identify the target repository from the user's request, the current Git
+   remote, or an explicit `--repo` value. Do not guess the owner or repository.
+2. Read the repository instructions relevant to contributions, issue filing,
+   support, and security.
+3. Inspect the repository's issue-template configuration and all available
+   issue templates. Support both issue forms and Markdown templates.
+4. Use `gh repo view` when remote metadata is needed, including whether issues
+   or discussions are enabled.
+5. Derive title conventions, labels, required fields, and routing rules only
+   from the target repository. Do not carry conventions from another project.
 
-## Issue Types and Templates
+If the repository provides no applicable template, write the smallest body that
+fully describes the request. Do not invent a project-specific form.
 
-### Type 1: Bug Report (`bug.yml`)
+## Issue Classification
 
-Use this type when reporting incorrect diagnostics, runtime crashes, compatibility failures, or package consumption defects.
+Choose a template from the reported behavior and the template descriptions:
 
-**Required Fields**:
+- Use a bug template for reproducible incorrect behavior or regressions.
+- Use a feature template for a concrete capability or improvement request.
+- Follow repository-provided support, question, documentation, or proposal
+  templates when they match more closely.
+- Follow contact links or security reporting instructions instead of opening a
+  public issue when the repository routes that category elsewhere.
 
-- **Version**: `eslint-config-yarapa` version (e.g. `0.3.0`).
-- **Environment**: Node.js version, ESLint version, TypeScript version, OS, package manager, and profile used (`next`, `react`, `nest`, or default).
-- **Minimal reproduction**: Public reproduction repo or minimal sanitized config snippet.
-- **Expected behavior**: What should have happened.
-- **Actual behavior**: What actually happened (diagnostic output, error message).
-- **Safety**: Confirm removal of credentials, secrets, and proprietary code.
+If more than one template is equally applicable and the choice affects required
+content, ask the user which issue type they intend.
 
-**Invocation via GitHub CLI**:
+## Evidence and Safety
+
+- State only facts supported by the user's report, command output, repository
+  state, or linked evidence.
+- Never fabricate versions, environments, reproduction results, expected
+  behavior, labels, issue relationships, or acceptance criteria.
+- Ask for required information that cannot be discovered. Do not leave fake
+  example values in a final issue.
+- Minimize reproduction material and remove credentials, tokens, personal or
+  customer data, private URLs, and proprietary source code.
+- Follow the repository's private vulnerability-reporting process when the
+  report may disclose a security vulnerability.
+- Keep the issue self-contained. Include the relevant context rather than
+  relying on unstated knowledge from the current conversation.
+
+## Drafting Workflow
+
+1. Build the title using the repository's declared convention. Otherwise use a
+   concise outcome-oriented title without imposing a prefix.
+2. Reproduce every required template heading or issue-form field in the same
+   order and with the same meaning.
+3. Preserve required checklists and attestations. Mark an item complete only
+   when the evidence supports it.
+4. Remove template instructions only when the template explicitly says they
+   should be removed.
+5. Use repository labels, assignees, milestones, and projects only when the
+   template, repository policy, or user explicitly requires them.
+6. Present the completed title and body for review when the user asked to
+   prepare or draft an issue rather than create it.
+
+## GitHub CLI Creation
+
+When the user has asked to create the issue, use the authenticated GitHub CLI
+against the verified repository:
 
 ```sh
-gh issue create --title "bug: <concise summary>" --body "$(cat <<'EOF'
-### eslint-config-yarapa version
-
-0.3.0
-
-### Environment
-
-- Node.js: 24.20.0
-- ESLint: 10.9.1
-- TypeScript: 6.0.3
-- OS: macOS
-- Package Manager: pnpm 11.23.0
-- Profile: default
-
-### Minimal reproduction
-
-<Reproduction steps or sanitized config/code>
-
-### Expected behavior
-
-<Description of expected behavior>
-
-### Actual behavior
-
-<Description of actual behavior or error diagnostic>
-
-### Safety
-
-- [x] I removed credentials, secrets, personal/customer data, and proprietary source code from this report.
+gh issue create --repo "<owner/repository>" --title "<title>" --body "$(cat <<'EOF'
+<body matching the selected repository template>
 EOF
 )"
 ```
 
----
+Add `--label`, `--assignee`, `--milestone`, or `--project` only when their exact
+values have been verified for the target repository. Do not replace a required
+repository template with a hardcoded generic body.
 
-### Type 2: Feature Request (`feature.yml`)
+## Verification
 
-Use this type when proposing a concrete, actionable change or enhancement to `eslint-config-yarapa`.
+Before creation:
 
-**Required Fields**:
+- Confirm the target repository and selected template.
+- Compare the final title and body with the current template and contribution
+  instructions.
+- Confirm all required fields contain real information and all checked items
+  are true.
+- Inspect the final body for secrets and private data.
 
-- **Problem**: Concrete limitation, friction, or use case that needs addressing.
-- **Proposed change**: The smallest, most focused change that resolves the problem.
-- **Alternatives considered**: Optional workarounds or alternative conventions considered.
-
-**Invocation via GitHub CLI**:
-
-```sh
-gh issue create --title "feat: <concise summary>" --body "$(cat <<'EOF'
-### Problem
-
-<Describe the concrete limitation or use case>
-
-### Proposed change
-
-<Describe the smallest focused change addressing the problem>
-
-### Alternatives considered
-
-<Optional alternatives, workarounds, or upstream conventions>
-EOF
-)"
-```
-
----
-
-### Type 3: Questions & Exploratory Ideas (`config.yml`)
-
-If the user ask is an open-ended question, usage inquiry, or unvetted idea, advise routing to GitHub Discussions instead of opening an issue:
-
-- **Questions & Usage Help**: https://github.com/useyarapa/eslint-config-yarapa/discussions/categories/q-a
-- **Ideas & Design Discussion**: https://github.com/useyarapa/eslint-config-yarapa/discussions/categories/ideas
+After creation, return the issue URL from `gh issue create`. If creation fails,
+report the command failure and preserve the prepared title and body; do not
+claim that an issue exists.

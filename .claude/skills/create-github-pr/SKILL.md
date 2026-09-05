@@ -43,19 +43,19 @@ Run each verification check specified in the repository PR template:
 
 ```sh
 # 1. Package lint
-pnpm --filter eslint-config-yarapa lint
+pnpm --filter @yarapa/eslint-config lint
 
 # 2. Package type check
-pnpm --filter eslint-config-yarapa check-types
+pnpm --filter @yarapa/eslint-config check-types
 
 # 3. Package tests
-pnpm --filter eslint-config-yarapa test
+pnpm --filter @yarapa/eslint-config test
 
 # 4. Dead code & dependency audit
 pnpm knip
 
 # 5. Full consumer verification pipeline
-pnpm --filter eslint-config-yarapa verify
+pnpm --filter @yarapa/eslint-config verify
 ```
 
 If any check fails, resolve the root cause before proceeding. Never open a PR with failing checks.
@@ -95,11 +95,11 @@ Fixes #<issue-number>
 
 ## Verification
 
-- [x] `pnpm --filter eslint-config-yarapa lint`
-- [x] `pnpm --filter eslint-config-yarapa check-types`
-- [x] `pnpm --filter eslint-config-yarapa test`
+- [x] `pnpm --filter @yarapa/eslint-config lint`
+- [x] `pnpm --filter @yarapa/eslint-config check-types`
+- [x] `pnpm --filter @yarapa/eslint-config test`
 - [x] `pnpm knip`
-- [x] `pnpm --filter eslint-config-yarapa verify`
+- [x] `pnpm --filter @yarapa/eslint-config verify`
 
 ## Release
 
@@ -129,11 +129,11 @@ Fixes #123
 
 ## Verification
 
-- [x] `pnpm --filter eslint-config-yarapa lint`
-- [x] `pnpm --filter eslint-config-yarapa check-types`
-- [x] `pnpm --filter eslint-config-yarapa test`
+- [x] `pnpm --filter @yarapa/eslint-config lint`
+- [x] `pnpm --filter @yarapa/eslint-config check-types`
+- [x] `pnpm --filter @yarapa/eslint-config test`
 - [x] `pnpm knip`
-- [x] `pnpm --filter eslint-config-yarapa verify`
+- [x] `pnpm --filter @yarapa/eslint-config verify`
 
 ## Release
 

@@ -4,7 +4,7 @@
 
 **Goal:** Complete the single public config consolidation (Issue #59) by resolving the tarball verification script lint defect and verifying the full test and package delivery pipeline.
 
-**Architecture:** `eslint-config-yarapa` exports a single Flat Config array with no subpath framework profiles. The consumer verification script verifies that the packed tarball lints JS and TS files via the single root import.
+**Architecture:** `@yarapa/eslint-config` exports a single Flat Config array with no subpath framework profiles. The consumer verification script verifies that the packed tarball lints JS and TS files via the single root import.
 
 **Tech Stack:** TypeScript, ESLint 9/10 Flat Config, `eslint-plugin-n`, Vitest, pnpm, tsdown, publint, arethetypeswrong.
 
@@ -84,8 +84,8 @@ Expected: PASS with all 7 test files and 36 tests passing.
 
 - [ ] **Step 3: Run tarball consumer verification**
 
-Run: `pnpm --filter eslint-config-yarapa test:consumer`
-Expected: PASS with successful publint, attw, and real ESLint execution on JS, TS, and React files via `eslint-config-yarapa`.
+Run: `pnpm --filter @yarapa/eslint-config test:consumer`
+Expected: PASS with successful publint, attw, and real ESLint execution on JS, TS, and React files via `@yarapa/eslint-config`.
 
 - [ ] **Step 4: Run full workspace verification**
 

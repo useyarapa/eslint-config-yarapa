@@ -7,6 +7,11 @@ import { packageRoot } from "./helpers/eslint.js";
 type PackageJson = {
   bin?: Record<string, string>;
   exports: Record<string, unknown>;
+  name: string;
+  publishConfig: {
+    access: string;
+    provenance: boolean;
+  };
 };
 
 const packageJson = JSON.parse(
@@ -14,6 +19,14 @@ const packageJson = JSON.parse(
 ) as PackageJson;
 
 describe("public API", () => {
+  it("publishes as a public scoped package with provenance", () => {
+    expect(packageJson.name).toBe("@yarapa/eslint-config");
+    expect(packageJson.publishConfig).toEqual({
+      access: "public",
+      provenance: true,
+    });
+  });
+
   it("exports only the canonical default configuration", async () => {
     const module = await import("../src/index.js");
 

@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-Only the latest release of `eslint-config-yarapa` receives security updates.
+Only the latest release of `@yarapa/eslint-config` receives security updates.
 
 | Version | Supported          |
 | ------- | ------------------ |
@@ -11,7 +11,7 @@ Only the latest release of `eslint-config-yarapa` receives security updates.
 
 ## Reporting a Vulnerability
 
-We take the security of `eslint-config-yarapa` seriously. If you discover a security vulnerability, please report it responsibly.
+We take the security of `@yarapa/eslint-config` seriously. If you discover a security vulnerability, please report it responsibly.
 
 **Please do not report security vulnerabilities through public GitHub issues.**
 

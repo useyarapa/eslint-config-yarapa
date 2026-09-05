@@ -4,7 +4,7 @@ Overview of the canonical configuration, internal capabilities, and enforced des
 
 ## Philosophy: Deterministic & Opinionated
 
-`eslint-config-yarapa` is designed as a strict, deterministic ESLint Flat Config baseline for modern JavaScript and TypeScript applications, with particular emphasis on regulated, high-integrity environments (such as banking and fintech services).
+`@yarapa/eslint-config` is designed as a strict, deterministic ESLint Flat Config baseline for modern JavaScript and TypeScript applications, with particular emphasis on regulated, high-integrity environments (such as banking and fintech services).
 
 1. **Static Flat Config**: The canonical configuration is a static Flat Config array. It does not conditionally sniff runtime environments or dynamically alter rules based on installed dependencies.
 2. **Type-Aware First**: Type-aware rules run through TypeScript's native `projectService`, avoiding ad-hoc or incomplete AST assumptions.
@@ -12,11 +12,11 @@ Overview of the canonical configuration, internal capabilities, and enforced des
 
 ## Unified Architecture
 
-`eslint-config-yarapa` exports one canonical Flat Config array containing every internal capability:
+`@yarapa/eslint-config` exports one canonical Flat Config array containing every internal capability:
 
-| Capability           | Entrypoint             | Target Scope     | Key Inclusions                                                                                                                          |
-| -------------------- | ---------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| **Unified Baseline** | `eslint-config-yarapa` | Full-stack JS/TS | Base JS, Node.js runtime, Browser globals, TS syntax, TS type-checked, Imports, SonarJS, JSDoc, JSON, Stylistic, Perfectionist, Unicorn |
+| Capability           | Entrypoint              | Target Scope     | Key Inclusions                                                                                                                          |
+| -------------------- | ----------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **Unified Baseline** | `@yarapa/eslint-config` | Full-stack JS/TS | Base JS, Node.js runtime, Browser globals, TS syntax, TS type-checked, Imports, SonarJS, JSDoc, JSON, Stylistic, Perfectionist, Unicorn |
 
 ## Included Plugins
 
@@ -39,13 +39,13 @@ Overview of the canonical configuration, internal capabilities, and enforced des
 
 ## Canonical Utility Layer
 
-To eliminate fragmentation and decision surface across AI-generated and human-written code, `eslint-config-yarapa` enforces a single canonical utility standard:
+To eliminate fragmentation and decision surface across AI-generated and human-written code, `@yarapa/eslint-config` enforces a single canonical utility standard:
 
 1. **Native Array & Object Methods**: Always use native ECMAScript methods (`map`, `filter`, `find`, `some`, `every`, `reduce`, `Object.hasOwn`, etc.).
 2. **Approved Shared Utilities**: For operations beyond native capabilities (e.g. `debounce`, `throttle`, `groupBy`, `keyBy`, `uniqBy`, `cloneDeep`), standardize on `es-toolkit`.
 3. **Restricted Alternative Libraries**: Alternative general-purpose utility libraries (`lodash`, `lodash-es`, `underscore`, `ramda`) are restricted at the lint layer via `no-restricted-imports`.
 
-Because `eslint-config-yarapa` integrates hundreds of upstream rules across multiple plugins, the authoritative and up-to-date way to explore exact rule configurations is via `@eslint/config-inspector`:
+Because `@yarapa/eslint-config` integrates hundreds of upstream rules across multiple plugins, the authoritative and up-to-date way to explore exact rule configurations is via `@eslint/config-inspector`:
 
 ```sh
 # Inside this repository

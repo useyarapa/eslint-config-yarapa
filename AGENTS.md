@@ -12,12 +12,12 @@ Architectural and workflow constraints when working in this repository.
 
 - `packages/eslint-config-yarapa` is a strict, deterministic ESLint Flat Config package. Source lives in `packages/eslint-config-yarapa/src/`; generated artifacts live in `packages/eslint-config-yarapa/dist/`.
 - Edit `src/` and tests, never generated `dist/` files.
-- The root `eslint.config.mjs` consumes built package output from `packages/eslint-config-yarapa/dist/index.mjs`. Root linting therefore requires a package build first. Use `pnpm lint` (which builds first) or build the package before invoking ESLint directly at repository root. Package-scoped linting (`pnpm --filter eslint-config-yarapa lint`) lints source files directly.
+- The root `eslint.config.mjs` consumes built package output from `packages/eslint-config-yarapa/dist/index.mjs`. Root linting therefore requires a package build first. Use `pnpm lint` (which builds first) or build the package before invoking ESLint directly at repository root. Package-scoped linting (`pnpm --filter @yarapa/eslint-config lint`) lints source files directly.
 
 ## Verification Requirements
 
 - Preset changes: add or update tests for both config composition / profile shape and at least one observable lint behavior in `packages/eslint-config-yarapa/test/`.
-- Export or package metadata changes: run `pnpm --filter eslint-config-yarapa test:consumer` (or `verify`), which tests the packed tarball against a real consumer project.
+- Export or package metadata changes: run `pnpm --filter @yarapa/eslint-config test:consumer` (or `verify`), which tests the packed tarball against a real consumer project.
 
 ## Testing Architecture & Fixture Policy
 

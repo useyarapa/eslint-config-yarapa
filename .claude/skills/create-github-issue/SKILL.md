@@ -36,7 +36,7 @@ Use this type when reporting incorrect diagnostics, runtime crashes, compatibili
 
 **Required Fields**:
 
-- **Version**: `eslint-config-yarapa` version (e.g. `0.3.0`).
+- **Version**: `@yarapa/eslint-config` version (e.g. `0.3.0`).
 - **Environment**: Node.js version, ESLint version, TypeScript version, OS, package manager, and profile used (`next`, `react`, `nest`, or default).
 - **Minimal reproduction**: Public reproduction repo or minimal sanitized config snippet.
 - **Expected behavior**: What should have happened.
@@ -47,7 +47,7 @@ Use this type when reporting incorrect diagnostics, runtime crashes, compatibili
 
 ```sh
 gh issue create --title "bug: <concise summary>" --body "$(cat <<'EOF'
-### eslint-config-yarapa version
+### @yarapa/eslint-config version
 
 0.3.0
 
@@ -83,7 +83,7 @@ EOF
 
 ### Type 2: Feature Request (`feature.yml`)
 
-Use this type when proposing a concrete, actionable change or enhancement to `eslint-config-yarapa`.
+Use this type when proposing a concrete, actionable change or enhancement to `@yarapa/eslint-config`.
 
 **Required Fields**:
 

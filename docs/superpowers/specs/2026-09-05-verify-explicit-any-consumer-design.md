@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Prove that a real consumer installing the packed default `eslint-config-yarapa` export rejects explicit `any` through the official `typescript-eslint` recommended preset.
+Prove that a real consumer installing the packed default `@yarapa/eslint-config` export rejects explicit `any` through the official `typescript-eslint` recommended preset.
 
 ## Scope
 
@@ -32,7 +32,7 @@ If the assertion fails, diagnose the packed artifact and default-config composit
 The primary check is:
 
 ```sh
-pnpm --filter eslint-config-yarapa test:consumer
+pnpm --filter @yarapa/eslint-config test:consumer
 ```
 
 It builds and packs the package, installs the tarball into an isolated consumer, runs the generated behavior assertions, and lints the valid JavaScript and TypeScript fixtures.

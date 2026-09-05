@@ -107,7 +107,7 @@ export function verifyTarball(): void {
     writeFileSync(
       path.resolve(consumerDirectory, "verify.mjs"),
       [
-        `import yarapa from "eslint-config-yarapa";`,
+        `import yarapa from "@yarapa/eslint-config";`,
         "",
         "if (!Array.isArray(yarapa) || yarapa.length === 0) {",
         `  throw new Error("Expected non-empty Flat Config array");`,
@@ -120,7 +120,7 @@ export function verifyTarball(): void {
       path.resolve(consumerDirectory, "verify-behavior.mjs"),
       [
         `import { ESLint } from "eslint";`,
-        `import yarapa from "eslint-config-yarapa";`,
+        `import yarapa from "@yarapa/eslint-config";`,
         "",
         "async function expectRule(config, filePath, source, expectedRule) {",
         "  const eslint = new ESLint({",
@@ -200,7 +200,7 @@ export function verifyTarball(): void {
     writeFileSync(
       eslintConfigPath,
       [
-        `import yarapa from "eslint-config-yarapa";`,
+        `import yarapa from "@yarapa/eslint-config";`,
         "",
         `export default [...yarapa, { rules: { "no-console": "off" } }];`,
         "",

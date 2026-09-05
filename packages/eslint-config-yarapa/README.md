@@ -1,13 +1,13 @@
-# eslint-config-yarapa
+# @yarapa/eslint-config
 
-[![npm version](https://img.shields.io/npm/v/eslint-config-yarapa.svg?color=cb3837)](https://www.npmjs.com/package/eslint-config-yarapa)
-[![npm downloads](https://img.shields.io/npm/dm/eslint-config-yarapa.svg)](https://www.npmjs.com/package/eslint-config-yarapa)
+[![npm version](https://img.shields.io/npm/v/%40yarapa%2Feslint-config.svg?color=cb3837)](https://www.npmjs.com/package/@yarapa/eslint-config)
+[![npm downloads](https://img.shields.io/npm/dm/%40yarapa%2Feslint-config.svg)](https://www.npmjs.com/package/@yarapa/eslint-config)
 [![node version](https://img.shields.io/badge/node-%3E%3D24.15.0-brightgreen.svg)](https://nodejs.org)
 [![license](https://img.shields.io/github/license/useyarapa/eslint-config-yarapa.svg)](https://github.com/useyarapa/eslint-config-yarapa/blob/main/LICENSE)
 
 Opinionated, deterministic ESLint Flat Config standards for modern JavaScript and TypeScript projects.
 
-`eslint-config-yarapa` provides a shared, zero-compromise linting baseline across modern JavaScript, TypeScript, and Node.js. All capabilities are bundled into a single unified Flat Config.
+`@yarapa/eslint-config` provides a shared, zero-compromise linting baseline across modern JavaScript, TypeScript, and Node.js. All capabilities are bundled into a single unified Flat Config.
 
 ---
 
@@ -32,18 +32,18 @@ Opinionated, deterministic ESLint Flat Config standards for modern JavaScript an
 
 ## Installation
 
-Install `eslint-config-yarapa` along with required peer dependencies:
+Install `@yarapa/eslint-config` along with required peer dependencies:
 
 ```sh
-pnpm add -D eslint eslint-config-yarapa typescript
+pnpm add -D eslint @yarapa/eslint-config typescript
 ```
 
 Or using npm / yarn:
 
 ```sh
-npm install --save-dev eslint eslint-config-yarapa typescript
+npm install --save-dev eslint @yarapa/eslint-config typescript
 # or
-yarn add -D eslint eslint-config-yarapa typescript
+yarn add -D eslint @yarapa/eslint-config typescript
 ```
 
 ---
@@ -53,7 +53,7 @@ yarn add -D eslint eslint-config-yarapa typescript
 Create an `eslint.config.mjs` in the root of your project:
 
 ```js
-import yarapa from "eslint-config-yarapa";
+import yarapa from "@yarapa/eslint-config";
 
 export default yarapa;
 ```
@@ -62,7 +62,7 @@ export default yarapa;
 
 ## Configuration Architecture
 
-`eslint-config-yarapa` exports a single static Flat Config array containing all capability layers:
+`@yarapa/eslint-config` exports a single static Flat Config array containing all capability layers:
 
 | Capability Layer     | Scope / Files                  | Key Inclusions                                          |
 | -------------------- | ------------------------------ | ------------------------------------------------------- |
@@ -82,7 +82,7 @@ For full architecture details and rule philosophies, refer to the [Architecture 
 
 ## Canonical Configuration Contract
 
-`eslint.config.mjs` must contain the Quick Start template exactly. Consumer repositories must not append rules, ignores, globals, mutations, imports, or side effects. Changes to ESLint policy belong in `eslint-config-yarapa` so every repository receives the same configuration.
+`eslint.config.mjs` must contain the Quick Start template exactly. Consumer repositories must not append rules, ignores, globals, mutations, imports, or side effects. Changes to ESLint policy belong in `@yarapa/eslint-config` so every repository receives the same configuration.
 
 Add the validator to the consumer's CI scripts:
 
@@ -100,7 +100,7 @@ Run `pnpm lint:config` before ESLint. The command exits with status `1` when `es
 
 ## Formatting & Prettier Integration
 
-`eslint-config-yarapa` includes deterministic code styling via `@stylistic/eslint-plugin` (semi, quotes, 2-space indentation, max line length).
+`@yarapa/eslint-config` includes deterministic code styling via `@stylistic/eslint-plugin` (semi, quotes, 2-space indentation, max line length).
 
 - Run ESLint directly with `--fix` to format and lint your entire repository deterministically.
 - **If using Prettier**: If your workflow requires Prettier for non-JS files (e.g. Markdown, CSS, HTML), ensure that Prettier is configured with matching options:
@@ -176,11 +176,11 @@ When running type-aware rules, ESLint must resolve project configuration relativ
 pnpm exec eslint .
 ```
 
-The package owns `projectService` and file-scope policy. Unsupported repository layouts require a central change to `eslint-config-yarapa`, not a consumer override.
+The package owns `projectService` and file-scope policy. Unsupported repository layouts require a central change to `@yarapa/eslint-config`, not a consumer override.
 
 ### 2. Can I use `eslint-disable` comments?
 
-Inline rule suppressions are prohibited. Fix diagnostics at their source. Generated-file ignores and project-wide policy changes must be added to `eslint-config-yarapa`, not to a consumer's `eslint.config.mjs`.
+Inline rule suppressions are prohibited. Fix diagnostics at their source. Generated-file ignores and project-wide policy changes must be added to `@yarapa/eslint-config`, not to a consumer's `eslint.config.mjs`.
 
 ---
 

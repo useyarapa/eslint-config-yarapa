@@ -76,7 +76,7 @@ jobs:
           runtime: node@24.15.0
           cache: true
       - name: Run benchmark suite
-        run: pnpm --filter eslint-config-yarapa test test/benchmark.test.ts
+        run: pnpm --filter @yarapa/eslint-config test test/benchmark.test.ts
 
   check-types:
     name: Type Check
@@ -120,9 +120,9 @@ jobs:
       - name: Build package
         run: pnpm build
       - name: Validate package metadata
-        run: pnpm --filter eslint-config-yarapa check:publint
+        run: pnpm --filter @yarapa/eslint-config check:publint
       - name: Validate type declarations
-        run: pnpm --filter eslint-config-yarapa check:attw
+        run: pnpm --filter @yarapa/eslint-config check:attw
 
   consumer:
     name: Consumer Test
@@ -136,7 +136,7 @@ jobs:
           runtime: node@24.20.0
           cache: true
       - name: Run consumer verification
-        run: pnpm --filter eslint-config-yarapa test:consumer
+        run: pnpm --filter @yarapa/eslint-config test:consumer
 
   compatibility:
     name: Compatibility (${{ matrix.name }})
@@ -169,7 +169,7 @@ jobs:
           runtime: node@${{ matrix.node }}
           cache: true
       - name: Run consumer verification
-        run: pnpm --filter eslint-config-yarapa test:consumer
+        run: pnpm --filter @yarapa/eslint-config test:consumer
 
   windows-consumer:
     name: Windows Consumer Test
@@ -186,7 +186,7 @@ jobs:
           runtime: node@24.20.0
           cache: true
       - name: Run consumer verification
-        run: pnpm --filter eslint-config-yarapa test:consumer
+        run: pnpm --filter @yarapa/eslint-config test:consumer
 
   dependency-review:
     name: Dependency Review

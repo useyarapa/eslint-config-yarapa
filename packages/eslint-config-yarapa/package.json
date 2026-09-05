@@ -1,5 +1,5 @@
 {
-  "name": "eslint-config-yarapa",
+  "name": "@yarapa/eslint-config",
   "version": "0.3.0",
   "description": "Opinionated, deterministic ESLint Flat Config standards for modern JavaScript and TypeScript projects.",
   "keywords": [
@@ -105,6 +105,7 @@
     "node": ">=24.15.0 <25"
   },
   "publishConfig": {
+    "access": "public",
     "provenance": true
   }
 }

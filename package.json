@@ -1,7 +1,7 @@
 {
   "name": "yarapa-code-standard",
   "private": true,
-  "description": "YARAPA monorepo for the eslint-config-yarapa public ESLint Flat Config package.",
+  "description": "YARAPA monorepo for the @yarapa/eslint-config public ESLint Flat Config package.",
   "type": "module",
   "scripts": {
     "audit": "turbo run audit",
@@ -31,7 +31,7 @@
     "test:coverage": "turbo run test:coverage",
     "test:watch": "turbo run test:watch",
     "typecheck": "turbo run typecheck",
-    "verify": "pnpm --filter eslint-config-yarapa verify",
+    "verify": "pnpm --filter @yarapa/eslint-config verify",
     "version-packages": "changeset version"
   },
   "devDependencies": {

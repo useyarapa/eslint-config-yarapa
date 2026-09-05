@@ -5,7 +5,7 @@ A changeset records the package to release, the semver bump, and the changelog m
 For a package change:
 
 1. Run `pnpm changeset`.
-2. Select `eslint-config-yarapa`.
+2. Select `@yarapa/eslint-config`.
 3. Select `patch`, `minor`, or `major`.
 4. Describe what changed, why it changed, and how consumers should update.
 5. Commit the generated `.changeset/*.md` file.

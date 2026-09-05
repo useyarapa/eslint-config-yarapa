@@ -1,12 +1,12 @@
 # Global Landscape & Architectural Comparison
 
-A comprehensive technical comparison evaluating `eslint-config-yarapa` against leading industry standards: **`@antfu/eslint-config`**, **Airbnb (`eslint-config-airbnb`)**, **Vercel (`@vercel/style-guide`)**, **Shopify (`@shopify/eslint-plugin`)**, and **Google (`gts`)**.
+A comprehensive technical comparison evaluating `@yarapa/eslint-config` against leading industry standards: **`@antfu/eslint-config`**, **Airbnb (`eslint-config-airbnb`)**, **Vercel (`@vercel/style-guide`)**, **Shopify (`@shopify/eslint-plugin`)**, and **Google (`gts`)**.
 
 ---
 
 ## 1. Global Benchmark Matrix
 
-| Feature / Standard                    | `eslint-config-yarapa`         | `@antfu/eslint-config` | Airbnb (`airbnb-typescript`)    | Vercel (`@vercel/style-guide`) | Shopify (`@shopify/eslint-plugin`) | Google (`gts`)          |
+| Feature / Standard                    | `@yarapa/eslint-config`        | `@antfu/eslint-config` | Airbnb (`airbnb-typescript`)    | Vercel (`@vercel/style-guide`) | Shopify (`@shopify/eslint-plugin`) | Google (`gts`)          |
 | :------------------------------------ | :----------------------------- | :--------------------- | :------------------------------ | :----------------------------- | :--------------------------------- | :---------------------- |
 | **Native ESLint 9/10 Flat Config**    | **YES (100% Pure Arrays)**     | YES (Factory Function) | NO (Legacy .eslintrc)           | PARTIAL (In progress)          | NO (Legacy .eslintrc)              | NO (Legacy .eslintrc)   |
 | **Type-Aware via `projectService`**   | **YES (Built-in First-Class)** | PARTIAL (Opt-in only)  | NO (Slow parserOptions.project) | PARTIAL (Opt-in only)          | NO (Slow legacy parser)            | PARTIAL (Opt-in only)   |
@@ -25,7 +25,7 @@ A comprehensive technical comparison evaluating `eslint-config-yarapa` against l
 ### A. vs. `@antfu/eslint-config` (The Modern Community Giant)
 
 - **The Philosophy Gap**: Anthony Fu's config is designed for rapid open-source experimentation across a vast ecosystem (Vue, Svelte, Astro, UnoCSS, TOML, YAML). It relies on **ambient auto-detection**, silently reading `package.json` at runtime to decide which rule layers to inject.
-- **The YARAPA Distinction**: In regulated enterprise systems (banking, payments, fintech), ambient dependency sniffing represents an unacceptable **determinism risk**. A transitive or local dependency change could mutate the active ruleset silently, causing CI divergence. YARAPA enforces explicit, immutable Flat Config arrays (`eslint-config-yarapa`) ensuring 100% auditability and air-gapped reproducibility.
+- **The YARAPA Distinction**: In regulated enterprise systems (banking, payments, fintech), ambient dependency sniffing represents an unacceptable **determinism risk**. A transitive or local dependency change could mutate the active ruleset silently, causing CI divergence. YARAPA enforces explicit, immutable Flat Config arrays (`@yarapa/eslint-config`) ensuring 100% auditability and air-gapped reproducibility.
 
 ### B. vs. Airbnb (`eslint-config-airbnb` & `airbnb-typescript`)
 

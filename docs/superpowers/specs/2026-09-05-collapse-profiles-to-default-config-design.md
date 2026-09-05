@@ -13,12 +13,12 @@ Maintaining multiple profile entrypoints introduced cognitive friction for consu
 ## Target Architecture
 
 The package exposes exactly one consumer-facing Flat Config entrypoint:
-`eslint-config-yarapa`
+`@yarapa/eslint-config`
 
 Consumers configure their ESLint setup with a single import:
 
 ```javascript
-import yarapa from "eslint-config-yarapa";
+import yarapa from "@yarapa/eslint-config";
 
 export default yarapa;
 ```
@@ -53,7 +53,7 @@ The recommended composition in `src/configs/recommended.ts` bundles all capabili
 
 Update `scripts/verify-tarball/verify-tarball.mts` to:
 
-- Test only the root `eslint-config-yarapa` import.
+- Test only the root `@yarapa/eslint-config` import.
 - Validate that the single default export lints JavaScript and TypeScript files simultaneously.
 - Verify that violating code triggers expected diagnostic rules (`no-var`).
 - Clean up unused profile definitions (`FRAMEWORK_DEFINITIONS`, `FRAMEWORK_PROFILE`, etc.).
@@ -61,7 +61,7 @@ Update `scripts/verify-tarball/verify-tarball.mts` to:
 
 ## Acceptance Criteria
 
-- [x] `eslint-config-yarapa` is the only public ESLint config entrypoint.
+- [x] `@yarapa/eslint-config` is the only public ESLint config entrypoint.
 - [x] The default config contains the shared base rules.
 - [x] The default config contains Node.js behavior, including `eslint-plugin-n` and Node globals.
 - [x] The default config contains browser globals.

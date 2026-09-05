@@ -1,5 +1,5 @@
 name: Feature request
-description: Propose a concrete change to eslint-config-yarapa.
+description: Propose a concrete change to @yarapa/eslint-config.
 title: "feat: "
 labels: []
 body:

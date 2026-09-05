@@ -1,6 +1,6 @@
-# Contributing to eslint-config-yarapa
+# Contributing to @yarapa/eslint-config
 
-Thank you for contributing to `eslint-config-yarapa`.
+Thank you for contributing to `@yarapa/eslint-config`.
 
 This repository is a pnpm workspace containing `packages/eslint-config-yarapa`, an opinionated and deterministic ESLint Flat Config package for JavaScript and TypeScript projects.
 
@@ -34,15 +34,15 @@ pnpm install
 
 2. **Run verification**:
    - **Repository lint**: `pnpm lint` (automatically builds the package first)
-   - **Package lint**: `pnpm --filter eslint-config-yarapa lint`
+   - **Package lint**: `pnpm --filter @yarapa/eslint-config lint`
    - **Type check**: `pnpm check-types`
    - **Unit and behavior tests**: `pnpm test`
    - **Dead code & dependency check**: `pnpm knip`
-   - **Consumer smoke test**: `pnpm --filter eslint-config-yarapa test:consumer` (packs and verifies tarball with a consumer app)
+   - **Consumer smoke test**: `pnpm --filter @yarapa/eslint-config test:consumer` (packs and verifies tarball with a consumer app)
 
 3. **Verify by change category**:
    - **Preset rules or options**: Add test cases in `packages/eslint-config-yarapa/test/` covering both config profile composition and observable lint diagnostics.
-   - **Exports or package metadata**: Run `pnpm --filter eslint-config-yarapa test:consumer` or `pnpm --filter eslint-config-yarapa verify`.
+   - **Exports or package metadata**: Run `pnpm --filter @yarapa/eslint-config test:consumer` or `pnpm --filter @yarapa/eslint-config verify`.
    - **Documentation**: Verify references, links, and markdown formatting.
 
 ## Release Intent (Changesets)

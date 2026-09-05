@@ -41,7 +41,7 @@ const modifiedConfigs = [
   [
     "a spread rule override",
     [
-      `import yarapa from "eslint-config-yarapa";`,
+      `import yarapa from "@yarapa/eslint-config";`,
       "",
       `export default [...yarapa, { rules: { "no-console": "off" } }];`,
       "",
@@ -50,7 +50,7 @@ const modifiedConfigs = [
   [
     "local ignores",
     [
-      `import yarapa from "eslint-config-yarapa";`,
+      `import yarapa from "@yarapa/eslint-config";`,
       "",
       `export default [...yarapa, { ignores: ["coverage/**"] }];`,
       "",
@@ -59,7 +59,7 @@ const modifiedConfigs = [
   [
     "local globals",
     [
-      `import yarapa from "eslint-config-yarapa";`,
+      `import yarapa from "@yarapa/eslint-config";`,
       "",
       "export default [",
       "  ...yarapa,",
@@ -72,7 +72,7 @@ const modifiedConfigs = [
     "an extra import",
     [
       `import process from "node:process";`,
-      `import yarapa from "eslint-config-yarapa";`,
+      `import yarapa from "@yarapa/eslint-config";`,
       "",
       "export default yarapa;",
       "",
@@ -81,7 +81,7 @@ const modifiedConfigs = [
   [
     "a side effect",
     [
-      `import yarapa from "eslint-config-yarapa";`,
+      `import yarapa from "@yarapa/eslint-config";`,
       "",
       `process.stdout.write("");`,
       "export default yarapa;",
