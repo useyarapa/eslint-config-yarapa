@@ -2,21 +2,63 @@
   "$schema": "https://turborepo.dev/schema.json",
   "ui": "tui",
   "tasks": {
+    "audit": {
+      "cache": false
+    },
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": ["dist/**"]
     },
-    "lint": {
-      "dependsOn": ["^lint"]
+    "check:attw": {
+      "dependsOn": ["build"]
     },
-    "check-types": {
-      "dependsOn": ["^check-types"]
+    "check:publint": {
+      "dependsOn": ["build"]
     },
-    "test": {},
+    "clean": {
+      "cache": false
+    },
+    "clean:dist": {
+      "cache": false
+    },
+    "clean:test": {
+      "cache": false
+    },
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "format": {
+      "cache": false
+    },
+    "format:check": {},
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "lint:check": {
+      "dependsOn": ["^lint:check"]
+    },
+    "sort-package-json": {
+      "cache": false
+    },
+    "sort-package-json:check": {
+      "cache": false
+    },
+    "test": {},
+    "test:consumer": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "test:coverage": {
+      "outputs": ["coverage/**"]
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"]
     }
   }
 }

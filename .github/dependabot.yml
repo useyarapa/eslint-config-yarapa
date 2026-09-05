@@ -9,11 +9,11 @@ updates:
       time: "09:00"
       timezone: Asia/Bangkok
     open-pull-requests-limit: 10
+    commit-message:
+      prefix: chore
+      prefix-development: chore
+      include: scope
     ignore:
-      # The root npm job updates every pnpm workspace manifest, including the
-      # public package's (see #8). typescript-eslint supports TypeScript only
-      # below 6.1.0, so no workspace manifest may be raised into that range;
-      # root toolchain moves are intentional, manual engineering changes.
       - dependency-name: typescript
         versions: [">=6.1.0"]
     groups:
@@ -43,6 +43,8 @@ updates:
           - "@commitlint/*"
           - publint
           - "@arethetypeswrong/*"
+          - sort-package-json
+          - prettier
 
   - package-ecosystem: github-actions
     directory: /
@@ -51,6 +53,10 @@ updates:
       day: monday
       time: "09:30"
       timezone: Asia/Bangkok
+    commit-message:
+      prefix: chore
+      prefix-development: chore
+      include: scope
     groups:
       github-actions:
         patterns:

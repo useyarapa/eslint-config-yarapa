@@ -1,73 +1,96 @@
-# eslint-config-yarapa
+# YARAPA Code Standard
 
-Opinionated, deterministic ESLint Flat Config for modern JavaScript and TypeScript projects.
+[![CI Status](https://github.com/useyarapa/eslint-config-yarapa/actions/workflows/ci.yml/badge.svg)](https://github.com/useyarapa/eslint-config-yarapa/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/%40yarapa%2Feslint-config.svg?color=cb3837)](https://www.npmjs.com/package/@yarapa/eslint-config)
+[![node version](https://img.shields.io/badge/node-%3E%3D24.15.0-brightgreen.svg)](https://nodejs.org)
+[![license](https://img.shields.io/github/license/useyarapa/eslint-config-yarapa.svg)](LICENSE)
 
-YARAPA provides one shared coding style across JavaScript, TypeScript, Node.js, React, Next.js, and NestJS projects. Framework profiles extend the same baseline rather than introducing separate coding philosophies.
+Deterministic, opinionated ESLint Flat Config monorepo engineered for modern JavaScript and TypeScript applications.
 
-## Requirements
+This repository serves as the engineering baseline for YARAPA projects, enforcing strict code quality, consistent layout, and security standards suitable for high-integrity, regulated environments (such as financial technology and banking services).
 
-- Node.js `>=24.15.0 <25`
-- ESLint `^10.0.0`
-- TypeScript `>=5.0.0 <6.1.0` for TypeScript projects
+---
 
-## Install
+## Workspace Packages
+
+| Package                                                  | Version                                                                                                                   | Description                                                                    |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| [`@yarapa/eslint-config`](packages/eslint-config-yarapa) | [![npm](https://img.shields.io/npm/v/%40yarapa%2Feslint-config.svg)](https://www.npmjs.com/package/@yarapa/eslint-config) | Strict, full-stack ESLint Flat Config for JavaScript, TypeScript, and Node.js. |
+
+---
+
+## Core Architectural Pillars
+
+1. **Static & Deterministic Flat Configs**
+   - The configuration is a static, immutable Flat Config array.
+   - Zero runtime sniffing or dynamic rule mutations based on installed ambient dependencies.
+2. **Type-Aware First**
+   - Direct integration with TypeScript's native `projectService`, eliminating custom AST divergence and manual `tsconfig` lookup overhead.
+3. **Zero Inline Suppression**
+   - Suppression directives (`// eslint-disable`, `// @ts-ignore`, `/* prettier-ignore */`) are strictly prohibited in repository source code. All issues must be solved at the root cause.
+4. **Unified Capability Baseline**
+   - Combines JavaScript, TypeScript, and Node.js runtime in one deterministic configuration.
+
+For in-depth architecture, rule classifications, and plugin matrices, see [Architecture & Rules Overview](packages/eslint-config-yarapa/docs/RULES.md).
+
+---
+
+## Quick Start (For Consumers)
+
+Install the package alongside ESLint and TypeScript:
 
 ```sh
-pnpm add -D eslint eslint-config-yarapa typescript
+pnpm add -D eslint @yarapa/eslint-config typescript
 ```
 
-## Configure
-
-Create `eslint.config.mjs`:
+Configure `eslint.config.mjs`:
 
 ```js
-import yarapa from "eslint-config-yarapa";
+import yarapa from "@yarapa/eslint-config";
 
 export default yarapa;
 ```
 
-The default profile applies the shared JavaScript and TypeScript rules, including type-aware TypeScript rules through `projectService`.
+Consumer repositories must keep this file unchanged and run `yarapa-eslint-config` as a required CI check before ESLint. Rules, ignores, globals, and file scopes are maintained in the package rather than overridden locally.
 
-## Framework profiles
+For CI enforcement, editor configuration, and troubleshooting, read the [Package Documentation](packages/eslint-config-yarapa/README.md).
 
-Choose the profile that matches the runtime:
+---
 
-```js
-import next from "eslint-config-yarapa/next";
+## Repository Development & Contribution
 
-export default next;
-```
+### Prerequisites
 
-Available profiles:
+- Node.js matching `.nvmrc` (`>=24.15.0`)
+- pnpm `11.23.0` (managed via Corepack or package manager)
 
-- `eslint-config-yarapa` — shared JavaScript and TypeScript baseline
-- `eslint-config-yarapa/next` — baseline plus Next.js and React rules
-- `eslint-config-yarapa/react` — baseline plus React and JSX rules
-- `eslint-config-yarapa/nest` — baseline plus Node.js rules
-
-Framework profiles are static Flat Config arrays. They do not change based on which packages happen to be installed.
-
-## Run ESLint
+### Development Workflow
 
 ```sh
-pnpm exec eslint .
-```
-
-When using type-aware rules, run ESLint from the project root containing the relevant `tsconfig.json` files.
-
-## Development
-
-```sh
+# 1. Install dependencies
 pnpm install
-pnpm --filter eslint-config-yarapa build
-pnpm --filter eslint-config-yarapa check-types
-pnpm --filter eslint-config-yarapa test
-pnpm --filter eslint-config-yarapa test:consumer
-pnpm --filter eslint-config-yarapa verify
+
+# 2. Build the package distribution
+pnpm build
+
+# 3. Verify quality and test suites
+pnpm lint           # Repository linting (builds package first)
+pnpm check-types    # Workspace-wide TypeScript checks
+pnpm test           # Unit and diagnostic tests
+pnpm knip           # Dead code and unused dependency audit
+pnpm verify         # Complete CI-parity pipeline including consumer tarball test
 ```
 
-The package publishes only its generated `dist` directory. The consumer test packs the package, validates its exports, installs the tarball in a temporary project, and exercises each public profile.
+---
+
+## Repository Governance
+
+- [Contributing Guidelines](CONTRIBUTING.md) — Workflow, PR standards, and Changesets protocol
+- [Code of Conduct](CODE_OF_CONDUCT.md) — Contributor Covenant v2.1 community standards
+- [Security Policy](SECURITY.md) — Vulnerability reporting channel and response SLA
+
+---
 
 ## License
 
-MIT
+[MIT](LICENSE) © YARAPA

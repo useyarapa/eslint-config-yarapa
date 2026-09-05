@@ -10,7 +10,7 @@ body:
   - type: input
     id: version
     attributes:
-      label: eslint-config-yarapa version
+      label: "@yarapa/eslint-config version"
       placeholder: 0.1.0
     validations:
       required: true

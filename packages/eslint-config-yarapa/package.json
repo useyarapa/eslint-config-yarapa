@@ -1,7 +1,7 @@
 {
-  "name": "eslint-config-yarapa",
+  "name": "@yarapa/eslint-config",
   "version": "0.3.0",
-  "description": "One deterministic ESLint Flat Config handwriting for modern JavaScript and TypeScript projects.",
+  "description": "Opinionated, deterministic ESLint Flat Config standards for modern JavaScript and TypeScript projects.",
   "keywords": [
     "eslint",
     "eslintconfig",
@@ -27,45 +27,47 @@
       "types": "./dist/index.d.mts",
       "default": "./dist/index.mjs"
     },
-    "./nest": {
-      "types": "./dist/nest.d.mts",
-      "default": "./dist/nest.mjs"
-    },
-    "./next": {
-      "types": "./dist/next.d.mts",
-      "default": "./dist/next.mjs"
-    },
-    "./package.json": "./package.json",
-    "./react": {
-      "types": "./dist/react.d.mts",
-      "default": "./dist/react.mjs"
-    }
+    "./package.json": "./package.json"
   },
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
+  "bin": {
+    "yarapa-eslint-config": "./dist/yarapa-eslint-config.mjs"
+  },
   "files": [
-    "dist"
+    "dist",
+    "docs"
   ],
   "scripts": {
+    "audit": "pnpm audit",
     "build": "tsdown",
     "check:attw": "attw --pack . --profile esm-only",
+    "check:doctor": "node scripts/doctor/doctor.mts",
     "check:publint": "publint",
-    "check-types": "tsc --noEmit -p tsconfig.json",
+    "check:verify-tarball": "node scripts/verify-tarball/verify-tarball.mts",
+    "check-types": "pnpm typecheck",
+    "clean": "rm -rf dist coverage *.tsbuildinfo",
+    "clean:dist": "rm -rf dist",
+    "clean:test": "rm -rf coverage",
     "dev": "tsdown --watch",
-    "lint": "eslint .",
+    "format": "prettier --write --cache .",
+    "format:check": "prettier --check --cache .",
+    "inspect": "pnpm build && eslint-config-inspector",
+    "lint": "eslint . --fix --cache --max-warnings=0",
+    "lint:check": "eslint . --cache --max-warnings=0",
+    "sort-package-json": "sort-package-json package.json",
+    "sort-package-json:check": "sort-package-json --check package.json",
     "test": "vitest run",
-    "test:consumer": "pnpm build && node scripts/verify-tarball.mts",
+    "test:consumer": "pnpm build && node scripts/verify-tarball/verify-tarball.mts",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
-    "verify": "pnpm -w lint && pnpm check-types && pnpm build && pnpm check:publint && pnpm check:attw && pnpm test && pnpm test:consumer"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "verify": "pnpm build && pnpm -w lint:check && pnpm typecheck && pnpm check:publint && pnpm check:attw && pnpm test && pnpm test:consumer"
   },
   "dependencies": {
     "@eslint-community/eslint-plugin-eslint-comments": "4.7.2",
-    "@eslint/js": "10.0.1",
     "@eslint/json": "2.0.1",
-    "@next/eslint-plugin-next": "16.3.4",
     "@stylistic/eslint-plugin": "5.10.0",
-    "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "4.4.5",
     "eslint-plugin-import-x": "4.17.1",
     "eslint-plugin-jsdoc": "64.3.1",
@@ -74,20 +76,23 @@
     "eslint-plugin-package-json": "1.8.0",
     "eslint-plugin-perfectionist": "5.10.1",
     "eslint-plugin-promise": "7.3.0",
-    "eslint-plugin-react-hooks": "7.1.1",
     "eslint-plugin-regexp": "3.2.0",
     "eslint-plugin-sonarjs": "4.2.0",
+    "eslint-plugin-unicorn": "~65.0.1",
     "eslint-plugin-unused-imports": "4.4.1",
     "globals": "17.11.0",
+    "jsonc-eslint-parser": "3.3.0",
     "typescript-eslint": "8.68.0"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
     "@types/eslint-plugin-promise": "7.3.0",
     "@types/node": "26.4.0",
+    "@types/semver": "7.5.8",
     "@vitest/coverage-v8": "4.1.11",
     "eslint": "10.9.1",
     "publint": "0.3.24",
+    "semver": "7.8.5",
     "tsdown": "0.22.14",
     "typescript": "6.0.3",
     "vitest": "4.1.11"
@@ -98,5 +103,9 @@
   },
   "engines": {
     "node": ">=24.15.0 <25"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }

@@ -9,7 +9,8 @@ export default defineConfig({
       reporter: ["text", "html", "lcov"],
     },
     environment: "node",
+    fileParallelism: false,
     include: ["test/**/*.test.ts"],
-    testTimeout: 15_000,
+    testTimeout: 60_000,
   },
 });

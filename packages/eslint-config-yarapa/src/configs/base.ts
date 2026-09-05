@@ -1,20 +1,6 @@
 import type { Linter } from "eslint";
 
-import {
-  configs as commentsConfigs,
-  rules as commentsRules,
-} from "@eslint-community/eslint-plugin-eslint-comments";
-import promisePlugin from "eslint-plugin-promise";
-import { configs as regexpConfigs } from "eslint-plugin-regexp";
-import unusedImportsPlugin from "eslint-plugin-unused-imports";
-
-import { asFlatPlugin } from "./internal/eslintCompat.js";
-import { required } from "./internal/required.js";
-
-const { configs: promiseConfigs } = promisePlugin;
-const { rules: unusedImportsRules } = unusedImportsPlugin;
-
-const jsRecommendedRules: Linter.RulesRecord = {
+const coreRules: Linter.RulesRecord = {
   "constructor-super": "error",
   "for-direction": "error",
   "getter-return": "error",
@@ -93,6 +79,40 @@ const modernJavaScriptRules: Linter.RulesRecord = {
   eqeqeq: ["error", "always"],
   "no-array-constructor": "error",
   "no-object-constructor": "error",
+  "no-restricted-imports": [
+    "error",
+    {
+      paths: [
+        {
+          message: "Use es-toolkit or native methods instead.",
+          name: "lodash",
+        },
+        {
+          message: "Use es-toolkit or native methods instead.",
+          name: "lodash-es",
+        },
+        {
+          message: "Use es-toolkit or native methods instead.",
+          name: "underscore",
+        },
+        { message: "Use es-toolkit or native methods instead.", name: "ramda" },
+      ],
+      patterns: [
+        {
+          group: ["lodash/*", "lodash-es/*"],
+          message: "Use es-toolkit or native methods instead.",
+        },
+        {
+          group: ["underscore/*"],
+          message: "Use es-toolkit or native methods instead.",
+        },
+        {
+          group: ["ramda/*"],
+          message: "Use es-toolkit or native methods instead.",
+        },
+      ],
+    },
+  ],
   "no-var": "error",
   "object-shorthand": ["error", "always"],
   "prefer-const": "error",
@@ -104,69 +124,13 @@ const modernJavaScriptRules: Linter.RulesRecord = {
   radix: "error",
 };
 
-const promiseRecommended = required(
-  promiseConfigs["flat/recommended"],
-  "eslint-plugin-promise.configs.flat/recommended",
-);
-const promiseRecommendedPlugin = asFlatPlugin(
-  required(
-    promiseRecommended.plugins?.promise,
-    "eslint-plugin-promise.configs.flat/recommended.plugins.promise",
-  ),
-);
-const regexpRecommended = regexpConfigs["flat/recommended"];
-
 export const base: Linter.Config[] = [
   {
-    name: "yarapa/base/eslint-recommended",
-    rules: jsRecommendedRules,
+    name: "yarapa/base/core",
+    rules: coreRules,
   },
   {
-    name: "yarapa/base/modern-js-handwriting",
+    name: "yarapa/base/modern-js",
     rules: modernJavaScriptRules,
-  },
-  {
-    name: "yarapa/base/eslint-comments-recommended",
-    plugins: {
-      "@eslint-community/eslint-comments": asFlatPlugin({ rules: commentsRules }),
-    },
-    rules: {
-      ...commentsConfigs.recommended.rules,
-      "@eslint-community/eslint-comments/require-description": "error",
-    },
-  },
-  {
-    name: "yarapa/base/promise-recommended",
-    plugins: { promise: promiseRecommendedPlugin },
-    rules: {
-      ...promiseRecommended.rules,
-      "promise/no-callback-in-promise": "error",
-      "promise/no-nesting": "error",
-      "promise/no-promise-in-callback": "error",
-      "promise/no-return-in-finally": "error",
-      "promise/valid-params": "error",
-    },
-  },
-  {
-    name: "yarapa/base/regexp-recommended",
-    plugins: { regexp: regexpRecommended.plugins.regexp },
-    rules: { ...regexpRecommended.rules },
-  },
-  {
-    name: "yarapa/base/unused-imports",
-    plugins: { "unused-imports": asFlatPlugin({ rules: unusedImportsRules }) },
-    rules: {
-      "no-unused-vars": "off",
-      "unused-imports/no-unused-imports": "error",
-      "unused-imports/no-unused-vars": [
-        "error",
-        {
-          args: "after-used",
-          argsIgnorePattern: "^_",
-          vars: "all",
-          varsIgnorePattern: "^_",
-        },
-      ],
-    },
   },
 ];

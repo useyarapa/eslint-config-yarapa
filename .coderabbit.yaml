@@ -1,6 +1,21 @@
+language: "en-US"
+early_access: false
+
 reviews:
+  profile: "assertive"
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  collapse_walkthrough: true
+  auto_review:
+    enabled: true
+    drafts: false
   path_filters:
-    - "!.agents/**"
-    - "!.claude/**"
-    - "!AGENTS.md"
-    - "!CLAUDE.md"
+    - "!pnpm-lock.yaml"
+    - "!packages/**/dist/**"
+    - "!.changeset/**"
+  instructions: |
+    - This repository is a strict, deterministic ESLint Flat Config package for regulated banking environments.
+    - Always edit source files in `packages/eslint-config-yarapa/src/` and tests, NEVER files in `dist/`.
+    - Never suppress, loosen, or disable ESLint rules or tests to pass checks; require root-cause fixes.
+    - Any changes to preset rules or configurations must be verified by observable tests.

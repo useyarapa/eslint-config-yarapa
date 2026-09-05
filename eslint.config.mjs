@@ -1,18 +1,11 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 
 import yarapa from "./packages/eslint-config-yarapa/dist/index.mjs";
-import yarapaNest from "./packages/eslint-config-yarapa/dist/nest.mjs";
-
-const nodeToolingFiles = [
-  "packages/eslint-config-yarapa/src/**/*.{ts,mts,cts}",
-  "packages/eslint-config-yarapa/test/**/*.{js,mjs,cjs,ts,mts,cts}",
-  "packages/eslint-config-yarapa/scripts/**/*.{js,mjs,cjs,ts,mts,cts}",
-  "packages/eslint-config-yarapa/*.config.{js,mjs,cjs,ts,mts,cts}",
-];
 
 export default defineConfig(
   globalIgnores(
     [
+      ".claude/**",
       ".turbo/**",
       "packages/eslint-config-yarapa/dist/**",
       "packages/eslint-config-yarapa/fixtures/**",
@@ -21,13 +14,37 @@ export default defineConfig(
   ),
   yarapa,
   {
-    extends: yarapaNest,
-    files: nodeToolingFiles,
-    name: "yarapa/repository/node-tooling",
+    files: ["packages/eslint-config-yarapa/**/*.ts"],
+    name: "yarapa/repository/typescript-emit-resolution",
+    rules: {
+      "n/no-missing-import": [
+        "error",
+        {
+          typescriptExtensionMap: [[".ts", ".js"]],
+        },
+      ],
+    },
+  },
+  {
+    files: ["packages/eslint-config-yarapa/src/cli/yarapa-eslint-config.ts"],
+    name: "yarapa/repository/published-bin-source",
+    rules: {
+      "n/hashbang": [
+        "error",
+        {
+          convertPath: {
+            "src/cli/yarapa-eslint-config.ts": [
+              String.raw`^src/cli/yarapa-eslint-config\.ts$`,
+              "dist/yarapa-eslint-config.mjs",
+            ],
+          },
+        },
+      ],
+    },
   },
   {
     files: [
-      "packages/eslint-config-yarapa/scripts/verify-tarball.mts",
+      "packages/eslint-config-yarapa/scripts/verify-tarball/**/*.{ts,mts}",
       "packages/eslint-config-yarapa/test/behavior.test.ts",
       "packages/eslint-config-yarapa/test/public-api.test.ts",
     ],

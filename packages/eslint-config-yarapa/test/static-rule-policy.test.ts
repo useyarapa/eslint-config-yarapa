@@ -1,66 +1,48 @@
-import type eslintJs from "@eslint/js";
-import type { Linter } from "eslint";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { describe, expect, it } from "vitest";
 
-import { afterEach, describe, expect, it, vi } from "vitest";
+const currentDir = path.dirname(fileURLToPath(import.meta.url));
+const configsDir = path.resolve(currentDir, "../src/configs");
 
-const ESLINT_JS_MODULE = "@eslint/js";
+describe("static rule policy guard", () => {
+  it("forbids upstream preset access and extends in production configs", () => {
+    const configFiles = fs
+      .readdirSync(configsDir)
+      .filter(file => file.endsWith(".ts"))
+      .map(file => path.join(configsDir, file));
 
-/**
- * Resolve the final configured value for one rule across a config array.
- * @param config Flat Config array.
- * @param ruleName Rule name to resolve.
- * @returns The final configured rule entry.
- */
-function findRule(
-  config: Linter.Config[],
-  ruleName: string,
-): Linter.RuleEntry | undefined {
-  let resolved: Linter.RuleEntry | undefined;
+    const forbiddenPatterns = [
+      /\.configs[.[\]]/u,
+      /\bextends\s*:/u,
+      /import\s*\{[^}]*\bconfigs\b[^}]*\}\s*from\s+["'][^./]/u,
+    ];
 
-  for (const entry of config) {
-    const rule = Reflect.get(entry.rules ?? {}, ruleName) as
-      | Linter.RuleEntry
-      | undefined;
+    const violations: string[] = [];
 
-    if (rule !== undefined) {
-      resolved = rule;
+    for (const filePath of configFiles) {
+      const content = fs.readFileSync(filePath, "utf8");
+      const relativePath = path.relative(configsDir, filePath);
+
+      for (const pattern of forbiddenPatterns) {
+        if (pattern.test(content)) {
+          violations.push(`${relativePath} matched ${pattern.toString()}`);
+        }
+      }
     }
-  }
 
-  return resolved;
-}
+    expect(violations).toEqual([]);
+  });
 
-afterEach(() => {
-  vi.doUnmock(ESLINT_JS_MODULE);
-  vi.resetModules();
-});
+  it("keeps yarapa.ts orchestration-only", () => {
+    const yarapaPath = path.join(configsDir, "yarapa.ts");
+    const content = fs.readFileSync(yarapaPath, "utf8");
 
-describe("static rule policy", () => {
-  it("does not inherit newly exported upstream rules implicitly", async () => {
-    vi.resetModules();
-    vi.doMock(ESLINT_JS_MODULE, async importOriginal => {
-      const original = await importOriginal<typeof eslintJs>();
-      const recommended = original.configs.recommended;
-
-      return {
-        default: {
-          ...original,
-          configs: {
-            ...original.configs,
-            recommended: {
-              ...recommended,
-              rules: {
-                ...recommended.rules,
-                "no-alert": "error",
-              },
-            },
-          },
-        },
-      };
-    });
-
-    const { base } = await import("../src/configs/base.js");
-
-    expect(findRule(base, "no-alert")).toBeUndefined();
+    expect(content).not.toMatch(/\brules\s*:/u);
+    expect(content).not.toMatch(/\bplugins\s*:/u);
+    expect(content).not.toMatch(/\blanguageOptions\s*:/u);
+    expect(content).not.toMatch(/\bsettings\s*:/u);
+    expect(content).not.toMatch(/from\s+["']eslint-plugin-[^./]+/u);
   });
 });

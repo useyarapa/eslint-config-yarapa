@@ -1,10 +1,10 @@
 import type { Linter } from "eslint";
 
-import { resolve } from "node:path";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { required } from "../src/configs/internal/required.js";
 import yarapa from "../src/index.js";
+import { required } from "../src/utils/compat.js";
 import { eslintForConfigs, packageRoot } from "./helpers/eslint.js";
 
 /**
@@ -22,7 +22,7 @@ async function fixTwice(
   const eslint = eslintForConfigs(config, { fix: true });
 
   const [first] = await eslint.lintText(code, {
-    filePath: resolve(packageRoot, filename),
+    filePath: path.resolve(packageRoot, filename),
   });
   expect(first).toBeDefined();
   const firstResult = required(first, "first autofix lint result");
@@ -30,7 +30,7 @@ async function fixTwice(
 
   const output1 = firstResult.output ?? code;
   const [second] = await eslint.lintText(output1, {
-    filePath: resolve(packageRoot, filename),
+    filePath: path.resolve(packageRoot, filename),
   });
   expect(second).toBeDefined();
   const secondResult = required(second, "second autofix lint result");
@@ -80,9 +80,7 @@ describe("autofix safety and idempotence", () => {
       "fixtures/autofix/import-order.js",
     );
 
-    expect(output.indexOf("from \"a\"")).toBeLessThan(
-      output.indexOf("from \"z\""),
-    );
+    expect(output.indexOf("from \"a\"")).toBeLessThan(output.indexOf("from \"z\""));
   });
 
   it("normalizes template strings and object shorthand once", async () => {
@@ -105,5 +103,41 @@ describe("autofix safety and idempotence", () => {
     );
 
     expect(output).toBe("export const double = value => value * 2;\n");
+  });
+
+  it("formats structured JSON data idempotently", async () => {
+    const source = "{\n\"name\":   \"example\",\n\"version\":\"1.0.0\"\n}\n";
+    const output = await fixTwice(yarapa, source, "fixtures/autofix/data.json");
+
+    expect(output).toBe("{\n  \"name\": \"example\",\n  \"version\": \"1.0.0\"\n}\n");
+  });
+
+  it("orders package manifest properties idempotently", async () => {
+    const source = `${JSON.stringify(
+      Object.fromEntries([
+        ["version", "1.0.0"],
+        ["type", "commonjs"],
+        ["name", "example"],
+      ]),
+      null,
+      2,
+    )}\n`;
+    const output = await fixTwice(
+      yarapa,
+      source,
+      "fixtures/autofix/package.json",
+    );
+
+    expect(output).toBe(
+      `${JSON.stringify(
+        Object.fromEntries([
+          ["name", "example"],
+          ["version", "1.0.0"],
+          ["type", "commonjs"],
+        ]),
+        null,
+        2,
+      )}\n`,
+    );
   });
 });

@@ -1,9 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "ignoreDependencies": [
-    "eslint-import-resolver-typescript"
-  ],
-  "ignore": ["packages/eslint-config-yarapa/fixtures/**"],
+  "ignoreDependencies": ["eslint-import-resolver-typescript"],
+  "ignore": [".claude/**", "packages/eslint-config-yarapa/fixtures/**"],
   "workspaces": {
     "packages/*": {}
   }

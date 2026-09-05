@@ -1,5 +1,5 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/usr/bin/env sh
+set -e
 
 if ! command -v gitleaks >/dev/null 2>&1; then
   case "$(uname -s)" in
@@ -9,6 +9,6 @@ if ! command -v gitleaks >/dev/null 2>&1; then
   esac
   exit 1
 fi
-gitleaks protect --staged --exit-code=1
-pnpm --filter eslint-config-yarapa build
+
+gitleaks protect --staged --verbose --redact
 pnpm exec lint-staged

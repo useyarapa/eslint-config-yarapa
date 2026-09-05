@@ -64,6 +64,20 @@ jobs:
       - name: Run tests
         run: pnpm test
 
+  benchmark:
+    name: Performance & Memory Benchmark
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Set up pnpm
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          runtime: node@24.15.0
+          cache: true
+      - name: Run benchmark suite
+        run: pnpm --filter @yarapa/eslint-config test test/benchmark.test.ts
+
   check-types:
     name: Type Check
     runs-on: ubuntu-latest
@@ -77,6 +91,20 @@ jobs:
           cache: true
       - name: Check types
         run: pnpm check-types
+
+  knip:
+    name: Dead Code & Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Set up pnpm
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          runtime: node@24.15.0
+          cache: true
+      - name: Run Knip audit
+        run: pnpm knip
 
   build:
     name: Build
@@ -92,9 +120,9 @@ jobs:
       - name: Build package
         run: pnpm build
       - name: Validate package metadata
-        run: pnpm --filter eslint-config-yarapa check:publint
+        run: pnpm --filter @yarapa/eslint-config check:publint
       - name: Validate type declarations
-        run: pnpm --filter eslint-config-yarapa check:attw
+        run: pnpm --filter @yarapa/eslint-config check:attw
 
   consumer:
     name: Consumer Test
@@ -108,7 +136,7 @@ jobs:
           runtime: node@24.20.0
           cache: true
       - name: Run consumer verification
-        run: pnpm --filter eslint-config-yarapa test:consumer
+        run: pnpm --filter @yarapa/eslint-config test:consumer
 
   compatibility:
     name: Compatibility (${{ matrix.name }})
@@ -141,51 +169,7 @@ jobs:
           runtime: node@${{ matrix.node }}
           cache: true
       - name: Run consumer verification
-        run: pnpm --filter eslint-config-yarapa test:consumer
-
-  framework-compatibility:
-    name: Framework Compatibility (${{ matrix.name }})
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: next-16.0.0-react-19.0.0
-            profile: next
-            react: 19.0.0
-            version: 16.0.0
-          - name: next-16.3.4-react-19.2.7
-            profile: next
-            react: 19.2.7
-            version: 16.3.4
-          - name: react-19.0.0
-            profile: react
-            version: 19.0.0
-          - name: react-19.2.7
-            profile: react
-            version: 19.2.7
-          - name: nest-12.0.0
-            profile: nest
-            version: 12.0.0
-          - name: nest-12.0.1
-            profile: nest
-            version: 12.0.1
-    env:
-      ESLINT_VERSION: 10.9.1
-      FRAMEWORK_PROFILE: ${{ matrix.profile }}
-      FRAMEWORK_REACT_VERSION: ${{ matrix.react }}
-      FRAMEWORK_VERSION: ${{ matrix.version }}
-      TYPESCRIPT_VERSION: 6.0.3
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - name: Set up pnpm
-        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
-        with:
-          runtime: node@24.20.0
-          cache: true
-      - name: Run consumer verification
-        run: pnpm --filter eslint-config-yarapa test:consumer
+        run: pnpm --filter @yarapa/eslint-config test:consumer
 
   windows-consumer:
     name: Windows Consumer Test
@@ -202,7 +186,7 @@ jobs:
           runtime: node@24.20.0
           cache: true
       - name: Run consumer verification
-        run: pnpm --filter eslint-config-yarapa test:consumer
+        run: pnpm --filter @yarapa/eslint-config test:consumer
 
   dependency-review:
     name: Dependency Review
@@ -332,16 +316,18 @@ jobs:
       - build
       - consumer
       - compatibility
-      - framework-compatibility
       - windows-consumer
       - dependency-review
       - gitleaks
       - changesets
+      - benchmark
+      - knip
     runs-on: ubuntu-latest
     steps:
       - name: Require all verification jobs
         env:
           ACTIONLINT_RESULT: ${{ needs.actionlint.result }}
+          BENCHMARK_RESULT: ${{ needs.benchmark.result }}
           BUILD_RESULT: ${{ needs.build.result }}
           CHANGESETS_RESULT: ${{ needs.changesets.result }}
           CHECK_TYPES_RESULT: ${{ needs.check-types.result }}
@@ -349,8 +335,8 @@ jobs:
           CONSUMER_RESULT: ${{ needs.consumer.result }}
           DEPENDENCY_REVIEW_RESULT: ${{ needs.dependency-review.result }}
           EVENT_NAME: ${{ github.event_name }}
-          FRAMEWORK_COMPATIBILITY_RESULT: ${{ needs.framework-compatibility.result }}
           GITLEAKS_RESULT: ${{ needs.gitleaks.result }}
+          KNIP_RESULT: ${{ needs.knip.result }}
           LINT_RESULT: ${{ needs.lint.result }}
           TEST_RESULT: ${{ needs.test.result }}
           WINDOWS_CONSUMER_RESULT: ${{ needs.windows-consumer.result }}
@@ -365,12 +351,13 @@ jobs:
 
           for result in \
             "$ACTIONLINT_RESULT" \
+            "$BENCHMARK_RESULT" \
             "$BUILD_RESULT" \
             "$CHECK_TYPES_RESULT" \
             "$COMPATIBILITY_RESULT" \
             "$CONSUMER_RESULT" \
-            "$FRAMEWORK_COMPATIBILITY_RESULT" \
             "$GITLEAKS_RESULT" \
+            "$KNIP_RESULT" \
             "$LINT_RESULT" \
             "$TEST_RESULT" \
             "$WINDOWS_CONSUMER_RESULT"
