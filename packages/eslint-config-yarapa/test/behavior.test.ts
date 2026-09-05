@@ -4,7 +4,6 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import yarapa from "../src/index.js";
-import react from "../src/react.js";
 import { required } from "../src/utils/compat.js";
 import { eslintForConfigs, packageRoot } from "./helpers/eslint.js";
 
@@ -154,8 +153,7 @@ describe("shared YARAPA behavior", () => {
     );
   });
 
-  it("reports conditional hooks through the official React Hooks preset", async () => {
-    const reactEslint = eslintForConfigs(react);
+  it("reports conditional hooks through the scoped React Hooks configuration", async () => {
     const source = [
       "const useEffect = callback => callback();",
       "export const Component = active => {",
@@ -166,7 +164,7 @@ describe("shared YARAPA behavior", () => {
       "};",
       "",
     ].join("\n");
-    const [result] = await reactEslint.lintText(source, {
+    const [result] = await eslint.lintText(source, {
       filePath: path.resolve(packageRoot, "fixtures/react-hooks.jsx"),
     });
     const lintResult = required(result, "React Hooks behavior result");

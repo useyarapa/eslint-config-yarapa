@@ -3,7 +3,7 @@ import { defineConfig } from "tsdown";
 export default defineConfig({
   clean: true,
   dts: true,
-  entry: ["src/index.ts", "src/nest.ts", "src/react.ts"],
+  entry: ["src/index.ts"],
   format: ["esm"],
   platform: "node",
   sourcemap: true,

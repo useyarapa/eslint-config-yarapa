@@ -10,19 +10,23 @@ Overview of profiles, plugins, and key design principles enforced by `eslint-con
 2. **Type-Aware First**: Type-aware rules run through TypeScript's native `projectService`, avoiding ad-hoc or incomplete AST assumptions.
 3. **Root-Cause Fixes Only**: Suppressing rules via inline comments (`eslint-disable`, `@ts-ignore`, `prettier-ignore`) is strictly forbidden by repository standards. Issues must be resolved at the root cause.
 
-## Profiles Matrix
+## Unified Architecture
 
-| Profile     | Entrypoint                   | Target Runtime      | Key Layers Included                                                                                        |
-| ----------- | ---------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **Default** | `eslint-config-yarapa`       | Universal JS/TS     | Base JS, TS syntax, TS type-checked, Imports, SonarJS, JSDoc, JSON, Package.json, Stylistic, Perfectionist |
-| **React**   | `eslint-config-yarapa/react` | React (SPA/Library) | Baseline + React Hooks, Component Naming, Browser Globals, JSX syntax                                      |
-| **NestJS**  | `eslint-config-yarapa/nest`  | Node.js / NestJS    | Baseline + Node.js runtime rules (`eslint-plugin-n`)                                                       |
+`eslint-config-yarapa` exports a single, static Flat Config array containing all capability layers:
+
+| Layer                | Entrypoint             | Target Scope           | Key Inclusions                                                                                                                                       |
+| -------------------- | ---------------------- | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Unified Baseline** | `eslint-config-yarapa` | Full-stack JS/TS/React | Base JS, Node.js runtime, Browser globals, React Hooks, TS syntax, TS type-checked, Imports, SonarJS, JSDoc, JSON, Stylistic, Perfectionist, Unicorn |
+
+Specific frameworks (such as React Hooks and JSX options) are file-scoped to `**/*.{jsx,tsx}` within the single array, eliminating fragmented profile subpaths.
 
 ## Layered Plugins
 
 | Layer             | Plugin                                | Purpose                                                                    |
 | ----------------- | ------------------------------------- | -------------------------------------------------------------------------- |
 | **Core JS**       | `@eslint/js`                          | Recommended baseline syntax and runtime errors                             |
+| **Node.js**       | `eslint-plugin-n`                     | Node.js runtime checks and globals                                         |
+| **React**         | `eslint-plugin-react-hooks`           | Rules of Hooks and React component conventions                             |
 | **TypeScript**    | `typescript-eslint`                   | Type checking, syntax rules, strict type-aware rules via `projectService`  |
 | **Promises**      | `eslint-plugin-promise`               | Asynchronous correctness, avoids unhandled rejections and nesting          |
 | **RegExp**        | `eslint-plugin-regexp`                | Regular expression correctness, optimization, and anti-ReDoS patterns      |

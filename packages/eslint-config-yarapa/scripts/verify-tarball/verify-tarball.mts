@@ -14,78 +14,6 @@ if (process.platform === "win32" && !process.env.PNPM_HOME) {
   throw new Error("PNPM_HOME is required for the Windows consumer smoke test");
 }
 
-const frameworkProfile = process.env.FRAMEWORK_PROFILE;
-const frameworkVersion = process.env.FRAMEWORK_VERSION;
-if ((frameworkProfile === undefined) !== (frameworkVersion === undefined)) {
-  throw new Error(
-    "FRAMEWORK_PROFILE and FRAMEWORK_VERSION must be provided together",
-  );
-}
-
-type FrameworkDefinition = {
-  installPackages: (version: string) => string[];
-  packageNames: string[];
-};
-
-const FRAMEWORK_DEFINITIONS: Record<string, FrameworkDefinition> = {
-  nest: {
-    installPackages: version => [
-      `@nestjs/common@${version}`,
-      `@nestjs/core@${version}`,
-      "reflect-metadata@0.2.2",
-      "rxjs@7.8.2",
-    ],
-    packageNames: [
-      "@nestjs/common",
-      "@nestjs/core",
-      "reflect-metadata",
-      "rxjs",
-    ],
-  },
-  react: {
-    installPackages: version => [`react@${version}`, `react-dom@${version}`],
-    packageNames: ["react", "react-dom"],
-  },
-};
-
-/**
- * Resolve the package installation definition for a framework profile.
- * @param profile Requested framework profile.
- * @returns The framework definition, or undefined when no profile is selected.
- */
-function getFrameworkDefinition(
-  profile: string | undefined,
-): FrameworkDefinition | undefined {
-  if (profile === undefined) {
-    return undefined;
-  }
-  const definition = FRAMEWORK_DEFINITIONS[profile];
-  if (!definition) {
-    throw new Error(`Unsupported FRAMEWORK_PROFILE: ${profile}`);
-  }
-  return definition;
-}
-
-/**
- * Build the framework package list for a consumer smoke test.
- * @param profile Requested framework profile.
- * @param version Framework version to install.
- * @returns Package specifiers required by the selected framework.
- */
-function getFrameworkPackages(
-  profile: string | undefined,
-  version: string | undefined,
-): string[] {
-  const definition = getFrameworkDefinition(profile);
-  if (definition === undefined) {
-    return [];
-  }
-  if (version === undefined) {
-    throw new Error("FRAMEWORK_VERSION is required for framework verification");
-  }
-  return definition.installPackages(version);
-}
-
 /**
  * Run a command and throw when it exits unsuccessfully.
  * @param command Executable to run.
@@ -127,11 +55,6 @@ export function verifyTarball(): void {
   const node = process.execPath;
   const eslintVersion = process.env.ESLINT_VERSION ?? "10.9.1";
   const typescriptVersion = process.env.TYPESCRIPT_VERSION ?? "6.0.3";
-  const frameworkProfile = process.env.FRAMEWORK_PROFILE;
-  const frameworkVersion = process.env.FRAMEWORK_VERSION;
-  const expectRuleCall = "await expectRule(";
-  const nestSampleFile = "sample-nest.ts";
-  const nestServiceFile = "sample-nest-service.ts";
 
   try {
     run(pnpm, ["exec", "publint"], packageRoot);
@@ -160,11 +83,6 @@ export function verifyTarball(): void {
       )}\n`,
     );
 
-    const frameworkPackages = getFrameworkPackages(
-      frameworkProfile,
-      frameworkVersion,
-    );
-
     run(
       pnpm,
       [
@@ -174,31 +92,19 @@ export function verifyTarball(): void {
         "--save-exact",
         `eslint@${eslintVersion}`,
         `typescript@${typescriptVersion}`,
-        ...frameworkPackages,
         tarball,
       ],
       consumerDirectory,
     );
 
-    const frameworkDefinition = getFrameworkDefinition(frameworkProfile);
-    const selectedFrameworkPackages = frameworkDefinition?.packageNames ?? [];
-
     writeFileSync(
       path.resolve(consumerDirectory, "verify.mjs"),
       [
         "import yarapa from \"eslint-config-yarapa\";",
-        "import nest from \"eslint-config-yarapa/nest\";",
-        "import react from \"eslint-config-yarapa/react\";",
         "",
-        "for (const profile of [yarapa, nest, react]) {",
-        "  if (!Array.isArray(profile) || profile.length === 0) {",
-        "    throw new Error(\"Expected non-empty Flat Config array\");",
-        "  }",
+        "if (!Array.isArray(yarapa) || yarapa.length === 0) {",
+        "  throw new Error(\"Expected non-empty Flat Config array\");",
         "}",
-        "",
-        ...selectedFrameworkPackages.map(
-          packageName => `await import(${JSON.stringify(packageName)});`,
-        ),
         "",
       ].join("\n"),
     );
@@ -208,7 +114,6 @@ export function verifyTarball(): void {
       [
         "import { ESLint } from \"eslint\";",
         "import yarapa from \"eslint-config-yarapa\";",
-        "import react from \"eslint-config-yarapa/react\";",
         "",
         "async function expectRule(config, filePath, source, expectedRule) {",
         "  const eslint = new ESLint({",
@@ -226,51 +131,38 @@ export function verifyTarball(): void {
         "  }",
         "}",
         "",
-        expectRuleCall,
+        "await expectRule(",
         "  yarapa,",
         "  \"sample-invalid.js\",",
         String.raw`  "export function value() { var answer = 42; return answer; }\n",`,
         "  \"no-var\",",
         ");",
         "",
-        frameworkProfile === "react"
-          ? [
-              expectRuleCall,
-              "  react,",
-              "  \"sample-react-invalid.jsx\",",
-              "  [",
-              String.raw`    "import { useState } from \"react\";",`,
-              "    \"/** @returns {object | null} Rendered component. */\",",
-              "    \"export function Component({ enabled }) {\",",
-              "    \"  if (enabled) useState(0);\",",
-              "    \"  return null;\",",
-              "    \"}\",",
-              String.raw`  ].join("\n"),`,
-              "  \"react-hooks/rules-of-hooks\",",
-              ");",
-            ].join("\n")
-          : "",
+        "await expectRule(",
+        "  yarapa,",
+        "  \"sample-react-invalid.jsx\",",
+        "  [",
+        String.raw`    "const useEffect = callback => callback();",`,
+        "    \"export function Component({ enabled }) {\",",
+        "    \"  if (enabled) useEffect(() => {});\",",
+        "    \"  return null;\",",
+        "    \"}\",",
+        String.raw`  ].join("\n"),`,
+        "  \"react-hooks/rules-of-hooks\",",
+        ");",
         "",
       ].join("\n"),
     );
 
-    const profileConfigs = {
-      nest: "eslint-config-yarapa/nest",
-      react: "eslint-config-yarapa/react",
-      root: "eslint-config-yarapa",
-    } as const;
-
-    for (const [name, specifier] of Object.entries(profileConfigs)) {
-      writeFileSync(
-        path.resolve(consumerDirectory, `eslint.${name}.config.mjs`),
-        [
-          `import config from "${specifier}";`,
-          "",
-          "export default config;",
-          "",
-        ].join("\n"),
-      );
-    }
+    writeFileSync(
+      path.resolve(consumerDirectory, "eslint.config.mjs"),
+      [
+        "import yarapa from \"eslint-config-yarapa\";",
+        "",
+        "export default yarapa;",
+        "",
+      ].join("\n"),
+    );
 
     writeFileSync(
       path.resolve(consumerDirectory, "tsconfig.json"),
@@ -282,7 +174,7 @@ export function verifyTarball(): void {
             strict: true,
             target: "ES2022",
           },
-          include: [nestSampleFile, nestServiceFile],
+          include: ["sample.ts"],
         },
         null,
         2,
@@ -292,6 +184,10 @@ export function verifyTarball(): void {
     writeFileSync(
       path.resolve(consumerDirectory, "sample.js"),
       "export const answer = 42;\n",
+    );
+    writeFileSync(
+      path.resolve(consumerDirectory, "sample.ts"),
+      "export const answer: number = 42;\n",
     );
     writeFileSync(
       path.resolve(consumerDirectory, "sample-react.jsx"),
@@ -306,42 +202,12 @@ export function verifyTarball(): void {
         "",
       ].join("\n"),
     );
-    writeFileSync(
-      path.resolve(consumerDirectory, nestServiceFile),
-      "export const port = 3000;\n",
-    );
-    writeFileSync(
-      path.resolve(consumerDirectory, nestSampleFile),
-      [
-        "import \"./sample-nest-service\";",
-        "",
-        "export const configuredPort = 3000;",
-        "",
-      ].join("\n"),
-    );
 
     run(node, ["verify.mjs"], consumerDirectory);
     run(node, ["verify-behavior.mjs"], consumerDirectory);
     run(
       pnpm,
-      ["exec", "eslint", "-c", "eslint.root.config.mjs", "sample.js"],
-      consumerDirectory,
-    );
-    run(
-      pnpm,
-      [
-        "exec",
-        "eslint",
-        "-c",
-        "eslint.nest.config.mjs",
-        nestSampleFile,
-        nestServiceFile,
-      ],
-      consumerDirectory,
-    );
-    run(
-      pnpm,
-      ["exec", "eslint", "-c", "eslint.react.config.mjs", "sample-react.jsx"],
+      ["exec", "eslint", "sample.js", "sample.ts", "sample-react.jsx"],
       consumerDirectory,
     );
   } finally {

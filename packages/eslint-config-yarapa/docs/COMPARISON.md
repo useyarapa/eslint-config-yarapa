@@ -25,7 +25,7 @@ A comprehensive technical comparison evaluating `eslint-config-yarapa` against l
 ### A. vs. `@antfu/eslint-config` (The Modern Community Giant)
 
 - **The Philosophy Gap**: Anthony Fu's config is designed for rapid open-source experimentation across a vast ecosystem (Vue, Svelte, Astro, UnoCSS, TOML, YAML). It relies on **ambient auto-detection**, silently reading `package.json` at runtime to decide which rule layers to inject.
-- **The YARAPA Distinction**: In regulated enterprise systems (banking, payments, fintech), ambient dependency sniffing represents an unacceptable **determinism risk**. A transitive or local dependency change could mutate the active ruleset silently, causing CI divergence. YARAPA enforces explicit, immutable Flat Config arrays (`eslint-config-yarapa`, `/react`, `/nest`) ensuring 100% auditability and air-gapped reproducibility.
+- **The YARAPA Distinction**: In regulated enterprise systems (banking, payments, fintech), ambient dependency sniffing represents an unacceptable **determinism risk**. A transitive or local dependency change could mutate the active ruleset silently, causing CI divergence. YARAPA enforces explicit, immutable Flat Config arrays (`eslint-config-yarapa`) ensuring 100% auditability and air-gapped reproducibility.
 
 ### B. vs. Airbnb (`eslint-config-airbnb` & `airbnb-typescript`)
 

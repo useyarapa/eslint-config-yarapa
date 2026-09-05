@@ -13,9 +13,9 @@ This repository serves as the engineering baseline for YARAPA projects, enforcin
 
 ## Workspace Packages
 
-| Package                                                 | Version                                                                                                             | Description                                                             |
-| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| [`eslint-config-yarapa`](packages/eslint-config-yarapa) | [![npm](https://img.shields.io/npm/v/eslint-config-yarapa.svg)](https://www.npmjs.com/package/eslint-config-yarapa) | Strict ESLint Flat Config profiles (Universal, Next.js, React, NestJS). |
+| Package                                                 | Version                                                                                                             | Description                                                                           |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| [`eslint-config-yarapa`](packages/eslint-config-yarapa) | [![npm](https://img.shields.io/npm/v/eslint-config-yarapa.svg)](https://www.npmjs.com/package/eslint-config-yarapa) | Strict, full-stack ESLint Flat Config for JavaScript, TypeScript, Node.js, and React. |
 
 ---
 
@@ -28,8 +28,8 @@ This repository serves as the engineering baseline for YARAPA projects, enforcin
    - Direct integration with TypeScript's native `projectService`, eliminating custom AST divergence and manual `tsconfig` lookup overhead.
 3. **Zero Inline Suppression**
    - Suppression directives (`// eslint-disable`, `// @ts-ignore`, `/* prettier-ignore */`) are strictly prohibited in repository source code. All issues must be solved at the root cause.
-4. **Symmetric Layering**
-   - Framework profiles (`next`, `react`, `nest`) extend the universal baseline without fracturing the core stylistic or structural expectations.
+4. **Unified Capability Baseline**
+   - Combines JavaScript, TypeScript, Node.js runtime, and React/JSX file scoping in a single deterministic config without fragmented profiles.
 
 For in-depth architecture, rule classifications, and plugin matrices, see [Architecture & Rules Overview](packages/eslint-config-yarapa/docs/RULES.md).
 
@@ -51,7 +51,7 @@ import yarapa from "eslint-config-yarapa";
 export default yarapa;
 ```
 
-For complete framework profiles (`next`, `react`, `nest`), custom overrides, editor configuration, and troubleshooting, read the [Package Documentation](packages/eslint-config-yarapa/README.md).
+For custom overrides, editor configuration, and troubleshooting, read the [Package Documentation](packages/eslint-config-yarapa/README.md).
 
 ---
 

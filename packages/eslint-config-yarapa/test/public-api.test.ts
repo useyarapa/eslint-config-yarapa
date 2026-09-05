@@ -16,10 +16,15 @@ describe("public API", () => {
     expect(Reflect.has(module, "configs")).toBe(false);
   });
 
-  it.each(["./nest", "./react"])(
-    "publishes %s as a semantic subpath",
+  it("publishes root entry and package.json exports only", () => {
+    expect(Reflect.has(packageJson.exports, ".")).toBe(true);
+    expect(Reflect.has(packageJson.exports, "./package.json")).toBe(true);
+  });
+
+  it.each(["./nest", "./react", "./node"])(
+    "does not expose %s as a public subpath",
     subpath => {
-      expect(Reflect.has(packageJson.exports, subpath)).toBe(true);
+      expect(Reflect.has(packageJson.exports, subpath)).toBe(false);
     },
   );
 });

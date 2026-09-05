@@ -7,18 +7,19 @@
 
 Opinionated, deterministic ESLint Flat Config standards for modern JavaScript and TypeScript projects.
 
-`eslint-config-yarapa` provides a shared, zero-compromise linting baseline across JavaScript, TypeScript, Node.js, React, Next.js, and NestJS. Framework profiles extend this unified baseline rather than introducing separate, fragmented rulesets.
+`eslint-config-yarapa` provides a shared, zero-compromise linting baseline across modern JavaScript, TypeScript, Node.js, and React. All capabilities are bundled into a single unified Flat Config and automatically scoped to matching file extensions.
 
 ---
 
 ## Features
 
 - **Strict Flat Config First**: Pre-configured, deterministic arrays compatible with ESLint 9+ and 10+.
+- **Unified Full-Stack Baseline**: Integrates JavaScript, TypeScript, Node.js runtime (`eslint-plugin-n`), Node/Browser globals, and React Hooks in one setup.
+- **File Scoped**: Framework-specific capabilities such as React Hooks and JSX parsing are automatically scoped to `**/*.{jsx,tsx}` without requiring separate profile selection.
 - **Type-Aware First**: Native integration with TypeScript's `projectService` for accurate, AST-driven type analysis without manual `tsconfig.json` overhead.
 - **Unified Style**: Integrated `@stylistic/eslint-plugin` rules with zero format suppression allowed.
 - **Natural Ordering**: Automated, deterministic sorting of imports, exports, and object keys via `eslint-plugin-perfectionist`.
 - **Security & Bug Prevention**: Built-in cognitive complexity analysis and anti-ReDoS rules with `eslint-plugin-sonarjs` and `eslint-plugin-regexp`.
-- **Modular Framework Profiles**: First-class profiles for Next.js, React, and NestJS/Node.js.
 
 ---
 
@@ -58,45 +59,24 @@ import yarapa from "eslint-config-yarapa";
 export default yarapa;
 ```
 
-The default profile applies universal baseline rules for JavaScript and TypeScript, including type-aware rules through `projectService`.
-
 ---
 
-## Framework Profiles
+## Configuration Architecture
 
-Select the profile that matches your project runtime:
+`eslint-config-yarapa` exports a single static Flat Config array containing all capability layers:
 
-### React Applications & Libraries (`eslint-config-yarapa/react`)
+| Capability Layer     | Scope / Files                  | Key Inclusions                                          |
+| -------------------- | ------------------------------ | ------------------------------------------------------- |
+| Universal JavaScript | All matching files             | Core JS, modern builtins, imports (`import-x`), SonarJS |
+| Node.js Runtime      | All matching files             | Node globals, `eslint-plugin-n` runtime checks          |
+| Browser Environment  | All matching files             | Browser globals                                         |
+| React & JSX          | `**/*.{jsx,tsx}`               | JSX parsing, React Hooks rules, React component naming  |
+| TypeScript Syntax    | `**/*.{ts,tsx,mts,cts}`        | `@typescript-eslint` recommended syntax & hygiene       |
+| Type-Checked Rules   | `**/*.{ts,tsx,mts,cts}`        | `projectService` type-aware analysis                    |
+| Style & Formatting   | All matching files             | Stylistic rules, Perfectionist natural sorting, Unicorn |
+| Structural Data      | `**/*.json`, `**/package.json` | `@eslint/json`, `eslint-plugin-package-json`            |
 
-Baseline plus React Hooks, JSX syntax, and browser globals for Single-Page Applications (Vite, CRA) or UI libraries.
-
-```js
-import react from "eslint-config-yarapa/react";
-
-export default react;
-```
-
-### NestJS & Node.js (`eslint-config-yarapa/nest`)
-
-Baseline plus Node.js runtime and environment rules (`eslint-plugin-n`).
-
-```js
-import nest from "eslint-config-yarapa/nest";
-
-export default nest;
-```
-
----
-
-## Profiles Matrix
-
-| Profile Entrypoint           | Target Environment  | Key Rule Layers Included                                                                  |
-| ---------------------------- | ------------------- | ----------------------------------------------------------------------------------------- |
-| `eslint-config-yarapa`       | Universal JS / TS   | Base JS, TS syntax, TS type-checked, Imports, SonarJS, JSDoc, Perfectionist sorting, JSON |
-| `eslint-config-yarapa/react` | React (SPA/Library) | Baseline + React Hooks, JSX syntax, Browser globals                                       |
-| `eslint-config-yarapa/nest`  | Node.js / NestJS    | Baseline + Node.js runtime rules (`eslint-plugin-n`)                                      |
-
-All profiles are static Flat Config arrays. Rules do not mutate based on ambient runtime conditions.
+All rules are deterministic and do not mutate based on ambient runtime conditions.
 
 For full architecture details and rule philosophies, refer to the [Architecture & Rules Overview](docs/RULES.md).
 

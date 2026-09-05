@@ -8,10 +8,13 @@ import { configs as sonarjsConfigs } from "eslint-plugin-sonarjs";
 
 import { required } from "../utils/compat.js";
 import { base } from "./base.js";
+import { browser } from "./browser.js";
 import { ignores } from "./ignores.js";
 import { jsdoc } from "./jsdoc.js";
 import { json } from "./json.js";
+import { node } from "./node.js";
 import { packageJson } from "./package-json.js";
+import { react } from "./react.js";
 import { stylistic } from "./stylistic.js";
 import { typeChecked } from "./type-checked.js";
 import { typescript } from "./typescript.js";
@@ -50,6 +53,9 @@ const modernJavaScriptOwnership: Linter.Config = {
 export const recommended: Linter.Config[] = [
   ...ignores,
   ...base,
+  ...node,
+  ...browser,
+  ...react,
   ...typescript,
   ...typeChecked,
   ...importResolution,
