@@ -22,14 +22,14 @@ This repository serves as the engineering baseline for YARAPA projects, enforcin
 ## Core Architectural Pillars
 
 1. **Static & Deterministic Flat Configs**
-   - Profiles are static, immutable Flat Config arrays.
+   - The configuration is a static, immutable Flat Config array.
    - Zero runtime sniffing or dynamic rule mutations based on installed ambient dependencies.
 2. **Type-Aware First**
    - Direct integration with TypeScript's native `projectService`, eliminating custom AST divergence and manual `tsconfig` lookup overhead.
 3. **Zero Inline Suppression**
    - Suppression directives (`// eslint-disable`, `// @ts-ignore`, `/* prettier-ignore */`) are strictly prohibited in repository source code. All issues must be solved at the root cause.
 4. **Unified Capability Baseline**
-   - Combines JavaScript, TypeScript, and Node.js runtime in a single deterministic config without fragmented profiles.
+   - Combines JavaScript, TypeScript, and Node.js runtime in one deterministic configuration.
 
 For in-depth architecture, rule classifications, and plugin matrices, see [Architecture & Rules Overview](packages/eslint-config-yarapa/docs/RULES.md).
 
@@ -51,7 +51,9 @@ import yarapa from "eslint-config-yarapa";
 export default yarapa;
 ```
 
-For custom overrides, editor configuration, and troubleshooting, read the [Package Documentation](packages/eslint-config-yarapa/README.md).
+Consumer repositories must keep this file unchanged and run `yarapa-eslint-config` as a required CI check before ESLint. Rules, ignores, globals, and file scopes are maintained in the package rather than overridden locally.
+
+For CI enforcement, editor configuration, and troubleshooting, read the [Package Documentation](packages/eslint-config-yarapa/README.md).
 
 ---
 

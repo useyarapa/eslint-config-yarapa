@@ -31,6 +31,9 @@
   },
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
+  "bin": {
+    "yarapa-eslint-config": "./dist/yarapa-eslint-config.mjs"
+  },
   "files": [
     "dist",
     "docs"

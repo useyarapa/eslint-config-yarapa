@@ -19,7 +19,7 @@ import { typescript } from "./typescript.js";
 import { unicorn } from "./unicorn.js";
 import { unusedImports } from "./unused-imports.js";
 
-export const recommended: Linter.Config[] = [
+export const yarapa: Linter.Config[] = [
   ...ignores,
   ...base,
   ...eslintComments,

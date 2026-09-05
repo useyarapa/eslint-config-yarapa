@@ -192,7 +192,7 @@ const stylisticRules: Linter.RulesRecord = {
 
 export const stylistic: Linter.Config[] = [
   {
-    name: "yarapa/stylistic/recommended",
+    name: "yarapa/stylistic",
     plugins: { "@stylistic": stylisticPlugin },
     rules: stylisticRules,
   },

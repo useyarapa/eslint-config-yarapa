@@ -4,7 +4,7 @@ import yarapa from "../src/index.js";
 import { eslintForConfigs } from "./helpers/eslint.js";
 
 describe("Performance & Memory Benchmark", () => {
-  it("executes default profile linting within strict enterprise performance budget", async () => {
+  it("executes canonical configuration within the performance budget", async () => {
     const eslint = eslintForConfigs(yarapa);
 
     const testSnippet = `

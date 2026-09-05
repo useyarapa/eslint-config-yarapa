@@ -10,6 +10,8 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { CANONICAL_CONFIG_CONTENT } from "../../src/cli/canonical-config.ts";
+
 if (process.platform === "win32" && !process.env.PNPM_HOME) {
   throw new Error("PNPM_HOME is required for the Windows consumer smoke test");
 }
@@ -19,8 +21,14 @@ if (process.platform === "win32" && !process.env.PNPM_HOME) {
  * @param command Executable to run.
  * @param arguments_ Arguments passed to the executable.
  * @param cwd Working directory for the command.
+ * @param expectedStatus Expected process exit status.
  */
-function run(command: string, arguments_: string[], cwd: string): void {
+function run(
+  command: string,
+  arguments_: string[],
+  cwd: string,
+  expectedStatus = 0,
+): void {
   const result = spawnSync(command, arguments_, {
     cwd,
     env: process.env,
@@ -30,9 +38,9 @@ function run(command: string, arguments_: string[], cwd: string): void {
   if (result.error) {
     throw result.error;
   }
-  if (result.status !== 0) {
+  if (result.status !== expectedStatus) {
     throw new Error(
-      `${command} ${arguments_.join(" ")} failed with ${result.status}`,
+      `${command} ${arguments_.join(" ")} exited with ${result.status}; expected ${expectedStatus}`,
     );
   }
 }
@@ -53,6 +61,7 @@ export function verifyTarball(): void {
   const node = process.execPath;
   const eslintVersion = process.env.ESLINT_VERSION ?? "10.9.1";
   const typescriptVersion = process.env.TYPESCRIPT_VERSION ?? "6.0.3";
+  const eslintConfigPath = path.resolve(consumerDirectory, "eslint.config.mjs");
 
   try {
     run(pnpm, ["exec", "publint"], packageRoot);
@@ -160,15 +169,7 @@ export function verifyTarball(): void {
       ].join("\n"),
     );
 
-    writeFileSync(
-      path.resolve(consumerDirectory, "eslint.config.mjs"),
-      [
-        `import yarapa from "eslint-config-yarapa";`,
-        "",
-        "export default yarapa;",
-        "",
-      ].join("\n"),
-    );
+    writeFileSync(eslintConfigPath, CANONICAL_CONFIG_CONTENT);
 
     writeFileSync(
       path.resolve(consumerDirectory, "tsconfig.json"),
@@ -195,6 +196,18 @@ export function verifyTarball(): void {
       path.resolve(consumerDirectory, "sample.ts"),
       "export const answer: number = 42;\n",
     );
+    run(pnpm, ["exec", "yarapa-eslint-config"], consumerDirectory);
+    writeFileSync(
+      eslintConfigPath,
+      [
+        `import yarapa from "eslint-config-yarapa";`,
+        "",
+        `export default [...yarapa, { rules: { "no-console": "off" } }];`,
+        "",
+      ].join("\n"),
+    );
+    run(pnpm, ["exec", "yarapa-eslint-config"], consumerDirectory, 1);
+    writeFileSync(eslintConfigPath, CANONICAL_CONFIG_CONTENT);
     run(node, ["verify.mjs"], consumerDirectory);
     run(node, ["verify-behavior.mjs"], consumerDirectory);
     run(pnpm, ["exec", "eslint", "sample.js", "sample.ts"], consumerDirectory);

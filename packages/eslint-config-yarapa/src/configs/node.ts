@@ -33,7 +33,7 @@ export const node: Linter.Config[] = [
       },
       sourceType: "module",
     },
-    name: "yarapa/node/recommended",
+    name: "yarapa/node",
     plugins: { n: nPlugin },
     rules: nodeRules,
     settings: {

@@ -1,28 +1,28 @@
 # Rules & Architecture Overview
 
-Overview of profiles, plugins, and key design principles enforced by `eslint-config-yarapa`.
+Overview of the canonical configuration, internal capabilities, and enforced design principles.
 
 ## Philosophy: Deterministic & Opinionated
 
 `eslint-config-yarapa` is designed as a strict, deterministic ESLint Flat Config baseline for modern JavaScript and TypeScript applications, with particular emphasis on regulated, high-integrity environments (such as banking and fintech services).
 
-1. **Static Flat Configs**: Profiles are static Flat Config arrays. They do not conditionally sniff runtime environments or dynamically alter rules based on installed dependencies.
+1. **Static Flat Config**: The canonical configuration is a static Flat Config array. It does not conditionally sniff runtime environments or dynamically alter rules based on installed dependencies.
 2. **Type-Aware First**: Type-aware rules run through TypeScript's native `projectService`, avoiding ad-hoc or incomplete AST assumptions.
 3. **Root-Cause Fixes Only**: Suppressing rules via inline comments (`eslint-disable`, `@ts-ignore`, `prettier-ignore`) is strictly forbidden by repository standards. Issues must be resolved at the root cause.
 
 ## Unified Architecture
 
-`eslint-config-yarapa` exports a single, static Flat Config array containing all capability layers:
+`eslint-config-yarapa` exports one canonical Flat Config array containing every internal capability:
 
-| Layer                | Entrypoint             | Target Scope     | Key Inclusions                                                                                                                          |
+| Capability           | Entrypoint             | Target Scope     | Key Inclusions                                                                                                                          |
 | -------------------- | ---------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | **Unified Baseline** | `eslint-config-yarapa` | Full-stack JS/TS | Base JS, Node.js runtime, Browser globals, TS syntax, TS type-checked, Imports, SonarJS, JSDoc, JSON, Stylistic, Perfectionist, Unicorn |
 
-## Layered Plugins
+## Included Plugins
 
-| Layer             | Plugin                                | Purpose                                                                    |
+| Capability        | Plugin                                | Purpose                                                                    |
 | ----------------- | ------------------------------------- | -------------------------------------------------------------------------- |
-| **Core JS**       | `@eslint/js`                          | Recommended baseline syntax and runtime errors                             |
+| **Core JS**       | `@eslint/js`                          | Baseline syntax and runtime errors                                         |
 | **Node.js**       | `eslint-plugin-n`                     | Node.js runtime checks and globals                                         |
 | **TypeScript**    | `typescript-eslint`                   | Type checking, syntax rules, strict type-aware rules via `projectService`  |
 | **Promises**      | `eslint-plugin-promise`               | Asynchronous correctness, avoids unhandled rejections and nesting          |

@@ -8,7 +8,7 @@ const jsoncCompatibilityRules: Linter.RulesRecord = {
   strict: "off",
 };
 
-const jsoncRecommendedRules: Linter.RulesRecord = {
+const jsoncRules: Linter.RulesRecord = {
   "jsonc/array-bracket-spacing": ["error", "never"],
   "jsonc/comma-dangle": ["error", "never"],
   "jsonc/indent": ["error", 2],
@@ -67,8 +67,8 @@ export const json: Linter.Config[] = [
     rules: jsoncCompatibilityRules,
   },
   {
-    name: "yarapa/json/recommended",
-    rules: jsoncRecommendedRules,
+    name: "yarapa/json/rules",
+    rules: jsoncRules,
   },
   {
     files: ["*.json5", "**/*.json5"],

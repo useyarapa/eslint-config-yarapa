@@ -9,19 +9,19 @@ import yarapa from "../src/index.js";
 import { required } from "../src/utils/compat.js";
 
 /**
- * Resolve the final configured value for one rule in a profile.
- * @param profile Flat Config array.
+ * Resolve the final configured value for one rule.
+ * @param config Flat Config array.
  * @param ruleName Fully qualified rule name.
  * @returns The final rule entry when configured.
  */
 function findRule(
-  profile: Linter.Config[],
+  config: Linter.Config[],
   ruleName: string,
 ): Linter.RuleEntry | undefined {
   let resolved: Linter.RuleEntry | undefined;
 
-  for (const config of profile) {
-    const rule = Reflect.get(config.rules ?? {}, ruleName) as
+  for (const entry of config) {
+    const rule = Reflect.get(entry.rules ?? {}, ruleName) as
       Linter.RuleEntry | undefined;
 
     if (rule !== undefined) {
@@ -32,10 +32,19 @@ function findRule(
   return resolved;
 }
 
-describe("unified public configuration", () => {
+describe("canonical public configuration", () => {
   it("exports a non-empty Flat Config array", () => {
     expect(Array.isArray(yarapa)).toBe(true);
     expect(yarapa.length).toBeGreaterThan(0);
+  });
+
+  it("uses canonical capability names without preset tiers", () => {
+    const presetName = ["recom", "mended"].join("");
+    const tierNames = yarapa
+      .map(config => config.name)
+      .filter(name => name?.includes(presetName));
+
+    expect(tierNames).toEqual([]);
   });
 
   it("owns base, comments, promise, regexp, and unused-imports policies", () => {
@@ -48,8 +57,8 @@ describe("unified public configuration", () => {
     expect(configNames).toContain("yarapa/regexp");
     expect(configNames).toContain("yarapa/unused-imports");
     expect(configNames).toContain("yarapa/typescript");
-    expect(configNames).toContain("yarapa/type-checked/recommended");
-    expect(configNames).toContain("yarapa/stylistic/recommended");
+    expect(configNames).toContain("yarapa/type-checked");
+    expect(configNames).toContain("yarapa/stylistic");
     expect(configNames).toContain("yarapa/unicorn");
     expect(configNames).toContain("yarapa/import-x");
     expect(configNames).toContain("yarapa/sonarjs");
@@ -67,10 +76,10 @@ describe("unified public configuration", () => {
     expect(configsWithTsPlugin[0]?.name).toBe("yarapa/typescript");
   });
 
-  it("places typescript before type-checked in recommended composition", () => {
+  it("places typescript before type-checked in canonical composition", () => {
     const names = yarapa.map(config => config.name).filter(Boolean);
     const tsIndex = names.indexOf("yarapa/typescript");
-    const typeCheckedIndex = names.indexOf("yarapa/type-checked/recommended");
+    const typeCheckedIndex = names.indexOf("yarapa/type-checked");
 
     expect(tsIndex).toBeGreaterThanOrEqual(0);
     expect(typeCheckedIndex).toBeGreaterThan(tsIndex);
@@ -104,12 +113,13 @@ describe("unified public configuration", () => {
     );
     expect(hasNodePlugin).toBe(true);
 
-    const hasBrowserGlobals = yarapa.some(config =>
-      Boolean(
-        config.languageOptions?.globals
-        && Reflect.has(config.languageOptions.globals, "window"),
-      ),
-    );
+    const hasBrowserGlobals = yarapa.some(config => {
+      const configuredGlobals = config.languageOptions?.globals;
+
+      return configuredGlobals
+        ? Reflect.has(configuredGlobals, "window")
+        : false;
+    });
     expect(hasBrowserGlobals).toBe(true);
   });
 

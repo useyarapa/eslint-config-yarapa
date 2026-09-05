@@ -14,6 +14,35 @@ export default defineConfig(
   ),
   yarapa,
   {
+    files: ["packages/eslint-config-yarapa/**/*.ts"],
+    name: "yarapa/repository/typescript-emit-resolution",
+    rules: {
+      "n/no-missing-import": [
+        "error",
+        {
+          typescriptExtensionMap: [[".ts", ".js"]],
+        },
+      ],
+    },
+  },
+  {
+    files: ["packages/eslint-config-yarapa/src/cli/yarapa-eslint-config.ts"],
+    name: "yarapa/repository/published-bin-source",
+    rules: {
+      "n/hashbang": [
+        "error",
+        {
+          convertPath: {
+            "src/cli/yarapa-eslint-config.ts": [
+              String.raw`^src/cli/yarapa-eslint-config\.ts$`,
+              "dist/yarapa-eslint-config.mjs",
+            ],
+          },
+        },
+      ],
+    },
+  },
+  {
     files: [
       "packages/eslint-config-yarapa/scripts/verify-tarball/**/*.{ts,mts}",
       "packages/eslint-config-yarapa/test/behavior.test.ts",

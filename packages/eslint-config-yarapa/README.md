@@ -69,7 +69,7 @@ export default yarapa;
 | Universal JavaScript | All matching files             | Core JS, modern builtins, imports (`import-x`), SonarJS |
 | Node.js Runtime      | All matching files             | Node globals, `eslint-plugin-n` runtime checks          |
 | Browser Environment  | All matching files             | Browser globals                                         |
-| TypeScript Syntax    | `**/*.{ts,tsx,mts,cts}`        | `@typescript-eslint` recommended syntax & hygiene       |
+| TypeScript Syntax    | `**/*.{ts,tsx,mts,cts}`        | `@typescript-eslint` syntax and hygiene policies        |
 | Type-Checked Rules   | `**/*.{ts,tsx,mts,cts}`        | `projectService` type-aware analysis                    |
 | Style & Formatting   | All matching files             | Stylistic rules, Perfectionist natural sorting, Unicorn |
 | Structural Data      | `**/*.json`, `**/package.json` | `@eslint/json`, `eslint-plugin-package-json`            |
@@ -80,29 +80,21 @@ For full architecture details and rule philosophies, refer to the [Architecture 
 
 ---
 
-## Customization & Overriding Rules
+## Canonical Configuration Contract
 
-Because all profiles export standard Flat Config arrays, you can compose, add project-specific rules, or ignore files using standard JavaScript array operations:
+`eslint.config.mjs` must contain the Quick Start template exactly. Consumer repositories must not append rules, ignores, globals, mutations, imports, or side effects. Changes to ESLint policy belong in `eslint-config-yarapa` so every repository receives the same configuration.
 
-```js
-import yarapa from "eslint-config-yarapa";
+Add the validator to the consumer's CI scripts:
 
-export default [
-  ...yarapa,
-  {
-    // Global ignore patterns
-    ignores: ["**/dist/**", "**/build/**", "**/.next/**", "**/coverage/**"],
-  },
-  {
-    // Custom project-level overrides
-    files: ["src/**/*.ts"],
-    rules: {
-      // Add or adjust specific rules
-      "no-console": ["warn", { allow: ["warn", "error"] }],
-    },
-  },
-];
+```json
+{
+  "scripts": {
+    "lint:config": "yarapa-eslint-config"
+  }
+}
 ```
+
+Run `pnpm lint:config` before ESLint. The command exits with status `1` when `eslint.config.mjs` is missing or differs from the canonical template. A repository must make this command a required CI check for enforcement.
 
 ---
 
@@ -110,7 +102,7 @@ export default [
 
 `eslint-config-yarapa` includes deterministic code styling via `@stylistic/eslint-plugin` (semi, quotes, 2-space indentation, max line length).
 
-- **Recommended**: Run ESLint directly with `--fix` to format and lint your entire repository deterministically.
+- Run ESLint directly with `--fix` to format and lint your entire repository deterministically.
 - **If using Prettier**: If your workflow requires Prettier for non-JS files (e.g. Markdown, CSS, HTML), ensure that Prettier is configured with matching options:
   - `"semi": true`
   - `"singleQuote": false`
@@ -184,32 +176,17 @@ When running type-aware rules, ESLint must resolve project configuration relativ
 pnpm exec eslint .
 ```
 
-In monorepo setups, run ESLint within each workspace package or configure `tsconfigRootDir`:
-
-```js
-import yarapa from "eslint-config-yarapa";
-
-export default [
-  ...yarapa,
-  {
-    languageOptions: {
-      parserOptions: {
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
-  },
-];
-```
+The package owns `projectService` and file-scope policy. Unsupported repository layouts require a central change to `eslint-config-yarapa`, not a consumer override.
 
 ### 2. Can I use `eslint-disable` comments?
 
-By repository philosophy, inline rule suppressions (`// eslint-disable`) are prohibited. All diagnostics should be resolved at the root cause. If a project-wide exemption is genuinely required (e.g., generated files), configure it explicitly in `eslint.config.mjs` under `ignores` or `rules`.
+Inline rule suppressions are prohibited. Fix diagnostics at their source. Generated-file ignores and project-wide policy changes must be added to `eslint-config-yarapa`, not to a consumer's `eslint.config.mjs`.
 
 ---
 
 ## Inspecting Active Rules
 
-To visually explore every rule, plugin, and active override in your configuration:
+To visually explore every rule, plugin, and active configuration:
 
 ```sh
 pnpm dlx @eslint/config-inspector

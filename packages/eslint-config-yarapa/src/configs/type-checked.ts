@@ -51,7 +51,7 @@ export const typeChecked: Linter.Config[] = [
         tsconfigRootDir: process.cwd(),
       },
     },
-    name: "yarapa/type-checked/recommended",
+    name: "yarapa/type-checked",
     rules: {
       ...typeCheckedCoreReplacementRules,
       ...typeCheckedPolicyRules,

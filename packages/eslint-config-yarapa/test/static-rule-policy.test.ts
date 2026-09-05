@@ -35,9 +35,9 @@ describe("static rule policy guard", () => {
     expect(violations).toEqual([]);
   });
 
-  it("keeps recommended.ts orchestration-only", () => {
-    const recommendedPath = path.join(configsDir, "recommended.ts");
-    const content = fs.readFileSync(recommendedPath, "utf8");
+  it("keeps yarapa.ts orchestration-only", () => {
+    const yarapaPath = path.join(configsDir, "yarapa.ts");
+    const content = fs.readFileSync(yarapaPath, "utf8");
 
     expect(content).not.toMatch(/\brules\s*:/u);
     expect(content).not.toMatch(/\bplugins\s*:/u);

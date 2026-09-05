@@ -165,13 +165,13 @@ const jsdocTypeScriptRules: Linter.RulesRecord = {
 export const jsdoc: Linter.Config[] = [
   {
     files: ["**/*.js", "**/*.mjs", "**/*.cjs", "**/*.jsx"],
-    name: "yarapa/jsdoc/recommended-javascript",
+    name: "yarapa/jsdoc/javascript",
     plugins: { jsdoc: jsdocPlugin },
     rules: jsdocJavaScriptRules,
   },
   {
     files: ["**/*.ts", "**/*.mts", "**/*.cts", "**/*.tsx"],
-    name: "yarapa/jsdoc/recommended-typescript",
+    name: "yarapa/jsdoc/typescript",
     plugins: { jsdoc: jsdocPlugin },
     rules: jsdocTypeScriptRules,
   },
